@@ -1302,13 +1302,13 @@ function telaPortfolio(){
           '<td><button class="icone alca" type="button" title="Arraste para reordenar">' + svg('alca',14) + '</button></td>' +
           '<td class="forte">' + esc(v.titulo || 'Sem título') +
             (ehExemplo(v.titulo) ? ' <span class="pil pil-exemplo">exemplo</span>' : '') + '</td>' +
-          '<td>' + (v.nicho ? esc(v.nicho) : '<span class="apagado">—</span>') + '</td>' +
-          '<td>' + (v.formato ? esc(v.formato) : '<span class="apagado">—</span>') + '</td>' +
-          '<td>' + (v.marca ? esc(v.marca) : '<span class="apagado">—</span>') + '</td>' +
-          '<td>' + (v.destaque ? '<span class="pil pil-lead">' + esc(v.destaque) + '</span>' : '<span class="apagado">—</span>') + '</td>' +
+          '<td>' + (v.nicho ? esc(v.nicho) : '<span class="apagado">·</span>') + '</td>' +
+          '<td>' + (v.formato ? esc(v.formato) : '<span class="apagado">·</span>') + '</td>' +
+          '<td>' + (v.marca ? esc(v.marca) : '<span class="apagado">·</span>') + '</td>' +
+          '<td>' + (v.destaque ? '<span class="pil pil-lead">' + esc(v.destaque) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
           '<td>' + (v.link
               ? '<a href="' + esc(v.link) + '" target="_blank" rel="noopener" title="' + esc(v.link) + '">abrir</a>'
-              : '<span class="apagado">—</span>') + '</td>' +
+              : '<span class="apagado">·</span>') + '</td>' +
           '<td class="acoes">' +
             '<button class="icone' + (oculto ? '' : ' on') + '" type="button" data-olho="' + esc(v.id) + '" ' +
               'title="' + (oculto ? 'Escondido do site, clique para mostrar' : 'Aparecendo no site, clique para esconder') + '">' +
@@ -1542,16 +1542,16 @@ function telaMarcas(){
           '<td>' + (insta
               ? '<a href="' + esc(insta) + '" target="_blank" rel="noopener" data-paro="1">' +
                 esc(m.instagram) + '</a>'
-              : '<span class="apagado">—</span>') + '</td>' +
+              : '<span class="apagado">·</span>') + '</td>' +
           '<td>' + (m.email
               ? '<a href="mailto:' + esc(m.email) + '" data-paro="1">' + esc(m.email) + '</a>'
-              : '<span class="apagado">—</span>') + '</td>' +
-          '<td>' + (m.telefone ? esc(m.telefone) : '<span class="apagado">—</span>') + '</td>' +
+              : '<span class="apagado">·</span>') + '</td>' +
+          '<td>' + (m.telefone ? esc(m.telefone) : '<span class="apagado">·</span>') + '</td>' +
           '<td><span class="' + classeSituacao(m.situacao) + '">' + esc(rotSituacao(m.situacao)) + '</span></td>' +
           '<td style="max-width:210px;font-size:12.5px;color:var(--faint)">' +
             (m.obs ? esc(String(m.obs).slice(0,110)) + (String(m.obs).length > 110 ? '...' : '')
-                   : '<span class="apagado">—</span>') + '</td>' +
-          '<td>' + (m.ultimo_contato ? brData(m.ultimo_contato, true) : '<span class="apagado">—</span>') + '</td>' +
+                   : '<span class="apagado">·</span>') + '</td>' +
+          '<td>' + (m.ultimo_contato ? brData(m.ultimo_contato, true) : '<span class="apagado">·</span>') + '</td>' +
           '<td class="acoes">' + (zap
               ? '<a class="icone" href="' + esc(zap) + '" target="_blank" rel="noopener" ' +
                 'data-paro="1" title="Abrir no WhatsApp">' + svg('zap',14) + '</a>'
@@ -2012,14 +2012,14 @@ function telaCampanhas(){
             svg('estrela',14, !!c.favorita) + '</button></td>' +
           '<td class="forte">' + esc(c.campanha || 'Sem nome') +
             (ehExemplo(c.campanha) ? ' <span class="pil pil-exemplo">exemplo</span>' : '') + '</td>' +
-          '<td>' + (c.cliente ? esc(c.cliente) : '<span class="apagado">—</span>') + '</td>' +
+          '<td>' + (c.cliente ? esc(c.cliente) : '<span class="apagado">·</span>') + '</td>' +
           '<td><span class="pil pil-' +
             (String(c.tipo || '').toLowerCase().indexOf('public') > -1 ? 'publicidade' : 'conteudo') + '">' +
             esc(c.tipo || 'Conteúdo') + '</span></td>' +
           '<td><span class="' + classeStatus(c.status) + '">' + esc(c.status || 'Briefing') + '</span></td>' +
           '<td class="num">' + num(c.qtd) + '</td>' +
           '<td class="num">' + real(c.valor) + '</td>' +
-          '<td>' + (c.prazo ? brData(c.prazo, true) + avisoPrazo(c) : '<span class="apagado">—</span>') + '</td>' +
+          '<td>' + (c.prazo ? brData(c.prazo, true) + avisoPrazo(c) : '<span class="apagado">·</span>') + '</td>' +
           '<td><span class="pil pil-' + (String(c.pagamento) === 'pago' ? 'pago' : 'pendente') + '">' +
             (String(c.pagamento) === 'pago' ? 'Pago' : 'Pendente') + '</span></td>' +
         '</tr>';
