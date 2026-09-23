@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- noindex: esta pagina nao deve aparecer no Google -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+
+<title>Entrar · Giovanna Carrilho</title>
+<meta name="theme-color" content="#331319">
+
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================================
+   Mesmas cores, mesma fonte e mesmo arredondamento do portfolio.
+   Uma fonte so: Archivo. Tamanhos pequenos e discretos.
+   ============================================================================ */
+:root{
+  --vinho:#4A2028;
+  --vinho-d:#331319;
+  --laranja:#B45F2B;
+  --terra:#C89078;
+  --oliva:#545A34;
+  --ocre:#C9A227;
+  --creme:#F5F0E6;
+  --creme2:#EFE9DC;
+  --white:#FFF;
+
+  --ink:#4A2028;
+  --soft:rgba(74,32,40,.78);
+  --faint:rgba(74,32,40,.46);
+  --linha:rgba(74,32,40,.14);
+
+  --disp:'Archivo',Helvetica,Arial,sans-serif;
+  --rad:26px;
+  --rad-s:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--disp);
+  background:var(--vinho-d);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+/* o mesmo fundo xadrez do portfolio, bem discreto */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:url('../xadrez_vinho.png') repeat;
+  opacity:.28;pointer-events:none;
+}
+::selection{background:var(--ocre);color:var(--vinho)}
+
+.cartao{
+  position:relative;
+  width:100%;max-width:392px;
+  background:var(--creme);
+  border-radius:var(--rad);
+  padding:38px 34px 30px;
+  box-shadow:0 22px 60px rgba(0,0,0,.34);
+}
+
+.marca{
+  font-weight:800;font-size:11px;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--laranja);
+  margin-bottom:10px;
+}
+h1{
+  font-weight:800;font-size:23px;line-height:1.1;
+  letter-spacing:-.03em;margin-bottom:5px;
+}
+.sub{font-size:13.5px;color:var(--faint);margin-bottom:24px}
+
+label{
+  display:block;font-weight:600;font-size:11.5px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:7px;
+}
+.campo{margin-bottom:16px}
+input{
+  width:100%;font-family:var(--disp);font-size:15px;
+  color:var(--ink);background:var(--white);
+  border:1px solid var(--linha);
+  border-radius:var(--rad-s);
+  padding:12px 14px;transition:border-color .15s,box-shadow .15s;
+}
+input:focus{
+  outline:none;border-color:var(--laranja);
+  box-shadow:0 0 0 3px rgba(180,95,43,.14);
+}
+input:disabled{background:var(--creme2);color:var(--faint)}
+
+/* botao em pilula, igual ao do portfolio */
+.btn{
+  width:100%;font-family:var(--disp);font-weight:800;font-size:15px;
+  letter-spacing:.05em;color:var(--creme);background:var(--laranja);
+  border:none;border-radius:100px;padding:15px 20px;cursor:pointer;
+  transition:background .16s,transform .16s;margin-top:6px;
+}
+.btn:hover:not(:disabled){background:#C56A31;transform:translateY(-1px)}
+.btn:disabled{opacity:.62;cursor:default;transform:none}
+
+.link{
+  display:block;width:100%;text-align:center;
+  background:none;border:none;cursor:pointer;
+  font-family:var(--disp);font-size:13px;color:var(--soft);
+  text-decoration:underline;text-underline-offset:3px;
+  margin-top:18px;padding:4px;
+}
+.link:hover{color:var(--laranja)}
+
+/* a faixa de aviso, sempre em portugues */
+.faixa{
+  display:none;border-radius:var(--rad-s);
+  padding:11px 14px;font-size:13.5px;font-weight:600;
+  margin-bottom:18px;line-height:1.45;
+}
+.faixa.erro{display:block;background:rgba(155,42,42,.1);color:#9B2A2A;border:1px solid rgba(155,42,42,.24)}
+.faixa.ok{display:block;background:rgba(84,90,52,.12);color:#3F4527;border:1px solid rgba(84,90,52,.26)}
+
+.pe{
+  margin-top:22px;padding-top:16px;border-top:1px solid var(--linha);
+  font-size:11.5px;color:var(--faint);text-align:center;
+}
+.pe a{color:var(--faint)}
+
+.escondido{display:none}
+</style>
+</head>
+<body>
+
+<main class="cartao">
+  <div class="marca">Leitura de Marca</div>
+
+  <!-- ENTRAR -->
+  <div id="telaEntrar">
+    <h1>Entrar no painel</h1>
+    <p class="sub">Area privada. Só você entra aqui.</p>
+
+    <div id="aviso" class="faixa"></div>
+
+    <form id="formEntrar" autocomplete="on">
+      <div class="campo">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="username"
+               required placeholder="contato@gicarrilho.com.br">
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password"
+               required placeholder="••••••••">
+      </div>
+      <button id="btnEntrar" class="btn" type="submit">Entrar</button>
+    </form>
+
+    <button id="btnEsqueci" class="link" type="button">Esqueci minha senha</button>
+  </div>
+
+  <!-- DEFINIR NOVA SENHA, aparece quando você chega pelo link do e-mail -->
+  <div id="telaNova" class="escondido">
+    <h1>Criar uma senha nova</h1>
+    <p class="sub">Escolha a senha que você vai usar de agora em diante.</p>
+
+    <div id="avisoNova" class="faixa"></div>
+
+    <form id="formNova">
+      <div class="campo">
+        <label for="senha1">Nova senha</label>
+        <input id="senha1" type="password" autocomplete="new-password"
+               required minlength="6" placeholder="Pelo menos 6 letras ou números">
+      </div>
+      <div class="campo">
+        <label for="senha2">Repita a nova senha</label>
+        <input id="senha2" type="password" autocomplete="new-password"
+               required minlength="6" placeholder="A mesma coisa de novo">
+      </div>
+      <button id="btnSalvarSenha" class="btn" type="submit">Salvar senha</button>
+    </form>
+  </div>
+
+  <div class="pe">
+    <a href="../">Voltar para o site</a>
+  </div>
+</main>
+
+<!-- O Supabase vem por CDN, com uma tag script, antes do nosso arquivo -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../js/banco.js"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  var aviso        = document.getElementById('aviso');
+  var avisoNova    = document.getElementById('avisoNova');
+  var telaEntrar   = document.getElementById('telaEntrar');
+  var telaNova     = document.getElementById('telaNova');
+  var formEntrar   = document.getElementById('formEntrar');
+  var formNova     = document.getElementById('formNova');
+  var btnEntrar    = document.getElementById('btnEntrar');
+  var btnEsqueci   = document.getElementById('btnEsqueci');
+  var btnSalvar    = document.getElementById('btnSalvarSenha');
+  var campoEmail   = document.getElementById('email');
+  var campoSenha   = document.getElementById('senha');
+
+  /* mostra uma mensagem na faixa, sempre em portugues */
+  function mostrar(caixa, texto, tipo){
+    caixa.textContent = texto;
+    caixa.className = 'faixa ' + (tipo || 'erro');
+  }
+  function limpar(caixa){
+    caixa.textContent = '';
+    caixa.className = 'faixa';
+  }
+
+  /* --------------------------------------------------------------------------
+     Traduz o erro do Supabase, que vem em ingles, para portugues.
+     A pessoa nunca ve texto em ingles nesta tela.
+     -------------------------------------------------------------------------- */
+  function emPortugues(erro){
+    var m = (erro && (erro.message || erro.error_description) || '').toLowerCase();
+
+    if (m.indexOf('invalid login') > -1 || m.indexOf('invalid credentials') > -1 ||
+        m.indexOf('invalid email or password') > -1) {
+      return 'E-mail ou senha incorretos';
+    }
+    if (m.indexOf('email not confirmed') > -1) {
+      return 'Este e-mail ainda não foi confirmado. Procure a mensagem de confirmação na sua caixa de entrada.';
+    }
+    if (m.indexOf('too many') > -1 || m.indexOf('rate limit') > -1 || m.indexOf('security purposes') > -1) {
+      return 'Muitas tentativas seguidas. Espere um minuto e tente de novo.';
+    }
+    if (m.indexOf('failed to fetch') > -1 || m.indexOf('network') > -1) {
+      return 'Sem conexão com a internet. Confira a sua rede e tente de novo.';
+    }
+    if (m.indexOf('user not found') > -1) {
+      return 'E-mail ou senha incorretos';
+    }
+    if (m.indexOf('should be at least') > -1 || m.indexOf('password') > -1 && m.indexOf('short') > -1) {
+      return 'A senha precisa ter pelo menos 6 letras ou números.';
+    }
+    if (m.indexOf('same as the old') > -1 || m.indexOf('different from the old') > -1) {
+      return 'Escolha uma senha diferente da anterior.';
+    }
+    if (m.indexOf('expired') > -1 || m.indexOf('invalid token') > -1) {
+      return 'Este link já expirou. Peça um novo em "Esqueci minha senha".';
+    }
+    /* qualquer outro caso: mensagem generica, nunca o texto em ingles */
+    return 'Não foi possível entrar agora. Tente de novo em um instante.';
+  }
+
+  /* se o Supabase nao carregou, avisa e nao deixa a pessoa no escuro */
+  if (!window.sb) {
+    mostrar(aviso, window.BANCO_ERRO || 'Não foi possível ligar no banco de dados. Recarregue a página.', 'erro');
+    btnEntrar.disabled = true;
+    return;
+  }
+
+  /* --------------------------------------------------------------------------
+     A pessoa chegou pelo link de recuperacao do e-mail?
+     O Supabase coloca type=recovery no endereco. Nesse caso, em vez de
+     mandar para o admin, a gente mostra a tela de criar senha nova.
+     -------------------------------------------------------------------------- */
+  function veioDoLinkDeSenha(){
+    var h = (location.hash || '') + '&' + (location.search || '');
+    return h.indexOf('type=recovery') > -1;
+  }
+
+  var recuperando = veioDoLinkDeSenha();
+
+  if (recuperando) {
+    telaEntrar.classList.add('escondido');
+    telaNova.classList.remove('escondido');
+  }
+
+  /* --------------------------------------------------------------------------
+     Se ja existe sessao aberta, manda direto para o admin.
+     Nao faz isso quando a pessoa esta no meio de trocar a senha.
+     -------------------------------------------------------------------------- */
+  (async function jaEstaLogada(){
+    if (recuperando) return;
+    try {
+      var r = await window.sb.auth.getSession();
+      if (r && r.data && r.data.session) {
+        location.replace('../admin/');
+      }
+    } catch (e) { /* segue mostrando o formulario */ }
+  })();
+
+  /* --------------------------------------------------------------------------
+     ENTRAR
+     -------------------------------------------------------------------------- */
+  formEntrar.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    limpar(aviso);
+
+    var email = campoEmail.value.trim();
+    var senha = campoSenha.value;
+
+    if (!email || !senha) {
+      mostrar(aviso, 'Preencha o e-mail e a senha.', 'erro');
+      return;
+    }
+
+    btnEntrar.disabled = true;
+    btnEntrar.textContent = 'Entrando...';
+
+    try {
+      var r = await window.sb.auth.signInWithPassword({ email: email, password: senha });
+      if (r.error) {
+        mostrar(aviso, emPortugues(r.error), 'erro');
+        campoSenha.value = '';
+        campoSenha.focus();
+      } else {
+        location.replace('../admin/');
+        return;
+      }
+    } catch (e) {
+      mostrar(aviso, emPortugues(e), 'erro');
+    }
+
+    btnEntrar.disabled = false;
+    btnEntrar.textContent = 'Entrar';
+  });
+
+  /* --------------------------------------------------------------------------
+     ESQUECI MINHA SENHA
+     Manda o e-mail de recuperacao. O link do e-mail volta para esta pagina.
+     -------------------------------------------------------------------------- */
+  btnEsqueci.addEventListener('click', async function(){
+    limpar(aviso);
+    var email = campoEmail.value.trim();
+
+    if (!email) {
+      mostrar(aviso, 'Escreva o seu e-mail no campo acima e clique aqui de novo.', 'erro');
+      campoEmail.focus();
+      return;
+    }
+
+    btnEsqueci.disabled = true;
+    btnEsqueci.textContent = 'Enviando...';
+
+    try {
+      var volta = location.origin + location.pathname;
+      var r = await window.sb.auth.resetPasswordForEmail(email, { redirectTo: volta });
+      if (r.error) {
+        mostrar(aviso, emPortugues(r.error), 'erro');
+      } else {
+        mostrar(aviso, 'Pronto. Enviamos um link para ' + email + '. Abra o seu e-mail para criar uma senha nova.', 'ok');
+      }
+    } catch (e) {
+      mostrar(aviso, emPortugues(e), 'erro');
+    }
+
+    btnEsqueci.disabled = false;
+    btnEsqueci.textContent = 'Esqueci minha senha';
+  });
+
+  /* --------------------------------------------------------------------------
+     SALVAR A SENHA NOVA
+     -------------------------------------------------------------------------- */
+  formNova.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    limpar(avisoNova);
+
+    var a = document.getElementById('senha1').value;
+    var b = document.getElementById('senha2').value;
+
+    if (a.length < 6) {
+      mostrar(avisoNova, 'A senha precisa ter pelo menos 6 letras ou números.', 'erro');
+      return;
+    }
+    if (a !== b) {
+      mostrar(avisoNova, 'As duas senhas não são iguais. Confira e tente de novo.', 'erro');
+      return;
+    }
+
+    btnSalvar.disabled = true;
+    btnSalvar.textContent = 'Salvando...';
+
+    try {
+      var r = await window.sb.auth.updateUser({ password: a });
+      if (r.error) {
+        mostrar(avisoNova, emPortugues(r.error), 'erro');
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar senha';
+      } else {
+        mostrar(avisoNova, 'Senha salva. Levando você para o painel...', 'ok');
+        setTimeout(function(){ location.replace('../admin/'); }, 1100);
+      }
+    } catch (e) {
+      mostrar(avisoNova, emPortugues(e), 'erro');
+      btnSalvar.disabled = false;
+      btnSalvar.textContent = 'Salvar senha';
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
