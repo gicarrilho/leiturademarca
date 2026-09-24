@@ -153,9 +153,9 @@ window.Banco = {
   },
 
   /* --------------------------------------------------------------------------
-     CADASTRAR UM LEAD VINDO DO FORMULARIO DO SITE
-     Entra sempre com situacao 'lead', que e a unica coisa que a tranca do
-     banco deixa um visitante gravar.
+     CADASTRAR UMA LEAD VINDA DO FORMULARIO DO SITE
+     Entra sempre no comeco do funil, com status 'Contato realizado', que e a
+     unica coisa que a tranca do banco deixa um visitante gravar.
      Devolve { ok: true } ou { ok: false, mensagem: 'texto em portugues' }.
      -------------------------------------------------------------------------- */
   async cadastrarLead(dados) {
@@ -167,13 +167,17 @@ window.Banco = {
       if (!nome) {
         return { ok: false, mensagem: 'Escreva o seu nome, por favor.' };
       }
-      var r = await window.sb.from('marcas').insert({
-        nome:      nome.slice(0, 120),
-        instagram: (dados.instagram || '').trim().slice(0, 80),
-        email:     (dados.email || '').trim().slice(0, 160),
-        telefone:  (dados.telefone || '').trim().slice(0, 40),
-        obs:       (dados.obs || '').trim().slice(0, 1000),
-        situacao:  'lead',
+      /* junta o @ e o telefone num campo so, que e como o painel mostra o contato */
+      var contato = [(dados.instagram || '').trim(),
+                     (dados.telefone  || '').trim(),
+                     (dados.email     || '').trim()].filter(Boolean).join(' · ');
+      var r = await window.sb.from('leads').insert({
+        lead:           nome.slice(0, 120),
+        contato:        contato.slice(0, 160),
+        notas:          (dados.obs || '').trim().slice(0, 2000),
+        origem:         'Instagram',
+        icp:            'A confirmar',
+        status:         'Contato realizado',
         ultimo_contato: new Date().toISOString().slice(0, 10)
       });
       if (r.error) {
