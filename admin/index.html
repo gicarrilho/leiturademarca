@@ -352,6 +352,13 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- jornada da cliente --------------------------------------------------- */
+.jornada{
+  font-size:12px;font-weight:600;color:var(--faint);margin-top:2px;
+  display:inline-block;background:rgba(163,186,203,.26);color:#33485A;
+  padding:1px 8px;border-radius:var(--rad-p);
+}
+
 /* --- campo travado, para nao mudar sem querer ----------------------------- */
 .travado{display:flex;align-items:center;gap:8px}
 .travado input{flex:1;min-width:0}
@@ -1051,7 +1058,7 @@ function abrirModal(opcoes){
 /* monta um formulario a partir de uma lista de campos */
 function htmlCampos(campos, valores){
   valores = valores || {};
-  return campos.map(function(c){
+  return campos.filter(Boolean).map(function(c){
 
     /* divisor de secao, para separar por exemplo os dados fiscais */
     if (c.tipo === 'secao') {
@@ -1110,11 +1117,14 @@ function htmlCampos(campos, valores){
 
     var dentro;
     if (c.tipo === 'select') {
-      dentro = '<select data-k="' + c.k + '">' +
+      dentro = '<select data-k="' + c.k + '"' + (c.numero ? ' data-num="1"' : '') + '>' +
         (c.vazio ? '<option value=""' + (!v ? ' selected' : '') + '>' + esc(c.vazio) + '</option>' : '') +
         c.opcoes.map(function(o){
-          return '<option value="' + esc(o) + '"' +
-            (String(o) === String(v) ? ' selected' : '') + '>' + esc(o) + '</option>';
+          /* opcao pode ser texto simples ou {v: valor, r: rotulo} */
+          var val = (o && typeof o === 'object') ? o.v : o;
+          var rot = (o && typeof o === 'object') ? o.r : o;
+          return '<option value="' + esc(val) + '"' +
+            (String(val) === String(v) ? ' selected' : '') + '>' + esc(rot) + '</option>';
         }).join('') + '</select>';
     } else if (c.tipo === 'area') {
       dentro = '<textarea data-k="' + c.k + '"' + (c.alto ? ' class="alto"' : '') +
@@ -1138,6 +1148,8 @@ function lerCampos(m){
     else if (el.type === 'number') out[k] = el.value === '' ? 0 : num(el.value);
     /* campo de data vazio precisa ir como vazio de verdade, senao o banco reclama */
     else if (el.type === 'date') out[k] = el.value === '' ? null : el.value;
+    /* campo que guarda numero, tipo a ligacao com a lead */
+    else if (el.getAttribute('data-num')) out[k] = el.value === '' ? null : num(el.value);
     else out[k] = el.value;
   });
   /* junta as caixinhas dos campos que aceitam mais de um valor */
@@ -1165,11 +1177,14 @@ function formPadrao(cfg){
     pe:
       (cfg.id ? '<button class="btn btn-perigo esq" type="button" data-apagar="1">' +
                 svg('lixo',13) + ' Apagar</button>' : '') +
+      (cfg.botaoExtra || '') +
       '<button class="btn" type="button" data-fechar="1">Cancelar</button>' +
       '<button class="btn btn-forte" type="button" data-salvar="1">Salvar</button>',
     depois: function(m){
       var primeiro = m.querySelector('input,select,textarea');
       if (primeiro) primeiro.focus();
+
+      if (cfg.depoisDeMontar) cfg.depoisDeMontar(m);
 
       /* destrava um campo de data que veio travado */
       m.querySelectorAll('[data-destrava]').forEach(function(b){
@@ -1186,11 +1201,17 @@ function formPadrao(cfg){
         var erro = cfg.validar ? cfg.validar(dados) : '';
         if (erro) { mostrarErroForm(m, erro); return; }
 
+        /* campos que nao aparecem no formulario mas vao junto */
+        if (cfg.extras) { for (var ch in cfg.extras) dados[ch] = cfg.extras[ch]; }
+
         b.disabled = true; b.textContent = 'Salvando...';
         var ok = cfg.id
           ? await gravar(cfg.tabela, function(t){ return t.update(dados).eq('id', cfg.id); })
           : await gravar(cfg.tabela, function(t){ return t.insert(dados); });
         if (!ok) { b.disabled = false; b.textContent = 'Salvar'; return; }
+
+        /* o que precisa acontecer depois de salvar, tipo graduar a lead */
+        if (cfg.aposSalvar) { try { await cfg.aposSalvar(dados); } catch (e) {} }
 
         fecharModal();
         toast(cfg.id ? 'Alterado.' : 'Adicionado.');
@@ -1876,6 +1897,24 @@ function lerListaColada(txt){
   return { novas: novas, repetidas: repetidas };
 }
 
+/* --------------------------------------------------------------------------
+   JORNADA: da primeira conversa ate o pagamento.
+   So existe quando a cliente esta ligada a uma lead e as duas datas existem.
+   -------------------------------------------------------------------------- */
+function leadDoCliente(c){
+  if (!c || !c.lead_id) return null;
+  return acharPorId(Estado.leads, c.lead_id);
+}
+function jornadaDe(c){
+  var l = leadDoCliente(c);
+  if (!l || !l.primeiro_contato || !c.data_pagamento) return null;
+  var ini = String(l.primeiro_contato).slice(0,10);
+  var fim = String(c.data_pagamento).slice(0,10);
+  var dias = difDias(ini, fim);
+  if (dias < 0) return null;          /* data trocada, melhor nao inventar */
+  return { inicio: ini, fim: fim, dias: dias, lead: l };
+}
+
 /* quem foi tocada num dia: lead cujo ultimo contato e aquele dia */
 function tocadasEm(dia){
   return Estado.leads.filter(function(l){
@@ -2229,6 +2268,7 @@ function telaImportar(){
             origem: x.origem, tempo_mercado: x.tempo_mercado,
             status: opc.status || 'Contato realizado',
             icp: opc.icp || 'A confirmar',
+            primeiro_contato: hojeS(),
             ultimo_contato: opc.hoje ? hojeS() : null,
             portoes: []
           };
@@ -2247,13 +2287,24 @@ function telaImportar(){
 }
 
 function formLead(l){
+  /* se ja existe cliente ligado a esta lead, nao oferece converter de novo */
+  var jaVirou = l && Estado.clientes.some(function(c){ return String(c.lead_id) === String(l.id); });
+
   formPadrao({
     titulo: l ? 'Editar lead' : 'Nova lead',
     sub: l ? (l.lead || '') : 'Uma conversa nova no pipeline',
     larga: true,
     tabela:'leads',
     id: l ? l.id : null,
-    valores: l || { status:'Contato realizado', icp:'A confirmar', ultimo_contato: hojeS() },
+    botaoExtra: (l && !jaVirou)
+      ? '<button class="btn" type="button" data-virou="1">' + svg('clientes',13) + ' Virou cliente</button>'
+      : '',
+    depoisDeMontar: function(m){
+      var bv = m.querySelector('[data-virou]');
+      if (bv) bv.addEventListener('click', function(){ formCliente(null, l); });
+    },
+    valores: l || { status:'Contato realizado', icp:'A confirmar',
+                    primeiro_contato: hojeS(), ultimo_contato: hojeS() },
     textoApagar:'Esta lead vai sair do seu pipeline.',
     campos:[
       { k:'lead', rot:'Nome', ph:'Como ela se chama' },
@@ -2265,6 +2316,8 @@ function formLead(l){
       { k:'tempo_mercado', rot:'Tempo de mercado',
         ph:'22 anos, 3 meses, a confirmar...',
         dica:'Qualificar cedo, antes de aprofundar.' },
+      { k:'primeiro_contato', rot:'Primeiro contato', tipo:'date',
+        dica:'Quando essa conversa começou. É o que mede o tamanho da jornada até o fechamento.' },
       { k:'ultimo_contato', rot:'Último contato', tipo:'date' },
 
       { tipo:'secao', rot:'O que importa nesta conversa',
@@ -2437,8 +2490,12 @@ function telaClientes(){
         var venceu = c.proximo_contato && String(c.proximo_contato).slice(0,10) < hoje;
         var perto = c.proximo_contato && !venceu &&
                     difDias(hoje, String(c.proximo_contato).slice(0,10)) <= 3;
+        var jor = jornadaDe(c);
         return '<tr class="clicavel" data-abre="' + esc(c.id) + '">' +
-          '<td class="forte" style="max-width:220px">' + esc(c.cliente || 'Sem nome') + '</td>' +
+          '<td class="forte" style="max-width:220px">' + esc(c.cliente || 'Sem nome') +
+            (jor ? '<div class="jornada" title="da primeira conversa ao pagamento">' +
+              (jor.dias === 0 ? 'fechou no mesmo dia' : plural(jor.dias,'dia','dias') + ' de conversa') +
+              '</div>' : '') + '</td>' +
           '<td><span class="pil pil-neutra">' + esc(c.produto || 'Outro') + '</span></td>' +
           '<td class="num">' + real(c.valor) + '</td>' +
           '<td>' + (c.data_pagamento ? brData(c.data_pagamento, true) : '<span class="apagado">·</span>') + '</td>' +
@@ -2485,6 +2542,8 @@ function telaClientes(){
       { rot:'Etapas', val:function(c){ return lista(c.crm_status).join(', '); } },
       { rot:'Objetivo do contato', k:'objetivo_contato' },
       { rot:'Próximo contato', val:function(c){ return c.proximo_contato ? brData(c.proximo_contato,true) : ''; } },
+      { rot:'Primeira conversa', val:function(c){ var j = jornadaDe(c); return j ? brData(j.inicio,true) : ''; } },
+      { rot:'Dias de jornada', val:function(c){ var j = jornadaDe(c); return j ? j.dias : ''; } },
       { rot:'Histórico', k:'historico' }
     ], listaC);
   });
@@ -2496,17 +2555,75 @@ function telaClientes(){
   });
 }
 
-function formCliente(c){
+/* junta o que a lead ja sabia, para a ficha do cliente nao nascer vazia */
+function historicoDaLead(l){
+  var p = [];
+  var cab = [];
+  if (l.origem) cab.push('Origem: ' + l.origem);
+  if (l.tempo_mercado) cab.push('Tempo de mercado: ' + l.tempo_mercado);
+  if (cab.length) p.push(cab.join('. ') + '.');
+  if (l.frase_real) p.push('O que ela disse:\n"' + l.frase_real + '"');
+  if (l.notas) p.push('Do pipeline:\n' + l.notas);
+  return p.join('\n\n');
+}
+
+function formCliente(c, deLead){
+  /* quando vem do botao Virou cliente, a ficha nasce preenchida pela lead */
+  var valores = c || { produto:'Leitura de Marca', status_nf:'A emitir', valor:0, crm_status:[] };
+  if (deLead) {
+    valores = {
+      cliente: deLead.lead || '',
+      origem: deLead.origem || '',
+      produto: 'Leitura de Marca',
+      status_nf: 'A emitir',
+      valor: 0,
+      crm_status: ['Pago'],
+      data_pagamento: hojeS(),
+      lead_id: deLead.id,
+      historico: historicoDaLead(deLead)
+    };
+  }
+
+  /* leads que podem ser ligadas: as livres, mais a que ja esta ligada aqui */
+  var ligadas = {};
+  Estado.clientes.forEach(function(x){
+    if (x.lead_id && (!c || String(x.id) !== String(c.id))) ligadas[String(x.lead_id)] = true;
+  });
+  var opcoesLead = Estado.leads.filter(function(l){ return !ligadas[String(l.id)]; })
+    .sort(function(a,b){ return String(a.lead||'').localeCompare(String(b.lead||'')); })
+    .map(function(l){
+      return { v: l.id, r: (l.lead || 'Sem nome') + (l.contato ? ' · ' + l.contato : '') };
+    });
+
+  /* a jornada so aparece quando da para calcular de verdade */
+  var j = c ? jornadaDe(c) : null;
+
   formPadrao({
-    titulo: c ? 'Editar cliente' : 'Novo cliente',
-    sub: c ? (c.cliente || '') : 'Alguém que já comprou',
+    titulo: c ? 'Editar cliente' : (deLead ? 'Graduar para cliente' : 'Novo cliente'),
+    sub: c ? (c.cliente || '')
+           : (deLead ? (deLead.lead || '') + ' sai do pipeline e entra na base de clientes'
+                     : 'Alguém que já comprou'),
     larga: true,
     tabela:'clientes',
     id: c ? c.id : null,
-    valores: c || { produto:'Leitura de Marca', status_nf:'A emitir', valor:0, crm_status:[] },
+    valores: valores,
     textoApagar:'Este cliente vai sair da sua base, com histórico e dados fiscais.',
+    /* graduar a lead: ela continua no pipeline, como historico, com status Cliente */
+    aposSalvar: deLead ? async function(){
+      await gravar('leads', function(t){
+        return t.update({ status:'Cliente', ultimo_contato: hojeS() }).eq('id', deLead.id);
+      });
+    } : null,
     campos:[
+      (j ? { tipo:'secao', rot:'Jornada desta cliente',
+             dica:'Primeira conversa em ' + brData(j.inicio, true) + ', fechou em ' +
+                   brData(j.fim, true) + '. ' +
+                   (j.dias === 0 ? 'Fechou no mesmo dia.' : plural(j.dias,'dia','dias') + ' de conversa.') }
+         : null),
       { k:'cliente', rot:'Cliente', ph:'Nome completo' },
+      { k:'lead_id', rot:'Veio desta lead do pipeline', tipo:'select', numero:true,
+        opcoes: opcoesLead, vazio:'Não veio do pipeline',
+        dica:'Ligando as duas, o painel calcula quantos dias foram da primeira conversa até o pagamento.' },
       { k:'produto', rot:'Produto', tipo:'select', opcoes:PRODUTO },
       { k:'valor', rot:'Valor em reais', tipo:'number', passo:'0.01',
         dica:'Use ponto para os centavos, por exemplo 697.90' },
