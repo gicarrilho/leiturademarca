@@ -352,6 +352,65 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- biblioteca de mensagens ---------------------------------------------- */
+.msg{border:1px solid var(--linha);border-radius:var(--rad);background:var(--white);
+  margin-bottom:14px;overflow:hidden}
+.msg-cab{padding:15px 18px 0}
+.msg-tit{font-weight:800;font-size:15.5px;letter-spacing:-.015em}
+.msg-quando{font-size:13px;color:var(--faint);margin-top:3px;line-height:1.45}
+.msg-princ{
+  font-size:13.5px;color:var(--soft);background:var(--creme);border-left:3px solid var(--terra);
+  border-radius:var(--rad-s);padding:11px 13px;margin:12px 18px 0;line-height:1.55;
+}
+.msg-corpo{padding:14px 18px 16px}
+/* o texto sai igual ao que vai para o WhatsApp, com as quebras de linha */
+.msg-txt{
+  white-space:pre-wrap;font-size:14.5px;line-height:1.6;color:var(--ink);
+  background:var(--creme);border:1px solid var(--linha);border-radius:var(--rad-s);
+  padding:14px 16px;max-height:340px;overflow-y:auto;
+}
+.msg-txt mark{background:rgba(201,162,39,.35);color:var(--ink);padding:1px 3px;border-radius:3px;
+  font-weight:700}
+.msg-pe{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.msg-vars{display:flex;gap:8px;flex-wrap:wrap;flex:1;min-width:200px}
+.msg-var{display:flex;align-items:center;gap:6px}
+.msg-var span{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--faint);
+  text-transform:uppercase;white-space:nowrap}
+.msg-var input{
+  width:130px;padding:6px 10px;border:1px solid var(--linha);border-radius:var(--rad-p);
+  background:var(--white);font-size:13px;
+}
+.msg-var input:focus{outline:none;border-color:var(--laranja);
+  box-shadow:0 0 0 3px rgba(180,95,43,.12)}
+.msg-nao{
+  font-size:13px;line-height:1.55;color:#8C3030;background:rgba(155,42,42,.07);
+  border-radius:var(--rad-s);padding:10px 13px;margin-top:12px;
+}
+.msg-nao b{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;opacity:.65;margin-bottom:6px}
+.msg-nao div{padding-left:15px;position:relative;margin-top:6px}
+.msg-nao div:first-of-type{margin-top:0}
+.msg-nao div::before{content:'';position:absolute;left:2px;top:8px;width:5px;height:5px;
+  border-radius:50%;background:currentColor;opacity:.55}
+.msg-dica{
+  font-size:13px;line-height:1.55;color:#75590F;background:rgba(201,162,39,.12);
+  border-radius:var(--rad-s);padding:10px 13px;margin-top:10px;
+}
+
+/* --- importar lista de leads ---------------------------------------------- */
+.previa{
+  border:1px solid var(--linha);border-radius:var(--rad-s);overflow:hidden;
+  margin-top:12px;max-height:280px;overflow-y:auto;
+}
+.previa table{font-size:13.5px}
+.previa th{position:sticky;top:0;z-index:1}
+.previa td{padding:8px 11px}
+.previa tr.repetida td{opacity:.45}
+.resumo{display:flex;gap:16px;flex-wrap:wrap;font-size:13.5px;margin-top:11px}
+.resumo b{font-size:17px;display:block;letter-spacing:-.02em}
+.resumo .bom b{color:var(--oliva)}
+.resumo .pulo b{color:var(--faint)}
+
 /* --- prospeccao do dia ---------------------------------------------------- */
 .meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .meta-esq{flex:1;min-width:210px}
@@ -602,6 +661,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 <!-- Supabase por CDN, com uma tag script, antes do nosso arquivo -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../js/banco.js"></script>
+<script src="../js/mensagens.js"></script>
 
 <script>
 (function(){
@@ -624,7 +684,9 @@ var Estado = {
   /* pipeline */
   lgBusca:'', lgStatus:'todos', lgIcp:'todos', lgCol:'status', lgDir:1,
   /* clientes */
-  clBusca:'', clFiltro:'todos', clMes:'todos', clCol:'data_pagamento', clDir:-1
+  clBusca:'', clFiltro:'todos', clMes:'todos', clCol:'data_pagamento', clDir:-1,
+  /* mensagens */
+  msMomento:'abordagem', msBusca:'', msCampos:{}
 };
 
 (async function porta(){
@@ -730,6 +792,8 @@ var ICO = {
   esq:'<polyline points="15 18 9 12 15 6"/>',
   dir:'<polyline points="9 18 15 12 9 6"/>',
   zap:'<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  colar:'<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
+  mensagens:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
 };
 function svg(nome, tam){
@@ -896,7 +960,9 @@ var ABAS = [
   { grupo:'meu negócio', id:'pipeline', rot:'Pipeline', ico:'pipeline',
     dica:'As suas leads e o próximo passo de cada conversa.' },
   { grupo:'meu negócio', id:'clientes', rot:'Clientes', ico:'clientes',
-    dica:'Quem já comprou, o que pagou e a situação da nota fiscal.' }
+    dica:'Quem já comprou, o que pagou e a situação da nota fiscal.' },
+  { grupo:'meu negócio', id:'mensagens', rot:'Mensagens', ico:'mensagens',
+    dica:'As suas mensagens prontas. Preencher, copiar, enviar.' }
 ];
 
 function montarMenu(){
@@ -933,7 +999,7 @@ function irPara(id){
 function desenhar(){
   var f = {
     pautas: telaPautas, calendario: telaCalendario,
-    pipeline: telaPipeline, clientes: telaClientes
+    pipeline: telaPipeline, clientes: telaClientes, mensagens: telaMensagens
   }[Estado.aba];
   try {
     $('painel').innerHTML = '';
@@ -1713,6 +1779,73 @@ function verDia(dia, listaD){
    11. ABA PIPELINE  ·  as suas leads
    ========================================================================== */
 
+/* tira acento e caixa, para comparar nome sem tropecar em maiuscula ou til */
+function semAcento(t){
+  return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toLowerCase().replace(/\s+/g,' ').trim();
+}
+/* pega so o @ de um texto de contato, se houver */
+function soArroba(t){
+  var m = String(t || '').match(/@([A-Za-z0-9._]+)/);
+  return m ? m[1].toLowerCase() : '';
+}
+
+/* --------------------------------------------------------------------------
+   LE UMA LISTA COLADA E DEVOLVE AS LEADS QUE DA PARA IMPORTAR
+   Aceita uma lead por linha. As colunas podem vir separadas por tabulacao
+   (quando voce cola de planilha), por ponto e virgula ou por virgula:
+     Nome ; @contato ; origem ; tempo de mercado ; notas
+   Linha com uma coluna so vira o nome. Se comecar com @, vira o contato.
+   -------------------------------------------------------------------------- */
+function lerListaColada(txt){
+  var jaTem = {};
+  Estado.leads.forEach(function(l){
+    var n = semAcento(l.lead); if (n) jaTem['n:' + n] = true;
+    var a = soArroba(l.contato); if (a) jaTem['a:' + a] = true;
+  });
+
+  var novas = [], repetidas = [], nesteLote = {};
+
+  String(txt || '').split(/\r?\n/).forEach(function(linha, i) {
+    var t = linha.trim();
+    if (!t) return;
+
+    /* descarta o cabecalho da planilha, se vier junto */
+    if (i === 0 && /(^|;|,|\t)\s*(nome|lead|marca|cliente)\s*($|;|,|\t)/i.test(t) && t.indexOf('@') < 0) return;
+
+    var sep = t.indexOf('\t') > -1 ? '\t' : (t.indexOf(';') > -1 ? ';' : ',');
+    var col = t.split(sep).map(function(x){ return x.trim(); });
+
+    var nome = col[0] || '';
+    var contato = col[1] || '';
+    /* linha com uma coluna so: se comeca com @, e contato sem nome */
+    if (col.length === 1 && nome.charAt(0) === '@') { contato = nome; nome = nome.replace('@',''); }
+    if (!nome) return;
+
+    var chaveN = 'n:' + semAcento(nome);
+    var arroba = soArroba(contato);
+    var chaveA = arroba ? 'a:' + arroba : null;
+
+    var repetida = jaTem[chaveN] || (chaveA && jaTem[chaveA]) ||
+                   nesteLote[chaveN] || (chaveA && nesteLote[chaveA]);
+
+    var item = {
+      lead: nome.slice(0,120),
+      contato: contato.slice(0,160),
+      origem: (col[2] || '').slice(0,60),
+      tempo_mercado: (col[3] || '').slice(0,80),
+      notas: (col[4] || '').slice(0,2000)
+    };
+
+    if (repetida) { repetidas.push(item); return; }
+    nesteLote[chaveN] = true;
+    if (chaveA) nesteLote[chaveA] = true;
+    novas.push(item);
+  });
+
+  return { novas: novas, repetidas: repetidas };
+}
+
 /* quem foi tocada num dia: lead cujo ultimo contato e aquele dia */
 function tocadasEm(dia){
   return Estado.leads.filter(function(l){
@@ -1890,6 +2023,7 @@ function telaPipeline(){
       }).join('') + '</select>' +
     '<div class="espaco"></div>' +
     '<button class="btn" type="button" id="lgBaixar">' + svg('baixar',13) + ' Baixar CSV</button>' +
+    '<button class="btn" type="button" id="lgImportar">' + svg('colar',13) + ' Importar lista</button>' +
     '<button class="btn btn-forte" type="button" id="lgAdd">' + svg('mais',13) + ' Nova lead</button>' +
   '</div>';
 
@@ -1946,6 +2080,7 @@ function telaPipeline(){
   $('lgStatus').addEventListener('change', function(){ Estado.lgStatus = this.value; telaPipeline(); });
   $('lgIcp').addEventListener('change', function(){ Estado.lgIcp = this.value; telaPipeline(); });
   $('lgAdd').addEventListener('click', function(){ formLead(null); });
+  $('lgImportar').addEventListener('click', function(){ telaImportar(); });
   ligarOrdenacao('lgCol', 'lgDir', telaPipeline);
 
   $('lgBaixar').addEventListener('click', function(){
@@ -1974,6 +2109,110 @@ function telaPipeline(){
     b.addEventListener('click', function(){
       formLead(acharPorId(Estado.leads, b.getAttribute('data-abrelead')));
     });
+  });
+}
+
+/* --------------------------------------------------------------------------
+   IMPORTAR UMA LISTA DE LEADS DE UMA VEZ
+   Serve para quando voce pesquisa corretoras e recebe uma lista pronta,
+   em vez de digitar uma por uma.
+   -------------------------------------------------------------------------- */
+function telaImportar(){
+  abrirModal({
+    larga: true,
+    titulo: 'Importar lista de leads',
+    sub: 'Uma lead por linha. Pode colar de planilha ou de uma lista que você recebeu.',
+    corpo:
+      '<div class="erro-campo"></div>' +
+      '<div class="campo"><label>Cole a lista aqui</label>' +
+      '<textarea id="impTexto" class="alto" placeholder="Ana Lima; @analima_corretora; Instagram; 22 anos&#10;' +
+      'Juliana Lopes; @juloppes; Indicação&#10;Tânia Moraes; @taniamoraes"></textarea>' +
+      '<div class="dica">A ordem das colunas é: <b>nome, contato, origem, tempo de mercado, notas</b>. ' +
+      'Só o nome é obrigatório. Separe por ponto e vírgula, vírgula ou tabulação. ' +
+      'Quem já estiver no pipeline é ignorada sozinha.</div></div>' +
+      htmlCampos([
+        { k:'status', rot:'Todas entram com o status', tipo:'select', opcoes:LEAD_STATUS,
+          padrao:'Contato realizado',
+          dica:'Se você ainda não falou com elas, deixe o último contato em branco abaixo.' },
+        { k:'icp', rot:'ICP', tipo:'select', opcoes:ICP, padrao:'A confirmar' },
+        { k:'hoje', rot:'Marcar último contato como hoje', tipo:'liga',
+          dica:'Ligue só se você já abordou essas leads hoje. Isso entra na contagem da meta.' }
+      ], {}) +
+      '<div id="impPrevia"></div>',
+    pe: '<div class="espaco"></div>' +
+        '<button class="btn" type="button" data-fechar="1">Cancelar</button>' +
+        '<button class="btn btn-forte" type="button" data-importar="1" disabled>Importar</button>',
+    depois: function(m){
+      var tx = m.querySelector('#impTexto');
+      var previa = m.querySelector('#impPrevia');
+      var botao = m.querySelector('[data-importar]');
+      var lote = { novas: [], repetidas: [] };
+
+      function atualizar(){
+        lote = lerListaColada(tx.value);
+        var n = lote.novas.length, r = lote.repetidas.length;
+
+        if (!n && !r) { previa.innerHTML = ''; botao.disabled = true; botao.textContent = 'Importar'; return; }
+
+        botao.disabled = n === 0;
+        botao.textContent = n ? 'Importar ' + plural(n,'lead','leads') : 'Nada novo para importar';
+
+        var html = '<div class="resumo">' +
+          '<div class="bom"><b>' + n + '</b> ' + (n === 1 ? 'lead nova' : 'leads novas') + '</div>' +
+          (r ? '<div class="pulo"><b>' + r + '</b> já no pipeline, vão ser puladas</div>' : '') +
+        '</div>';
+
+        var mostrar = lote.novas.slice(0, 40);
+        html += '<div class="previa"><table><thead><tr>' +
+          '<th>Nome</th><th>Contato</th><th>Origem</th><th>Tempo de mercado</th>' +
+          '</tr></thead><tbody>' +
+          mostrar.map(function(x){
+            return '<tr><td class="forte">' + esc(x.lead) + '</td>' +
+              '<td>' + (x.contato ? esc(x.contato) : '<span class="apagado">·</span>') + '</td>' +
+              '<td>' + (x.origem ? esc(x.origem) : '<span class="apagado">·</span>') + '</td>' +
+              '<td>' + (x.tempo_mercado ? esc(x.tempo_mercado) : '<span class="apagado">·</span>') + '</td></tr>';
+          }).join('') +
+          lote.repetidas.slice(0, 10).map(function(x){
+            return '<tr class="repetida"><td>' + esc(x.lead) + '</td>' +
+              '<td colspan="3">já está no pipeline</td></tr>';
+          }).join('') +
+          '</tbody></table></div>' +
+          (lote.novas.length > 40
+            ? '<div class="cartao-sub" style="margin-top:8px">Mostrando as 40 primeiras. ' +
+              'Vão entrar todas as ' + lote.novas.length + '.</div>' : '');
+
+        previa.innerHTML = html;
+      }
+
+      tx.addEventListener('input', atualizar);
+      tx.focus();
+
+      botao.addEventListener('click', async function(){
+        if (!lote.novas.length) return;
+        var opc = lerCampos(m);
+        botao.disabled = true;
+        botao.textContent = 'Importando...';
+
+        var prontas = lote.novas.map(function(x){
+          return {
+            lead: x.lead, contato: x.contato, notas: x.notas,
+            origem: x.origem, tempo_mercado: x.tempo_mercado,
+            status: opc.status || 'Contato realizado',
+            icp: opc.icp || 'A confirmar',
+            ultimo_contato: opc.hoje ? hojeS() : null,
+            portoes: []
+          };
+        });
+
+        var ok = await gravar('leads', function(t){ return t.insert(prontas); });
+        if (!ok) { botao.disabled = false; botao.textContent = 'Importar'; return; }
+
+        fecharModal();
+        toast(plural(prontas.length,'lead importada','leads importadas') + '.');
+        await carregarTudo();
+        desenhar();
+      });
+    }
   });
 }
 
@@ -2280,7 +2519,164 @@ function formCliente(c){
 
 
 /* ==========================================================================
-   13. LIGAR TUDO
+   13. ABA MENSAGENS  ·  a sua biblioteca de abordagem
+   O conteudo vem do arquivo js/mensagens.js, que espelha a sua pagina
+   Mensagens Padrao. Aqui ele vira coisa de usar: preencher, copiar, enviar.
+   ========================================================================== */
+
+function M(){ return window.Mensagens || { momentos:[], itens:[] }; }
+
+/* acha os campos variaveis de um texto, tipo [NOME] ou [LINK DO PLANO] */
+function variaveisDe(txt){
+  var achados = String(txt || '').match(/\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g) || [];
+  var unicas = [];
+  achados.forEach(function(v){ if (unicas.indexOf(v) < 0) unicas.push(v); });
+  return unicas;
+}
+/* troca os campos preenchidos pelo que voce digitou */
+function preencher(txt, valores){
+  var fora = String(txt || '');
+  variaveisDe(fora).forEach(function(v){
+    var val = (valores && valores[v] ? String(valores[v]).trim() : '');
+    if (val) fora = fora.split(v).join(val);
+  });
+  return fora;
+}
+/* marca os campos ainda vazios, para dar para ver o que falta */
+function destacarVars(txt){
+  return esc(txt).replace(/\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g, function(m){
+    return '<mark>' + m + '</mark>';
+  });
+}
+
+async function copiarTexto(txt){
+  try {
+    await navigator.clipboard.writeText(txt);
+    return true;
+  } catch (e) {
+    /* alguns navegadores so deixam copiar de um campo de verdade */
+    try {
+      var t = document.createElement('textarea');
+      t.value = txt;
+      t.style.position = 'fixed';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      t.select();
+      var ok = document.execCommand('copy');
+      t.remove();
+      return ok;
+    } catch (e2) { return false; }
+  }
+}
+
+function telaMensagens(){
+  var dados = M();
+  var busca = Estado.msBusca.trim().toLowerCase();
+
+  if (!window.Mensagens) {
+    $('painel').innerHTML = '<div class="cartao"><div class="cartao-corpo"><div class="vazio">' +
+      'O arquivo <b>js/mensagens.js</b> não carregou, então a biblioteca está vazia. ' +
+      'Confira se ele está na pasta js do projeto e recarregue a página.</div></div></div>';
+    return;
+  }
+
+  var lista = dados.itens.filter(function(m){
+    if (Estado.msMomento !== 'todas' && m.momento !== Estado.msMomento) return false;
+    if (!busca) return true;
+    return [m.titulo, m.quando, m.principio, m.texto].some(function(x){
+      return String(x || '').toLowerCase().indexOf(busca) > -1;
+    });
+  });
+
+  var mom = dados.momentos.filter(function(x){ return x.id === Estado.msMomento; })[0];
+
+  var h = '<div class="cartao"><div class="ferramentas">' +
+    '<div class="abas">' +
+      dados.momentos.map(function(x){
+        var n = dados.itens.filter(function(m){ return m.momento === x.id; }).length;
+        return '<button class="aba' + (Estado.msMomento === x.id ? ' on' : '') +
+          '" type="button" data-mom="' + esc(x.id) + '">' + esc(x.nome) +
+          ' <span class="apagado">' + n + '</span></button>';
+      }).join('') +
+      '<button class="aba' + (Estado.msMomento === 'todas' ? ' on' : '') +
+        '" type="button" data-mom="todas">Todas <span class="apagado">' +
+        dados.itens.length + '</span></button>' +
+    '</div>' +
+    '<div class="busca">' + svg('busca',14) +
+      '<input id="msBusca" type="search" placeholder="Buscar na mensagem" value="' +
+      esc(Estado.msBusca) + '"></div>' +
+  '</div>' +
+  (mom ? '<div class="cartao-topo" style="border-bottom:none">' +
+         '<div class="cartao-sub">' + esc(mom.dica) + '</div></div>' : '') +
+  '</div>';
+
+  if (!lista.length) {
+    h += '<div class="vazio">Nenhuma mensagem com essa busca. Tente outra palavra ou volte para <b>Todas</b>.</div>';
+  } else {
+    h += lista.map(function(m, i){
+      var vars = variaveisDe(m.texto);
+      return '<div class="msg" data-i="' + i + '">' +
+        '<div class="msg-cab">' +
+          '<div class="msg-tit">' + esc(m.titulo) + '</div>' +
+          (m.quando ? '<div class="msg-quando">' + esc(m.quando) + '</div>' : '') +
+        '</div>' +
+        (m.principio ? '<div class="msg-princ">' + esc(m.principio) + '</div>' : '') +
+        '<div class="msg-corpo">' +
+          '<div class="msg-txt" data-txt="' + i + '">' + destacarVars(m.texto) + '</div>' +
+          '<div class="msg-pe">' +
+            '<div class="msg-vars">' + vars.map(function(v){
+              return '<label class="msg-var"><span>' + esc(v.replace(/[\[\]]/g,'')) + '</span>' +
+                '<input type="text" data-var="' + esc(v) + '" data-para="' + i + '" value="' +
+                esc(Estado.msCampos[v] || '') + '" placeholder="preencher"></label>';
+            }).join('') + '</div>' +
+            '<button class="btn btn-forte" type="button" data-copiar="' + i + '">' +
+              svg('colar',13) + ' Copiar</button>' +
+          '</div>' +
+          (m.nao && m.nao.length ? '<div class="msg-nao"><b>Não fazer</b>' +
+            m.nao.map(function(x){ return '<div>' + esc(x) + '</div>'; }).join('') + '</div>' : '') +
+          (m.dica ? '<div class="msg-dica">' + esc(m.dica) + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+
+  $('painel').innerHTML = h;
+
+  $('painel').querySelectorAll('[data-mom]').forEach(function(b){
+    b.addEventListener('click', function(){ Estado.msMomento = b.getAttribute('data-mom'); telaMensagens(); });
+  });
+  ligarBusca('msBusca', 'msBusca', telaMensagens);
+
+  /* preencher um campo atualiza o texto na hora, sem recarregar a aba */
+  $('painel').querySelectorAll('[data-var]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      Estado.msCampos[inp.getAttribute('data-var')] = inp.value;
+      var i = inp.getAttribute('data-para');
+      var cx = $('painel').querySelector('[data-txt="' + i + '"]');
+      if (cx) cx.innerHTML = destacarVars(preencher(lista[num(i)].texto, Estado.msCampos));
+      /* o mesmo campo em outras mensagens acompanha */
+      $('painel').querySelectorAll('[data-var="' + inp.getAttribute('data-var') + '"]').forEach(function(o){
+        if (o !== inp) o.value = inp.value;
+      });
+    });
+  });
+
+  $('painel').querySelectorAll('[data-copiar]').forEach(function(b){
+    b.addEventListener('click', async function(){
+      var m = lista[num(b.getAttribute('data-copiar'))];
+      var txt = preencher(m.texto, Estado.msCampos);
+      var faltam = variaveisDe(txt);
+      var ok = await copiarTexto(txt);
+      if (!ok) { toast('Não consegui copiar. Selecione o texto e use Cmd+C.'); return; }
+      toast(faltam.length
+        ? 'Copiado, mas faltou preencher ' + faltam.join(', ')
+        : 'Copiado. É só colar no WhatsApp.');
+    });
+  });
+}
+
+
+/* ==========================================================================
+   14. LIGAR TUDO
    ========================================================================== */
 
 async function iniciar(){
