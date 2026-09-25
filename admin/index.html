@@ -145,6 +145,13 @@ body.liberado #checando{display:none}
   margin-bottom:8px;line-height:1.5;
 }
 .aviso b{color:#5E4A0D}
+/* o lembrete de backup nao e erro, entao muda de cor */
+.aviso.backup{
+  background:rgba(163,186,203,.22);border-color:rgba(163,186,203,.55);color:#33485A;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.aviso.backup b{color:#25384A}
+.aviso.backup .btn{margin-left:auto}
 
 /* ============================== CARTOES ================================== */
 .cartao{
@@ -351,6 +358,31 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   font-size:11.5px;font-weight:700;color:var(--laranja);
 }
 .cal-n-mais:hover{text-decoration:underline}
+
+/* --- home: agenda do dia e o que pede decisao ------------------------------ */
+.agenda{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--linha2);font-size:14.5px;cursor:pointer;flex-wrap:wrap}
+.agenda:last-child{border-bottom:none}
+.agenda:hover{background:var(--creme)}
+.agenda-t{flex:1;min-width:150px;font-weight:600}
+
+.decide{display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--linha2);font-size:14.5px;cursor:pointer;flex-wrap:wrap}
+.decide:last-child{border-bottom:none}
+.decide:hover{background:var(--creme)}
+.decide-n{
+  flex:none;min-width:30px;height:30px;border-radius:9px;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:15px;
+  background:rgba(74,32,40,.08);color:var(--soft);padding:0 8px;
+}
+.decide-n.bom{background:rgba(84,90,52,.18);color:#3F4527}
+.decide-n.atencao{background:rgba(201,162,39,.24);color:#75590F}
+.decide-t{flex:1;min-width:170px}
+.decide-ir{
+  font-size:12.5px;font-weight:700;color:var(--laranja);white-space:nowrap;
+  text-transform:capitalize;
+}
+.decide:hover .decide-ir{text-decoration:underline}
 
 /* --- jornada da cliente --------------------------------------------------- */
 .jornada{
@@ -646,6 +678,11 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 
     <div class="menu-pe">
       <div class="menu-email" id="meuEmail"></div>
+      <button class="btn-sair" id="btnBackup" type="button" style="margin-bottom:8px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Baixar tudo
+      </button>
       <button class="btn-sair" id="btnSair" type="button">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -689,7 +726,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
    ========================================================================== */
 
 var Estado = {
-  aba:'pautas', email:'',
+  aba:'hoje', email:'',
   pautas:[], leads:[], clientes:[],
   avisos:[],
 
@@ -810,6 +847,7 @@ var ICO = {
   zap:'<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
   colar:'<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
   mensagens:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  hoje:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
 };
 function svg(nome, tam){
@@ -958,9 +996,29 @@ async function carregarTudo(){
 
 function desenharAvisos(){
   var cx = $('avisos');
-  if (!Estado.avisos.length) { cx.className = 'avisos'; cx.innerHTML = ''; return; }
+  var html = Estado.avisos.map(function(a){ return '<div class="aviso">' + a + '</div>'; }).join('');
+
+  /* lembrete de backup: o plano gratuito do Supabase nao faz nenhum */
+  var d = diasSemBackup();
+  if (d === null || d >= DIAS_ATE_LEMBRAR) {
+    html += '<div class="aviso backup"><b>' +
+      (d === null
+        ? 'Você ainda não baixou nenhum backup.'
+        : 'Seu último backup foi há ' + plural(d,'dia','dias') + '.') +
+      '</b> O plano gratuito do Supabase não faz backup nenhum, então a única cópia dos seus ' +
+      'dados é a que você baixa. ' +
+      '<button class="btn btn-p" type="button" id="avisoBackup">Baixar agora</button></div>';
+  }
+
+  if (!html) { cx.className = 'avisos'; cx.innerHTML = ''; return; }
   cx.className = 'avisos tem';
-  cx.innerHTML = Estado.avisos.map(function(a){ return '<div class="aviso">' + a + '</div>'; }).join('');
+  cx.innerHTML = html;
+
+  var bb = $('avisoBackup');
+  if (bb) bb.addEventListener('click', async function(){
+    this.disabled = true; this.textContent = 'Baixando...';
+    await baixarTudo();
+  });
 }
 
 
@@ -969,6 +1027,8 @@ function desenharAvisos(){
    ========================================================================== */
 
 var ABAS = [
+  { grupo:'', id:'hoje', rot:'Hoje', ico:'hoje',
+    dica:'O que fazer agora e como está o mês.' },
   { grupo:'meu conteúdo', id:'pautas', rot:'Pautas', ico:'pautas',
     dica:'O seu banco de pautas, do primeiro rascunho até o ar.' },
   { grupo:'meu conteúdo', id:'calendario', rot:'Calendário', ico:'calendario',
@@ -986,7 +1046,8 @@ function montarMenu(){
   ABAS.forEach(function(a){
     if (a.grupo !== grupoAtual) {
       grupoAtual = a.grupo;
-      html += '<div class="menu-secao">' + esc(a.grupo) + '</div>';
+      if (a.grupo) html += '<div class="menu-secao">' + esc(a.grupo) + '</div>';
+      else html += '<div style="height:4px"></div>';
     }
     html += '<button class="menu-item" type="button" data-aba="' + a.id + '">' +
             svg(a.ico, 16) + '<span>' + esc(a.rot) + '</span></button>';
@@ -1014,7 +1075,7 @@ function irPara(id){
 
 function desenhar(){
   var f = {
-    pautas: telaPautas, calendario: telaCalendario,
+    hoje: telaHoje, pautas: telaPautas, calendario: telaCalendario,
     pipeline: telaPipeline, clientes: telaClientes, mensagens: telaMensagens
   }[Estado.aba];
   try {
@@ -1490,17 +1551,7 @@ function telaPautas(){
   ligarOrdenacao('ptCol', 'ptDir', telaPautas);
 
   $('ptBaixar').addEventListener('click', function(){
-    baixarCSV('pautas', [
-      { rot:'Pauta', k:'pauta' },
-      { rot:'Data', val:function(p){ return p.data ? brData(p.data,true) : ''; } },
-      { rot:'Status', k:'status' },
-      { rot:'Formato', k:'formato' },
-      { rot:'Formato Editorial', k:'formato_editorial' },
-      { rot:'Macrotema', k:'macrotema' },
-      { rot:'Objetivo', val:function(p){ return lista(p.objetivo).join(', '); } },
-      { rot:'Publicado', val:function(p){ return p.publicado ? 'sim' : 'não'; } },
-      { rot:'Notas', k:'notas' }
-    ], listaP);
+    baixarCSV('pautas', COLS_PAUTAS, listaP);
   });
 
   $('painel').querySelectorAll('[data-paro]').forEach(function(b){
@@ -1897,6 +1948,140 @@ function lerListaColada(txt){
   return { novas: novas, repetidas: repetidas };
 }
 
+/* ==========================================================================
+   BACKUP
+   O plano gratuito do Supabase NAO faz backup nenhum. Entao a copia que
+   existe e a que voce baixa daqui.
+
+   Saem dois tipos de arquivo:
+   . um .json, que e o backup de verdade. Guarda a estrutura exata, entao
+     lista continua lista, data continua data e vazio continua vazio.
+   . um .csv por tabela, para voce abrir no Excel e ler. Esse NAO serve
+     para restaurar, porque achata lista em texto e o Excel reinterpreta data.
+   ========================================================================== */
+
+var DIAS_ATE_LEMBRAR = 7;
+
+function ultimoBackup(){
+  try { return window.localStorage.getItem('ultimo_backup') || ''; } catch (e) { return ''; }
+}
+function marcarBackup(dia){
+  try { window.localStorage.setItem('ultimo_backup', dia); } catch (e) {}
+}
+/* ha quantos dias foi o ultimo backup. null quando nunca houve. */
+function diasSemBackup(){
+  var u = ultimoBackup();
+  if (!u) return null;
+  return difDias(u, hojeS());
+}
+
+function baixarArquivo(nome, conteudo, tipo){
+  try {
+    var blob = new Blob([conteudo], { type: tipo });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+    return true;
+  } catch (e) { return false; }
+}
+
+/* monta o conteudo de um CSV, do mesmo jeito do botao de cada aba */
+function montarCSV(colunas, linhas){
+  var sep = ';';
+  var txt = colunas.map(function(c){ return celulaCSV(c.rot); }).join(sep) + '\r\n';
+  linhas.forEach(function(l){
+    txt += colunas.map(function(c){ return celulaCSV(c.val ? c.val(l) : l[c.k]); }).join(sep) + '\r\n';
+  });
+  return '\ufeff' + txt;
+}
+
+async function baixarTudo(){
+  var dia = hojeS();
+  var pacote = {
+    gerado_em: new Date().toISOString(),
+    projeto: 'Leitura de Marca · Giovanna Carrilho',
+    aviso: 'Este arquivo contem dados pessoais de clientes. Guarde em lugar seu, nunca em pasta compartilhada.',
+    contagem: {
+      pautas: Estado.pautas.length,
+      leads: Estado.leads.length,
+      clientes: Estado.clientes.length
+    },
+    tabelas: {
+      pautas: Estado.pautas,
+      leads: Estado.leads,
+      clientes: Estado.clientes
+    }
+  };
+
+  var arquivos = [
+    ['backup-' + dia + '.json', JSON.stringify(pacote, null, 2), 'application/json;charset=utf-8'],
+    ['pautas-' + dia + '.csv',   montarCSV(COLS_PAUTAS, Estado.pautas),     'text/csv;charset=utf-8'],
+    ['pipeline-' + dia + '.csv', montarCSV(COLS_LEADS, Estado.leads),       'text/csv;charset=utf-8'],
+    ['clientes-' + dia + '.csv', montarCSV(COLS_CLIENTES, Estado.clientes), 'text/csv;charset=utf-8']
+  ];
+
+  /* um de cada vez, com folga, senao o navegador engasga */
+  var deuCerto = 0;
+  for (var i = 0; i < arquivos.length; i++) {
+    if (baixarArquivo(arquivos[i][0], arquivos[i][1], arquivos[i][2])) deuCerto++;
+    await new Promise(function(r){ setTimeout(r, 450); });
+  }
+
+  if (deuCerto === arquivos.length) {
+    marcarBackup(dia);
+    toast('Backup baixado: 1 arquivo de restauração e 3 planilhas.');
+  } else {
+    toast('Baixei ' + deuCerto + ' de ' + arquivos.length + ' arquivos. Tente de novo.');
+  }
+  desenharAvisos();
+}
+
+/* as colunas de cada tabela, usadas tanto no CSV de cada aba quanto no backup */
+var COLS_PAUTAS = [
+      { rot:'Pauta', k:'pauta' },
+      { rot:'Data', val:function(p){ return p.data ? brData(p.data,true) : ''; } },
+      { rot:'Status', k:'status' },
+      { rot:'Formato', k:'formato' },
+      { rot:'Formato Editorial', k:'formato_editorial' },
+      { rot:'Macrotema', k:'macrotema' },
+      { rot:'Objetivo', val:function(p){ return lista(p.objetivo).join(', '); } },
+      { rot:'Publicado', val:function(p){ return p.publicado ? 'sim' : 'não'; } },
+      { rot:'Notas', k:'notas' }
+    ];
+
+var COLS_LEADS = [
+      { rot:'Lead', k:'lead' }, { rot:'Contato', k:'contato' },
+      { rot:'Status', k:'status' }, { rot:'ICP', k:'icp' },
+      { rot:'Origem', k:'origem' }, { rot:'Tempo de mercado', k:'tempo_mercado' },
+      { rot:'Último contato', val:function(l){ return l.ultimo_contato ? brData(l.ultimo_contato,true) : ''; } },
+      { rot:'Próximo passo', k:'proximo_passo' },
+      { rot:'Frase real dela', k:'frase_real' },
+      { rot:'Portões cumpridos', val:function(l){ return contaPortoes(l) + ' de 4'; } },
+      { rot:'Portões', val:function(l){ return lista(l.portoes).join(', '); } },
+      { rot:'Notas', k:'notas' }
+    ];
+
+var COLS_CLIENTES = [
+      { rot:'Cliente', k:'cliente' }, { rot:'Produto', k:'produto' },
+      { rot:'Valor', val:function(c){ return String(num(c.valor).toFixed(2)).replace('.',','); } },
+      { rot:'Data do pagamento', val:function(c){ return c.data_pagamento ? brData(c.data_pagamento,true) : ''; } },
+      { rot:'Forma de pagamento', k:'forma_pagamento' },
+      { rot:'Status NF', k:'status_nf' }, { rot:'Nº da nota', k:'num_nota' },
+      { rot:'CPF/CNPJ', k:'cpf_cnpj' }, { rot:'Endereço', k:'endereco' },
+      { rot:'CEP', k:'cep' }, { rot:'Cidade/UF', k:'cidade_uf' },
+      { rot:'E-mail', k:'email' }, { rot:'Telefone', k:'telefone' },
+      { rot:'Origem', k:'origem' },
+      { rot:'Etapas', val:function(c){ return lista(c.crm_status).join(', '); } },
+      { rot:'Objetivo do contato', k:'objetivo_contato' },
+      { rot:'Próximo contato', val:function(c){ return c.proximo_contato ? brData(c.proximo_contato,true) : ''; } },
+      { rot:'Primeira conversa', val:function(c){ var j = jornadaDe(c); return j ? brData(j.inicio,true) : ''; } },
+      { rot:'Dias de jornada', val:function(c){ var j = jornadaDe(c); return j ? j.dias : ''; } },
+      { rot:'Histórico', k:'historico' }
+    ];
+
 /* --------------------------------------------------------------------------
    JORNADA: da primeira conversa ate o pagamento.
    So existe quando a cliente esta ligada a uma lead e as duas datas existem.
@@ -2153,17 +2338,7 @@ function telaPipeline(){
   ligarOrdenacao('lgCol', 'lgDir', telaPipeline);
 
   $('lgBaixar').addEventListener('click', function(){
-    baixarCSV('pipeline', [
-      { rot:'Lead', k:'lead' }, { rot:'Contato', k:'contato' },
-      { rot:'Status', k:'status' }, { rot:'ICP', k:'icp' },
-      { rot:'Origem', k:'origem' }, { rot:'Tempo de mercado', k:'tempo_mercado' },
-      { rot:'Último contato', val:function(l){ return l.ultimo_contato ? brData(l.ultimo_contato,true) : ''; } },
-      { rot:'Próximo passo', k:'proximo_passo' },
-      { rot:'Frase real dela', k:'frase_real' },
-      { rot:'Portões cumpridos', val:function(l){ return contaPortoes(l) + ' de 4'; } },
-      { rot:'Portões', val:function(l){ return lista(l.portoes).join(', '); } },
-      { rot:'Notas', k:'notas' }
-    ], listaL);
+    baixarCSV('pipeline', COLS_LEADS, listaL);
   });
 
   $('painel').querySelectorAll('[data-paro]').forEach(function(a){
@@ -2529,23 +2704,7 @@ function telaClientes(){
   ligarOrdenacao('clCol', 'clDir', telaClientes);
 
   $('clBaixar').addEventListener('click', function(){
-    baixarCSV('clientes', [
-      { rot:'Cliente', k:'cliente' }, { rot:'Produto', k:'produto' },
-      { rot:'Valor', val:function(c){ return String(num(c.valor).toFixed(2)).replace('.',','); } },
-      { rot:'Data do pagamento', val:function(c){ return c.data_pagamento ? brData(c.data_pagamento,true) : ''; } },
-      { rot:'Forma de pagamento', k:'forma_pagamento' },
-      { rot:'Status NF', k:'status_nf' }, { rot:'Nº da nota', k:'num_nota' },
-      { rot:'CPF/CNPJ', k:'cpf_cnpj' }, { rot:'Endereço', k:'endereco' },
-      { rot:'CEP', k:'cep' }, { rot:'Cidade/UF', k:'cidade_uf' },
-      { rot:'E-mail', k:'email' }, { rot:'Telefone', k:'telefone' },
-      { rot:'Origem', k:'origem' },
-      { rot:'Etapas', val:function(c){ return lista(c.crm_status).join(', '); } },
-      { rot:'Objetivo do contato', k:'objetivo_contato' },
-      { rot:'Próximo contato', val:function(c){ return c.proximo_contato ? brData(c.proximo_contato,true) : ''; } },
-      { rot:'Primeira conversa', val:function(c){ var j = jornadaDe(c); return j ? brData(j.inicio,true) : ''; } },
-      { rot:'Dias de jornada', val:function(c){ var j = jornadaDe(c); return j ? j.dias : ''; } },
-      { rot:'Histórico', k:'historico' }
-    ], listaC);
+    baixarCSV('clientes', COLS_CLIENTES, listaC);
   });
 
   $('painel').querySelectorAll('[data-abre]').forEach(function(tr){
@@ -2667,7 +2826,164 @@ function formCliente(c, deLead){
 
 
 /* ==========================================================================
-   13. ABA MENSAGENS  ·  a sua biblioteca de abordagem
+   13. ABA HOJE  ·  a home
+   Responde duas perguntas, nesta ordem: o que eu faco agora, e como esta
+   o mes. Nao repete as outras abas, aponta para elas.
+   ========================================================================== */
+
+/* uma linha de "pede decisao": so aparece quando tem o que decidir */
+function linhaDecisao(n, texto, aba, cor){
+  if (!n) return '';
+  return '<div class="decide" data-vaipara="' + aba + '">' +
+    '<span class="decide-n ' + (cor || '') + '">' + n + '</span>' +
+    '<span class="decide-t">' + texto + '</span>' +
+    '<span class="decide-ir">abrir ' + esc(aba) + '</span>' +
+  '</div>';
+}
+
+function telaHoje(){
+  var hoje = hojeS();
+  var agora = new Date();
+  var mes = hoje.slice(0, 7);
+  var mesPassado = sData(new Date(agora.getFullYear(), agora.getMonth() - 1, 1)).slice(0, 7);
+
+  /* ---------- BLOCO 1 · o que eu faco hoje ---------- */
+  var semana = semanaDeToques();
+  var toquesHoje = semana[semana.length - 1].n;
+  var bateu = toquesHoje >= META_DIA;
+  var pctMeta = Math.min(100, Math.round(div(toquesHoje, META_DIA) * 100));
+
+  var pautasHoje = Estado.pautas.filter(function(p){
+    return p.data && String(p.data).slice(0,10) === hoje;
+  });
+  var contatosHoje = Estado.clientes.filter(function(c){
+    return c.proximo_contato && String(c.proximo_contato).slice(0,10) === hoje;
+  });
+
+  var h = '<div class="cartao"><div class="cartao-topo"><div>' +
+    '<div class="cartao-tit">Hoje, ' + brData(hoje, true) + '</div>' +
+    '<div class="cartao-sub">O que está marcado para agora.</div></div></div>' +
+    '<div class="cartao-corpo">' +
+    '<div class="meta" style="margin-bottom:16px"><div class="meta-esq">' +
+      '<div class="faixa-rot">Prospecção</div>' +
+      '<div class="meta-num' + (bateu ? ' bateu' : '') + '"><b>' + toquesHoje + '</b> de ' + META_DIA + '</div>' +
+      '<div class="meta-tr"><div class="meta-in' + (bateu ? ' bateu' : '') +
+        '" style="width:' + pctMeta + '%"></div></div>' +
+    '</div>' +
+    '<div class="dias">' + semana.map(function(d){
+      var maior = Math.max.apply(null, semana.map(function(x){ return x.n; }).concat([META_DIA]));
+      var alt = maior > 0 ? Math.round(div(d.n, maior) * 100) : 0;
+      return '<div class="dia' + (d.hoje ? ' hoje' : '') + '" title="' + brData(d.dia, true) + '">' +
+        '<div class="dia-cx"><div class="dia-in' + (d.n >= META_DIA ? ' bateu' : '') +
+        '" style="height:' + alt + '%"></div><div class="dia-n">' + (d.n || '') + '</div></div>' +
+        '<div class="dia-r">' + d.rotulo + '</div></div>';
+    }).join('') + '</div></div>';
+
+  if (!pautasHoje.length && !contatosHoje.length) {
+    h += '<div class="vazio">Nada marcado para hoje. Aqui aparecem as <b>pautas com data de hoje</b> ' +
+         'e os <b>contatos de cliente</b> que você agendou.</div>';
+  } else {
+    h += pautasHoje.map(function(p){
+      return '<div class="agenda" data-pauta="' + esc(p.id) + '">' +
+        '<span class="' + classePauta(p.status) + '">' + esc(p.status || 'Ideia') + '</span>' +
+        '<span class="agenda-t">' + esc(p.pauta || 'Sem título') + '</span>' +
+        (p.publicado ? '<span class="pil pil-p4">no ar</span>'
+                     : '<span class="pil pil-neutra">' + esc(p.formato || 'A definir') + '</span>') +
+      '</div>';
+    }).join('');
+    h += contatosHoje.map(function(c){
+      return '<div class="agenda" data-cliente="' + esc(c.id) + '">' +
+        '<span class="pil pil-contato">Contato</span>' +
+        '<span class="agenda-t">' + esc(c.cliente || 'Cliente') + '</span>' +
+        '<span class="pil pil-neutra">' + esc(c.objetivo_contato || 'sem objetivo') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  h += '</div></div>';
+
+  /* ---------- BLOCO 2 · como esta o mes ---------- */
+  function doMes(lista, campo, m){
+    return lista.filter(function(x){
+      return x[campo] && String(x[campo]).slice(0,7) === m;
+    });
+  }
+  var clientesMes  = doMes(Estado.clientes, 'data_pagamento', mes);
+  var clientesAnte = doMes(Estado.clientes, 'data_pagamento', mesPassado);
+  var fatMes  = clientesMes.reduce(function(a,c){ return a + num(c.valor); }, 0);
+  var fatAnte = clientesAnte.reduce(function(a,c){ return a + num(c.valor); }, 0);
+  var variacao = fatAnte > 0 ? Math.round(div(fatMes - fatAnte, fatAnte) * 100) : null;
+  var publicadasMes = doMes(Estado.pautas.filter(function(p){ return p.publicado; }), 'data', mes);
+  var leadsMes = doMes(Estado.leads, 'ultimo_contato', mes);
+
+  h += '<div class="faixa c4">' +
+    '<div class="faixa-cel"><div class="faixa-rot">Faturamento de ' + capital(MESES[agora.getMonth()]) + '</div>' +
+      '<div class="faixa-num" style="font-size:21px">' + real(fatMes) + '</div>' +
+      '<div class="faixa-pe">' + (variacao === null
+          ? (fatAnte === 0 ? 'sem mês anterior para comparar' : '')
+          : (variacao >= 0 ? '+' : '') + variacao + '% contra ' + real(fatAnte) + ' em ' +
+            capital(MESES[(agora.getMonth() + 11) % 12])) + '</div></div>' +
+    cel('Clientes no mês', clientesMes.length, clientesMes.length ? 'pagaram neste mês' : 'nenhum ainda') +
+    cel('Pautas no ar', publicadasMes.length, 'publicadas neste mês') +
+    cel('Leads tocadas', leadsMes.length, 'conversas ativas no mês') +
+  '</div>';
+
+  /* ---------- BLOCO 3 · o que pede decisao ---------- */
+  var prontas = Estado.leads.filter(function(l){
+    return posLead(l.status) === 2 && contaPortoes(l) === 4;
+  }).length;
+  var esfriando = Estado.leads.filter(function(l){
+    if (!l.ultimo_contato || posLead(l.status) >= 5) return false;
+    return difDias(String(l.ultimo_contato).slice(0,10), hoje) > 14;
+  }).length;
+  var pautasAtrasadas = Estado.pautas.filter(function(p){
+    return p.data && !p.publicado && String(p.data).slice(0,10) < hoje;
+  }).length;
+  var contatosVencidos = Estado.clientes.filter(function(c){
+    return c.proximo_contato && String(c.proximo_contato).slice(0,10) < hoje;
+  }).length;
+  var notas = Estado.clientes.filter(function(c){ return String(c.status_nf) !== 'Emitida'; }).length;
+  var concluidasSemContato = Estado.clientes.filter(function(c){
+    return lista(c.crm_status).indexOf('Concluído') > -1 && !c.proximo_contato;
+  }).length;
+
+  var decisoes =
+    linhaDecisao(prontas, 'com os 4 portões fechados, prontas para receber a oferta', 'pipeline', 'bom') +
+    linhaDecisao(esfriando, 'paradas há mais de 14 dias', 'pipeline', 'atencao') +
+    linhaDecisao(pautasAtrasadas, 'pautas passaram da data e não foram publicadas', 'calendario', 'atencao') +
+    linhaDecisao(contatosVencidos, 'contatos de cliente venceram', 'clientes', 'atencao') +
+    linhaDecisao(notas, 'notas fiscais a emitir', 'clientes', '') +
+    linhaDecisao(concluidasSemContato, 'clientes concluídas sem próximo contato, cabe oferta de upgrade', 'clientes', 'bom');
+
+  h += '<div class="cartao"><div class="cartao-topo"><div>' +
+    '<div class="cartao-tit">Pede decisão</div>' +
+    '<div class="cartao-sub">O que está esperando você. Clique para ir direto.</div></div></div>' +
+    '<div class="cartao-corpo">' +
+    (decisoes || '<div class="vazio">Nada pendente. Aqui aparece <b>lead pronta para oferta</b>, ' +
+      '<b>conversa esfriando</b>, <b>pauta atrasada</b>, <b>contato vencido</b> e <b>nota a emitir</b>.</div>') +
+    '</div></div>';
+
+  $('painel').innerHTML = h;
+
+  $('painel').querySelectorAll('[data-vaipara]').forEach(function(b){
+    b.addEventListener('click', function(){ irPara(b.getAttribute('data-vaipara')); });
+  });
+  $('painel').querySelectorAll('[data-pauta]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var p = acharPorId(Estado.pautas, b.getAttribute('data-pauta'));
+      if (p) formPauta(p, String(p.data).slice(0,10));
+    });
+  });
+  $('painel').querySelectorAll('[data-cliente]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var c = acharPorId(Estado.clientes, b.getAttribute('data-cliente'));
+      if (c) formCliente(c);
+    });
+  });
+}
+
+
+/* ==========================================================================
+   14. ABA MENSAGENS  ·  a sua biblioteca de abordagem
    O conteudo vem do arquivo js/mensagens.js, que espelha a sua pagina
    Mensagens Padrao. Aqui ele vira coisa de usar: preencher, copiar, enviar.
    ========================================================================== */
@@ -2824,7 +3140,7 @@ function telaMensagens(){
 
 
 /* ==========================================================================
-   14. LIGAR TUDO
+   15. LIGAR TUDO
    ========================================================================== */
 
 async function iniciar(){
@@ -2832,6 +3148,16 @@ async function iniciar(){
 
   $('btnMenu').addEventListener('click', function(){ document.body.classList.toggle('gaveta'); });
   $('menuFundo').addEventListener('click', function(){ document.body.classList.remove('gaveta'); });
+
+  $('btnBackup').addEventListener('click', async function(){
+    var b = this;
+    b.disabled = true;
+    var antes = b.innerHTML;
+    b.textContent = 'Baixando...';
+    await baixarTudo();
+    b.disabled = false;
+    b.innerHTML = antes;
+  });
 
   $('btnSair').addEventListener('click', async function(){
     this.disabled = true;
@@ -2856,7 +3182,7 @@ async function iniciar(){
   await carregarTudo();
 
   var inicial = (location.hash || '').replace('#','');
-  irPara(ABAS.some(function(a){ return a.id === inicial; }) ? inicial : 'pautas');
+  irPara(ABAS.some(function(a){ return a.id === inicial; }) ? inicial : 'hoje');
 }
 
 })();
