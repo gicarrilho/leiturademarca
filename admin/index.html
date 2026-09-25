@@ -352,6 +352,31 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- prospeccao do dia ---------------------------------------------------- */
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.meta-esq{flex:1;min-width:210px}
+.meta-num{font-weight:800;font-size:26px;letter-spacing:-.035em;line-height:1}
+.meta-num b{color:var(--laranja)}
+.meta-num.bateu b{color:var(--oliva)}
+.meta-pe{font-size:13px;color:var(--faint);margin-top:4px;line-height:1.45}
+.meta-tr{height:9px;background:var(--creme2);border-radius:5px;overflow:hidden;margin-top:10px}
+.meta-in{height:100%;background:var(--laranja);border-radius:5px;transition:width .3s}
+.meta-in.bateu{background:var(--oliva)}
+
+/* os ultimos 7 dias, um bloquinho por dia */
+.dias{display:flex;gap:6px;flex:none}
+.dia{text-align:center;min-width:38px}
+.dia-cx{
+  height:40px;border-radius:8px;background:var(--creme2);display:flex;
+  align-items:flex-end;justify-content:center;overflow:hidden;position:relative;
+}
+.dia-in{width:100%;background:var(--terra);border-radius:8px 8px 0 0}
+.dia-in.bateu{background:var(--oliva)}
+.dia-n{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;
+  align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--vinho)}
+.dia-r{font-size:10.5px;font-weight:700;color:var(--faint);margin-top:4px;text-transform:uppercase}
+.dia.hoje .dia-r{color:var(--laranja)}
+
 /* --- os 4 portoes da Intencao --------------------------------------------- */
 .portao{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--linha2)}
 .portao:last-child{border-bottom:none}
@@ -747,6 +772,9 @@ var PORTOES = [
     dica:'Antes de qualquer número: ficou claro para ela o que é a Leitura? Concordar com a dor não é entender a solução.' }
 ];
 var NOMES_PORTOES = PORTOES.map(function(p){ return p.nome; });
+
+/* a sua meta de prospeccao. Conta lead tocada no dia, pelo ultimo contato. */
+var META_DIA = 7;
 
 var CRM_STATUS = ['Lead','Desqualificado','Forms preenchido','Call 1 agendada',
                   'Enviar material etapa 1','Call 2 agendada','Enviar material etapa 2',
@@ -1685,6 +1713,23 @@ function verDia(dia, listaD){
    11. ABA PIPELINE  ·  as suas leads
    ========================================================================== */
 
+/* quem foi tocada num dia: lead cujo ultimo contato e aquele dia */
+function tocadasEm(dia){
+  return Estado.leads.filter(function(l){
+    return l && l.ultimo_contato && String(l.ultimo_contato).slice(0,10) === dia;
+  });
+}
+/* os ultimos 7 dias, do mais antigo para hoje */
+function semanaDeToques(){
+  var hoje = new Date(), fora = [];
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - i);
+    var dia = sData(d);
+    fora.push({ dia:dia, n:tocadasEm(dia).length, rotulo:DIAS_CURTOS[(d.getDay()+6)%7], hoje:i === 0 });
+  }
+  return fora;
+}
+
 /* quantos portoes ja foram cumpridos nesta lead */
 function contaPortoes(l){
   var f = lista(l && l.portoes);
@@ -1739,7 +1784,42 @@ function telaPipeline(){
   });
   var origem = maisComum(todas.map(function(l){ return l.origem; }));
 
-  var h = '<div class="faixa c5">' +
+  /* --- prospeccao do dia, meta de 7 -------------------------------------- */
+  var semana = semanaDeToques();
+  var hojeN = semana[semana.length-1].n;
+  var bateu = hojeN >= META_DIA;
+  var pctMeta = Math.min(100, Math.round(div(hojeN, META_DIA) * 100));
+  var maiorDia = Math.max.apply(null, semana.map(function(d){ return d.n; }).concat([META_DIA]));
+  var nomesHoje = tocadasEm(hoje).map(function(l){ return l.lead; });
+
+  var h = '<div class="cartao"><div class="cartao-corpo"><div class="meta">' +
+    '<div class="meta-esq">' +
+      '<div class="faixa-rot">Prospecção de hoje</div>' +
+      '<div class="meta-num' + (bateu ? ' bateu' : '') + '"><b>' + hojeN + '</b> de ' + META_DIA + '</div>' +
+      '<div class="meta-tr"><div class="meta-in' + (bateu ? ' bateu' : '') +
+        '" style="width:' + pctMeta + '%"></div></div>' +
+      '<div class="meta-pe">' + (bateu
+          ? 'Meta batida. ' + esc(nomesHoje.slice(0,4).join(', ')) +
+            (nomesHoje.length > 4 ? ' e mais ' + (nomesHoje.length-4) : '')
+          : hojeN === 0
+            ? 'Nenhum toque hoje ainda. A meta é tocar ' + META_DIA + ' leads por dia.'
+            : 'Faltam ' + (META_DIA - hojeN) + '. Até agora: ' +
+              esc(nomesHoje.slice(0,4).join(', ')) +
+              (nomesHoje.length > 4 ? ' e mais ' + (nomesHoje.length-4) : '')) +
+      '</div>' +
+    '</div>' +
+    '<div class="dias">' + semana.map(function(d){
+      var alt = maiorDia > 0 ? Math.round(div(d.n, maiorDia) * 100) : 0;
+      return '<div class="dia' + (d.hoje ? ' hoje' : '') + '" title="' + brData(d.dia, true) +
+        ': ' + plural(d.n,'toque','toques') + '">' +
+        '<div class="dia-cx"><div class="dia-in' + (d.n >= META_DIA ? ' bateu' : '') +
+          '" style="height:' + alt + '%"></div>' +
+          '<div class="dia-n">' + (d.n || '') + '</div></div>' +
+        '<div class="dia-r">' + d.rotulo + '</div></div>';
+    }).join('') + '</div>' +
+  '</div></div></div>';
+
+  h += '<div class="faixa c5">' +
     cel('Leads', todas.length, todas.length === 0 ? 'nenhuma ainda' : 'no pipeline') +
     cel('Dentro do ICP', icpSim.length,
         todas.length ? Math.round(div(icpSim.length, todas.length) * 100) + '% do total' : '') +
