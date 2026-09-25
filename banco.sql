@@ -84,7 +84,8 @@ create table if not exists public.clientes (
   -- Enviar material etapa 1, Call 2 agendada, Enviar material etapa 2,
   -- Em negociacao, Aguardando pagamento, Pago, Concluido
   objetivo_contato  text default '',
-  -- Depoimento, Negociacao, Entrega de material, Agendamento, Sessao agendada
+  -- Depoimento, Negociacao, Entrega de material, Agendamento, Sessao agendada,
+  -- Oferta Upgrade
   proximo_contato   date,
   origem            text default '',
   produto           text default 'Leitura de Marca',
