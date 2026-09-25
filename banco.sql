@@ -65,6 +65,10 @@ create table if not exists public.leads (
   ultimo_contato  date,
   proximo_passo   text default '',            -- acao concreta e unica
   frase_real      text default '',            -- a fala da propria pessoa
+  portoes         text[] not null default '{}',
+  -- os 4 movimentos que acontecem DENTRO de Intencao, na ordem:
+  -- Microdiagnostico, Prova especifica, Levantada de mao, Confirmacao de entendimento.
+  -- So depois dos quatro a lead sobe para Oportunidade.
   notas           text default '',
   criado_em       timestamptz not null default now()
 );
@@ -110,6 +114,7 @@ create table if not exists public.clientes (
 alter table public.pautas    add column if not exists notas     text default '';
 alter table public.pautas    add column if not exists objetivo  text[] not null default '{}';
 alter table public.leads     add column if not exists notas     text default '';
+alter table public.leads     add column if not exists portoes   text[] not null default '{}';
 alter table public.clientes  add column if not exists historico text default '';
 alter table public.clientes  add column if not exists crm_status text[] not null default '{}';
 

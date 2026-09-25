@@ -352,6 +352,33 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- os 4 portoes da Intencao --------------------------------------------- */
+.portao{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--linha2)}
+.portao:last-child{border-bottom:none}
+.campo .portao input{width:18px;height:18px;flex:none;margin-top:2px;
+  cursor:pointer;accent-color:var(--laranja);padding:0;border-radius:4px}
+.portao > div:last-child{min-width:0;flex:1}
+.portao-n{
+  width:20px;height:20px;flex:none;border-radius:50%;background:var(--creme2);
+  color:var(--faint);font-size:11px;font-weight:800;display:flex;
+  align-items:center;justify-content:center;margin-top:1px;
+}
+.portao.ok .portao-n{background:var(--oliva);color:var(--creme)}
+.campo .portao-t{display:block;font-weight:700;font-size:14.5px;line-height:1.35;
+  cursor:pointer;text-transform:none;letter-spacing:0;color:var(--ink);margin-bottom:0}
+.portao.ok .portao-t{color:var(--faint)}
+.portao-d{font-size:13px;color:var(--faint);margin-top:3px;line-height:1.5}
+
+/* o medidor de portoes, na tabela e no cartao */
+.medidor{display:inline-flex;gap:3px;vertical-align:middle}
+.medidor i{width:7px;height:7px;border-radius:50%;background:var(--linha);display:block}
+.medidor i.on{background:var(--oliva)}
+.falta{display:flex;align-items:center;gap:10px;padding:10px 0;
+  border-bottom:1px solid var(--linha2);font-size:14px;flex-wrap:wrap}
+.falta:last-child{border-bottom:none}
+.falta-n{font-weight:700;min-width:130px}
+.falta-q{flex:1;min-width:180px;font-size:13px;color:var(--faint)}
+
 /* --- faturamento mes a mes ------------------------------------------------ */
 .mes{display:flex;align-items:center;gap:12px;padding:10px 0;
   border-bottom:1px solid var(--linha2);font-size:14.5px}
@@ -707,6 +734,20 @@ var ICP    = ['Sim','A confirmar','Fora do ICP'];
 var ORIGEM = ['Instagram','Grupo WhatsApp','ManyChat','Indicação','Comentário',
               'Palestra','Círculo pessoal','Base antiga'];
 
+/* Os 4 movimentos que acontecem DENTRO de Intencao, nesta ordem.
+   Vem do seu Fluxo Comercial. So depois dos quatro a lead sobe para Oportunidade. */
+var PORTOES = [
+  { nome:'Microdiagnóstico',
+    dica:'Devolva uma leitura curta e específica: nega o problema óbvio, nomeia a distância real, devolve para ela. Nomeia O QUE falta, nunca COMO resolver.' },
+  { nome:'Prova específica',
+    dica:'O caso que responde à frase que ela acabou de dizer, não depoimento genérico. Só quando existe dúvida real.' },
+  { nome:'Levantada de mão',
+    dica:'Ela precisa pedir ajuda com as próprias palavras. Sem isso, não existe oferta.' },
+  { nome:'Confirmação de entendimento',
+    dica:'Antes de qualquer número: ficou claro para ela o que é a Leitura? Concordar com a dor não é entender a solução.' }
+];
+var NOMES_PORTOES = PORTOES.map(function(p){ return p.nome; });
+
 var CRM_STATUS = ['Lead','Desqualificado','Forms preenchido','Call 1 agendada',
                   'Enviar material etapa 1','Call 2 agendada','Enviar material etapa 2',
                   'Em negociação','Aguardando pagamento','Pago','Concluído'];
@@ -921,6 +962,23 @@ function htmlCampos(campos, valores){
     if (c.tipo === 'liga') {
       return '<div class="campo"><label class="liga"><input type="checkbox" data-k="' + c.k + '"' +
         (v ? ' checked' : '') + '> <span>' + esc(c.rot) + '</span></label>' +
+        (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
+    }
+
+    /* os 4 portoes, com o titulo e a explicacao de cada um */
+    if (c.tipo === 'portoes') {
+      var feitos = lista(valores[c.k]);
+      return '<div class="campo"><label>' + esc(c.rot) + '</label>' +
+        PORTOES.map(function(pt, i){
+          var ok = feitos.indexOf(pt.nome) > -1;
+          var idp = 'pt-' + i;
+          return '<div class="portao' + (ok ? ' ok' : '') + '">' +
+            '<input type="checkbox" id="' + idp + '" data-multi="' + c.k + '" value="' + esc(pt.nome) + '"' +
+              (ok ? ' checked' : '') + '>' +
+            '<div class="portao-n">' + (i+1) + '</div>' +
+            '<div><label class="portao-t" for="' + idp + '">' + esc(pt.nome) + '</label>' +
+            '<div class="portao-d">' + esc(pt.dica) + '</div></div></div>';
+        }).join('') +
         (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
     }
 
@@ -1627,6 +1685,24 @@ function verDia(dia, listaD){
    11. ABA PIPELINE  ·  as suas leads
    ========================================================================== */
 
+/* quantos portoes ja foram cumpridos nesta lead */
+function contaPortoes(l){
+  var f = lista(l && l.portoes);
+  return NOMES_PORTOES.filter(function(n){ return f.indexOf(n) > -1; }).length;
+}
+function faltamPortoes(l){
+  var f = lista(l && l.portoes);
+  return NOMES_PORTOES.filter(function(n){ return f.indexOf(n) < 0; });
+}
+/* quatro bolinhas, as cumpridas em verde */
+function medidorPortoes(portoes){
+  var f = lista(portoes);
+  return '<span class="medidor" title="portões da Intenção: ' +
+    f.length + ' de 4">' + NOMES_PORTOES.map(function(n){
+      return '<i class="' + (f.indexOf(n) > -1 ? 'on' : '') + '"></i>';
+    }).join('') + '</span>';
+}
+
 function telaPipeline(){
   var busca = Estado.lgBusca.trim().toLowerCase();
   var hoje = hojeS();
@@ -1674,6 +1750,50 @@ function telaPipeline(){
         origem.nome ? plural(origem.n,'lead','leads') : 'preencha a origem') +
   '</div>';
 
+  /* --- os 4 portoes da Intencao ------------------------------------------ */
+  var emIntencao = todas.filter(function(l){ return posLead(l.status) === 2; });
+  /* quem ja subiu para Oportunidade ou Oferta sem ter fechado os quatro */
+  var subiuCedo = todas.filter(function(l){
+    var pz = posLead(l.status);
+    return (pz === 3 || pz === 4) && contaPortoes(l) < 4;
+  });
+  var prontas = emIntencao.filter(function(l){ return contaPortoes(l) === 4; });
+
+  if (emIntencao.length || subiuCedo.length) {
+    h += '<div class="cartao"><div class="cartao-topo"><div>' +
+      '<div class="cartao-tit">O que falta em cada conversa</div>' +
+      '<div class="cartao-sub">Os 4 portões da Intenção, na ordem. ' +
+      'Só depois dos quatro a lead sobe para Oportunidade.</div></div>' +
+      (prontas.length ? '<div class="espaco"></div><span class="pil pil-l5">' +
+        plural(prontas.length,'pronta para subir','prontas para subir') + '</span>' : '') +
+      '</div><div class="cartao-corpo">';
+
+    h += emIntencao.map(function(l){
+      var falta = faltamPortoes(l);
+      return '<div class="falta">' +
+        medidorPortoes(l.portoes) +
+        '<span class="falta-n">' + esc(l.lead || 'Sem nome') + '</span>' +
+        '<span class="falta-q">' + (falta.length
+            ? 'falta: <b style="color:var(--soft)">' + esc(falta[0]) + '</b>' +
+              (falta.length > 1 ? ' <span class="apagado">e mais ' + (falta.length-1) + '</span>' : '')
+            : '<b style="color:#3F4527">os quatro fechados, pode oferecer</b>') + '</span>' +
+        '<button class="btn btn-p" type="button" data-abrelead="' + esc(l.id) + '">Abrir</button>' +
+      '</div>';
+    }).join('');
+
+    h += subiuCedo.map(function(l){
+      return '<div class="falta">' +
+        medidorPortoes(l.portoes) +
+        '<span class="falta-n">' + esc(l.lead || 'Sem nome') + '</span>' +
+        '<span class="falta-q"><span class="pil pil-perto">subiu sem fechar</span> ' +
+          'está em ' + esc(l.status) + ' com ' + contaPortoes(l) + ' de 4</span>' +
+        '<button class="btn btn-p" type="button" data-abrelead="' + esc(l.id) + '">Abrir</button>' +
+      '</div>';
+    }).join('');
+
+    h += '</div></div>';
+  }
+
   h += '<div class="cartao"><div class="ferramentas">' +
     '<div class="busca">' + svg('busca',14) +
       '<input id="lgBusca" type="search" placeholder="Buscar lead, @, frase ou nota" value="' +
@@ -1718,7 +1838,8 @@ function telaPipeline(){
           '<td style="font-size:14px">' + (insta
               ? '<a href="' + esc(insta) + '" target="_blank" rel="noopener" data-paro="1">' + esc(l.contato) + '</a>'
               : (l.contato ? esc(l.contato) : '<span class="apagado">·</span>')) + '</td>' +
-          '<td><span class="' + classeLead(l.status) + '">' + esc(l.status || 'Contato realizado') + '</span></td>' +
+          '<td><span class="' + classeLead(l.status) + '">' + esc(l.status || 'Contato realizado') + '</span>' +
+            (posLead(l.status) === 2 ? ' ' + medidorPortoes(l.portoes) : '') + '</td>' +
           '<td><span class="' + classeIcp(l.icp) + '">' + esc(l.icp || 'A confirmar') + '</span></td>' +
           '<td style="font-size:14px">' + (l.origem ? esc(l.origem) : '<span class="apagado">·</span>') + '</td>' +
           '<td style="font-size:14px">' + (l.tempo_mercado ? esc(l.tempo_mercado) : '<span class="apagado">·</span>') + '</td>' +
@@ -1755,6 +1876,8 @@ function telaPipeline(){
       { rot:'Último contato', val:function(l){ return l.ultimo_contato ? brData(l.ultimo_contato,true) : ''; } },
       { rot:'Próximo passo', k:'proximo_passo' },
       { rot:'Frase real dela', k:'frase_real' },
+      { rot:'Portões cumpridos', val:function(l){ return contaPortoes(l) + ' de 4'; } },
+      { rot:'Portões', val:function(l){ return lista(l.portoes).join(', '); } },
       { rot:'Notas', k:'notas' }
     ], listaL);
   });
@@ -1765,6 +1888,11 @@ function telaPipeline(){
   $('painel').querySelectorAll('[data-abre]').forEach(function(tr){
     tr.addEventListener('click', function(){
       formLead(acharPorId(Estado.leads, tr.getAttribute('data-abre')));
+    });
+  });
+  $('painel').querySelectorAll('[data-abrelead]').forEach(function(b){
+    b.addEventListener('click', function(){
+      formLead(acharPorId(Estado.leads, b.getAttribute('data-abrelead')));
     });
   });
 }
@@ -1796,6 +1924,10 @@ function formLead(l){
         ph:'A fala da própria pessoa, com as palavras dela' },
       { k:'proximo_passo', rot:'Próximo passo', tipo:'area',
         ph:'Uma ação concreta e única' },
+
+      { tipo:'secao', rot:'Os 4 portões da Intenção',
+        dica:'Acontecem nesta ordem, dentro de Intenção. Só depois dos quatro a lead sobe para Oportunidade.' },
+      { k:'portoes', rot:'O que já aconteceu nesta conversa', tipo:'portoes' },
       { k:'notas', rot:'Notas', tipo:'area', alto:true,
         ph:'Leitura comercial, histórico, o que aprendeu com esta conversa' }
     ],
