@@ -352,6 +352,15 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- campo travado, para nao mudar sem querer ----------------------------- */
+.travado{display:flex;align-items:center;gap:8px}
+.travado input{flex:1;min-width:0}
+.campo input:disabled{
+  background:var(--creme2);color:var(--soft);cursor:default;
+  border-style:dashed;
+}
+.travado .btn{flex:none}
+
 /* --- biblioteca de mensagens ---------------------------------------------- */
 .msg{border:1px solid var(--linha);border-radius:var(--rad);background:var(--white);
   margin-bottom:14px;overflow:hidden}
@@ -546,8 +555,8 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 /* divisor de secao dentro do formulario */
 .sec-form{
   font-weight:800;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--faint);padding-top:8px;margin-bottom:12px;
-  border-top:1px solid var(--linha2);padding-top:16px;
+  color:var(--laranja);margin-bottom:14px;margin-top:8px;
+  border-top:2px solid var(--linha);padding-top:20px;
 }
 .sec-form .sub{
   display:block;font-weight:400;font-size:13px;letter-spacing:0;
@@ -1059,6 +1068,18 @@ function htmlCampos(campos, valores){
         (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
     }
 
+    /* data que ja tem valor entra travada, para nao ser mudada sem querer */
+    if (c.tipo === 'dataTravada') {
+      var jaTem = !!v;
+      return '<div class="campo"><label>' + esc(c.rot) + '</label>' +
+        '<div class="travado">' +
+          '<input type="date" data-k="' + c.k + '" value="' + esc(v) + '"' +
+            (jaTem ? ' disabled' : '') + '>' +
+          (jaTem ? '<button class="btn btn-p" type="button" data-destrava="' + c.k + '">Alterar</button>' : '') +
+        '</div>' +
+        (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
+    }
+
     /* os 4 portoes, com o titulo e a explicacao de cada um */
     if (c.tipo === 'portoes') {
       var feitos = lista(valores[c.k]);
@@ -1149,6 +1170,15 @@ function formPadrao(cfg){
     depois: function(m){
       var primeiro = m.querySelector('input,select,textarea');
       if (primeiro) primeiro.focus();
+
+      /* destrava um campo de data que veio travado */
+      m.querySelectorAll('[data-destrava]').forEach(function(b){
+        b.addEventListener('click', function(){
+          var alvo = m.querySelector('[data-k="' + b.getAttribute('data-destrava') + '"]');
+          if (alvo) { alvo.disabled = false; alvo.focus(); }
+          b.remove();
+        });
+      });
 
       m.querySelector('[data-salvar]').addEventListener('click', async function(){
         var b = this;
@@ -2491,7 +2521,8 @@ function formCliente(c){
         dica:'Esta data aparece sozinha no seu calendário.' },
 
       { tipo:'secao', rot:'Pagamento e nota fiscal' },
-      { k:'data_pagamento', rot:'Data do pagamento', tipo:'date' },
+      { k:'data_pagamento', rot:'Data do pagamento', tipo:'dataTravada',
+        dica:'Já preenchida trava sozinha. É um fato que quase nunca muda, e fica logo abaixo do próximo contato. Clique em Alterar se precisar mesmo corrigir.' },
       { k:'forma_pagamento', rot:'Forma de pagamento', tipo:'select',
         opcoes:FORMA_PAG, vazio:'Não informada' },
       { k:'status_nf', rot:'Status da nota', tipo:'select', opcoes:STATUS_NF },
