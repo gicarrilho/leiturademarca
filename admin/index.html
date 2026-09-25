@@ -735,7 +735,7 @@ var Estado = {
   /* calendario */
   calRef:new Date(), calTipo:'todos',
   /* pipeline */
-  lgBusca:'', lgStatus:'todos', lgIcp:'todos', lgCol:'status', lgDir:1,
+  lgBusca:'', lgStatus:'todos', lgIcp:'todos', lgTipo:'todos', lgCol:'status', lgDir:1,
   /* clientes */
   clBusca:'', clFiltro:'todos', clMes:'todos', clCol:'data_pagamento', clDir:-1,
   /* mensagens */
@@ -873,6 +873,11 @@ var PAUTA_OBJETIVO  = ['Alcance','Autoridade','Conexão','Conversão','Sustenta�
 
 var LEAD_STATUS = ['Contato realizado','Conversa','Intenção','Oportunidade',
                    'Oferta/Follow-up','Cliente','Não agora'];
+/* dois comerciais diferentes dentro do mesmo pipeline */
+var TIPOS_LEAD = ['Corretora','Empresa'];
+function tipoDa(l){ return String((l && l.tipo) || 'Corretora'); }
+function ehCorretora(l){ return tipoDa(l) === 'Corretora'; }
+
 var ICP    = ['Sim','A confirmar','Fora do ICP'];
 var ORIGEM = ['Instagram','Grupo WhatsApp','ManyChat','Indicação','Comentário',
               'Palestra','Círculo pessoal','Base antiga'];
@@ -1121,9 +1126,12 @@ function htmlCampos(campos, valores){
   valores = valores || {};
   return campos.filter(Boolean).map(function(c){
 
+    /* campo que so faz sentido para um tipo de lead */
+    var marcaTipo = c.sos ? ' data-sos="' + esc(c.sos) + '"' : '';
+
     /* divisor de secao, para separar por exemplo os dados fiscais */
     if (c.tipo === 'secao') {
-      return '<div class="sec-form">' + esc(c.rot) +
+      return '<div class="sec-form"' + marcaTipo + '>' + esc(c.rot) +
         (c.dica ? '<span class="sub">' + esc(c.dica) + '</span>' : '') + '</div>';
     }
 
@@ -1151,7 +1159,7 @@ function htmlCampos(campos, valores){
     /* os 4 portoes, com o titulo e a explicacao de cada um */
     if (c.tipo === 'portoes') {
       var feitos = lista(valores[c.k]);
-      return '<div class="campo"><label>' + esc(c.rot) + '</label>' +
+      return '<div class="campo"' + marcaTipo + '><label>' + esc(c.rot) + '</label>' +
         PORTOES.map(function(pt, i){
           var ok = feitos.indexOf(pt.nome) > -1;
           var idp = 'pt-' + i;
@@ -1196,7 +1204,7 @@ function htmlCampos(campos, valores){
         ' placeholder="' + esc(c.ph || '') + '">';
     }
 
-    return '<div class="campo"><label>' + esc(c.rot) + '</label>' + dentro +
+    return '<div class="campo"' + marcaTipo + '><label>' + esc(c.rot) + '</label>' + dentro +
       (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
   }).join('');
 }
@@ -1244,6 +1252,19 @@ function formPadrao(cfg){
     depois: function(m){
       var primeiro = m.querySelector('input,select,textarea');
       if (primeiro) primeiro.focus();
+
+      /* campos marcados com sos so aparecem para o tipo certo */
+      var selTipo = m.querySelector('[data-k="tipo"]');
+      if (selTipo) {
+        var ajustar = function(){
+          var t = selTipo.value;
+          m.querySelectorAll('[data-sos]').forEach(function(el){
+            el.style.display = (el.getAttribute('data-sos') === t) ? '' : 'none';
+          });
+        };
+        selTipo.addEventListener('change', ajustar);
+        ajustar();
+      }
 
       if (cfg.depoisDeMontar) cfg.depoisDeMontar(m);
 
@@ -2053,7 +2074,9 @@ var COLS_PAUTAS = [
     ];
 
 var COLS_LEADS = [
-      { rot:'Lead', k:'lead' }, { rot:'Contato', k:'contato' },
+      { rot:'Lead', k:'lead' }, { rot:'Tipo', val:function(l){ return tipoDa(l); } },
+      { rot:'Contato', k:'contato' },
+      { rot:'Pessoa', k:'pessoa' }, { rot:'E-mail', k:'email' },
       { rot:'Status', k:'status' }, { rot:'ICP', k:'icp' },
       { rot:'Origem', k:'origem' }, { rot:'Tempo de mercado', k:'tempo_mercado' },
       { rot:'Último contato', val:function(l){ return l.ultimo_contato ? brData(l.ultimo_contato,true) : ''; } },
@@ -2139,11 +2162,16 @@ function telaPipeline(){
   var busca = Estado.lgBusca.trim().toLowerCase();
   var hoje = hojeS();
 
-  var listaL = Estado.leads.filter(function(l){
+  /* corretora e empresa sao comerciais diferentes, entao contam separado */
+  var todas = Estado.lgTipo === 'todos' ? Estado.leads
+            : Estado.leads.filter(function(l){ return tipoDa(l) === Estado.lgTipo; });
+
+  var listaL = todas.filter(function(l){
     if (Estado.lgStatus !== 'todos' && String(l.status || '') !== Estado.lgStatus) return false;
     if (Estado.lgIcp !== 'todos' && String(l.icp || '') !== Estado.lgIcp) return false;
     if (!busca) return true;
-    return [l.lead, l.contato, l.origem, l.frase_real, l.proximo_passo, l.notas].some(function(c){
+    return [l.lead, l.contato, l.pessoa, l.email, l.origem,
+            l.frase_real, l.proximo_passo, l.notas].some(function(c){
       return String(c || '').toLowerCase().indexOf(busca) > -1;
     });
   });
@@ -2157,8 +2185,7 @@ function telaPipeline(){
     return ordenar(x, y, d) || num(a.id) - num(b.id);
   });
 
-  /* --- a faixa de numeros ------------------------------------------------ */
-  var todas   = Estado.leads;
+  /* --- a faixa de numeros, sempre sobre o recorte escolhido -------------- */
   var icpSim  = todas.filter(function(l){ return String(l.icp) === 'Sim'; });
   var quentes = todas.filter(function(l){
     var p = posLead(l.status);
@@ -2209,7 +2236,7 @@ function telaPipeline(){
   h += '<div class="faixa c5">' +
     cel('Leads', todas.length, todas.length === 0 ? 'nenhuma ainda' : 'no pipeline') +
     cel('Dentro do ICP', icpSim.length,
-        todas.length ? Math.round(div(icpSim.length, todas.length) * 100) + '% do total' : '') +
+        todas.length ? Math.round(div(icpSim.length, todas.length) * 100) + '% do recorte' : '') +
     cel('Quentes agora', quentes.length, 'em Oportunidade ou Oferta') +
     cel('Paradas há mais de 14 dias', paradas.length,
         paradas.length ? 'merecem um toque' : 'nenhuma esfriando') +
@@ -2218,11 +2245,11 @@ function telaPipeline(){
   '</div>';
 
   /* --- os 4 portoes da Intencao ------------------------------------------ */
-  var emIntencao = todas.filter(function(l){ return posLead(l.status) === 2; });
+  var emIntencao = todas.filter(function(l){ return posLead(l.status) === 2 && ehCorretora(l); });
   /* quem ja subiu para Oportunidade ou Oferta sem ter fechado os quatro */
   var subiuCedo = todas.filter(function(l){
     var pz = posLead(l.status);
-    return (pz === 3 || pz === 4) && contaPortoes(l) < 4;
+    return ehCorretora(l) && (pz === 3 || pz === 4) && contaPortoes(l) < 4;
   });
   var prontas = emIntencao.filter(function(l){ return contaPortoes(l) === 4; });
 
@@ -2262,6 +2289,15 @@ function telaPipeline(){
   }
 
   h += '<div class="cartao"><div class="ferramentas">' +
+    '<div class="abas">' +
+      [['todos','Todas'],['Corretora','Corretoras'],['Empresa','Empresas']].map(function(t){
+        var n = t[0] === 'todos' ? Estado.leads.length
+              : Estado.leads.filter(function(l){ return tipoDa(l) === t[0]; }).length;
+        return '<button class="aba' + (Estado.lgTipo === t[0] ? ' on' : '') +
+          '" type="button" data-tipolead="' + t[0] + '">' + t[1] +
+          ' <span class="apagado">' + n + '</span></button>';
+      }).join('') +
+    '</div>' +
     '<div class="busca">' + svg('busca',14) +
       '<input id="lgBusca" type="search" placeholder="Buscar lead, @, frase ou nota" value="' +
       esc(Estado.lgBusca) + '"></div>' +
@@ -2300,14 +2336,18 @@ function telaPipeline(){
         var zap = linkZap(l.contato);
         var dias = l.ultimo_contato ? difDias(String(l.ultimo_contato).slice(0,10), hoje) : null;
         var fechada = posLead(l.status) >= 5;
-        return '<tr class="clicavel' + (String(l.icp) === 'Sim' ? ' destaque' : '') +
+        return '<tr class="clicavel' + (String(l.icp) === 'Sim' && ehCorretora(l) ? ' destaque' : '') +
             '" data-abre="' + esc(l.id) + '">' +
-          '<td class="forte" style="max-width:190px">' + esc(l.lead || 'Sem nome') + '</td>' +
+          '<td class="forte" style="max-width:190px">' + esc(l.lead || 'Sem nome') +
+            (ehCorretora(l) ? '' : '<div class="pil pil-macro" style="margin-top:4px">Empresa</div>') + '</td>' +
           '<td style="font-size:14px">' + (insta
               ? '<a href="' + esc(insta) + '" target="_blank" rel="noopener" data-paro="1">' + esc(l.contato) + '</a>'
-              : (l.contato ? esc(l.contato) : '<span class="apagado">·</span>')) + '</td>' +
+              : (l.contato ? esc(l.contato) : (l.pessoa || l.email ? '' : '<span class="apagado">·</span>'))) +
+            (l.pessoa ? '<div class="apagado" style="font-size:13px">' + esc(l.pessoa) + '</div>' : '') +
+            (l.email ? '<div style="font-size:13px"><a href="mailto:' + esc(l.email) +
+              '" data-paro="1">' + esc(l.email) + '</a></div>' : '') + '</td>' +
           '<td><span class="' + classeLead(l.status) + '">' + esc(l.status || 'Contato realizado') + '</span>' +
-            (posLead(l.status) === 2 ? ' ' + medidorPortoes(l.portoes) : '') + '</td>' +
+            (posLead(l.status) === 2 && ehCorretora(l) ? ' ' + medidorPortoes(l.portoes) : '') + '</td>' +
           '<td><span class="' + classeIcp(l.icp) + '">' + esc(l.icp || 'A confirmar') + '</span></td>' +
           '<td style="font-size:14px">' + (l.origem ? esc(l.origem) : '<span class="apagado">·</span>') + '</td>' +
           '<td style="font-size:14px">' + (l.tempo_mercado ? esc(l.tempo_mercado) : '<span class="apagado">·</span>') + '</td>' +
@@ -2330,6 +2370,11 @@ function telaPipeline(){
 
   $('painel').innerHTML = h;
 
+  $('painel').querySelectorAll('[data-tipolead]').forEach(function(b){
+    b.addEventListener('click', function(){
+      Estado.lgTipo = b.getAttribute('data-tipolead'); telaPipeline();
+    });
+  });
   ligarBusca('lgBusca', 'lgBusca', telaPipeline);
   $('lgStatus').addEventListener('change', function(){ Estado.lgStatus = this.value; telaPipeline(); });
   $('lgIcp').addEventListener('change', function(){ Estado.lgIcp = this.value; telaPipeline(); });
@@ -2375,6 +2420,8 @@ function telaImportar(){
       'Só o nome é obrigatório. Separe por ponto e vírgula, vírgula ou tabulação. ' +
       'Quem já estiver no pipeline é ignorada sozinha.</div></div>' +
       htmlCampos([
+        { k:'tipo', rot:'Todas entram como', tipo:'select', opcoes:TIPOS_LEAD, padrao:'Corretora',
+          dica:'Corretora para a Leitura de Marca, Empresa para palestra.' },
         { k:'status', rot:'Todas entram com o status', tipo:'select', opcoes:LEAD_STATUS,
           padrao:'Contato realizado',
           dica:'Se você ainda não falou com elas, deixe o último contato em branco abaixo.' },
@@ -2441,6 +2488,7 @@ function telaImportar(){
           return {
             lead: x.lead, contato: x.contato, notas: x.notas,
             origem: x.origem, tempo_mercado: x.tempo_mercado,
+            tipo: opc.tipo || 'Corretora',
             status: opc.status || 'Contato realizado',
             icp: opc.icp || 'A confirmar',
             primeiro_contato: hojeS(),
@@ -2478,17 +2526,23 @@ function formLead(l){
       var bv = m.querySelector('[data-virou]');
       if (bv) bv.addEventListener('click', function(){ formCliente(null, l); });
     },
-    valores: l || { status:'Contato realizado', icp:'A confirmar',
+    valores: l || { tipo:'Corretora', status:'Contato realizado', icp:'A confirmar',
                     primeiro_contato: hojeS(), ultimo_contato: hojeS() },
     textoApagar:'Esta lead vai sair do seu pipeline.',
     campos:[
+      { k:'tipo', rot:'Tipo de lead', tipo:'select', opcoes:TIPOS_LEAD,
+        dica:'Corretora é a Leitura de Marca, conversa individual. Empresa é palestra, proposta B2B. Os campos mudam conforme a escolha.' },
       { k:'lead', rot:'Nome', ph:'Como ela se chama' },
       { k:'contato', rot:'Contato', ph:'@instagram ou WhatsApp',
         dica:'Com o @ aqui, a lista já vira link para o Instagram. Com número, vira botão do WhatsApp.' },
+      { k:'pessoa', rot:'Quem fala pela empresa', sos:'Empresa',
+        ph:'Nome e cargo, por exemplo: Marina Souza, RH' },
+      { k:'email', rot:'E-mail', tipo:'email', sos:'Empresa',
+        ph:'para onde vai a proposta' },
       { k:'status', rot:'Status no funil', tipo:'select', opcoes:LEAD_STATUS },
-      { k:'icp', rot:'ICP', tipo:'select', opcoes:ICP },
+      { k:'icp', rot:'ICP', tipo:'select', opcoes:ICP, sos:'Corretora' },
       { k:'origem', rot:'Origem', tipo:'select', opcoes:ORIGEM, vazio:'Sem origem' },
-      { k:'tempo_mercado', rot:'Tempo de mercado',
+      { k:'tempo_mercado', rot:'Tempo de mercado', sos:'Corretora',
         ph:'22 anos, 3 meses, a confirmar...',
         dica:'Qualificar cedo, antes de aprofundar.' },
       { k:'primeiro_contato', rot:'Primeiro contato', tipo:'date',
@@ -2497,14 +2551,14 @@ function formLead(l){
 
       { tipo:'secao', rot:'O que importa nesta conversa',
         dica:'A frase dela é o campo mais importante. É o que abre e fecha a apresentação.' },
-      { k:'frase_real', rot:'Frase real dela', tipo:'area',
+      { k:'frase_real', rot:'Frase real dela', tipo:'area', sos:'Corretora',
         ph:'A fala da própria pessoa, com as palavras dela' },
       { k:'proximo_passo', rot:'Próximo passo', tipo:'area',
         ph:'Uma ação concreta e única' },
 
-      { tipo:'secao', rot:'Os 4 portões da Intenção',
+      { tipo:'secao', rot:'Os 4 portões da Intenção', sos:'Corretora',
         dica:'Acontecem nesta ordem, dentro de Intenção. Só depois dos quatro a lead sobe para Oportunidade.' },
-      { k:'portoes', rot:'O que já aconteceu nesta conversa', tipo:'portoes' },
+      { k:'portoes', rot:'O que já aconteceu nesta conversa', tipo:'portoes', sos:'Corretora' },
       { k:'notas', rot:'Notas', tipo:'area', alto:true,
         ph:'Leitura comercial, histórico, o que aprendeu com esta conversa' }
     ],
