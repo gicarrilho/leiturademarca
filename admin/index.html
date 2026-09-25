@@ -352,6 +352,23 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 }
 .cal-n-mais:hover{text-decoration:underline}
 
+/* --- faturamento mes a mes ------------------------------------------------ */
+.mes{display:flex;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--linha2);font-size:14.5px}
+.mes:last-child{border-bottom:none}
+.mes.atual{background:rgba(201,162,39,.07);margin:0 -8px;padding-left:8px;padding-right:8px;
+  border-radius:8px}
+.mes-nome{width:168px;flex:none;font-weight:700}
+.mes-tr{flex:1;min-width:50px;height:10px;background:var(--creme2);border-radius:5px;overflow:hidden}
+.mes-in{height:100%;background:var(--laranja);border-radius:5px;transition:width .3s}
+.mes-val{width:118px;flex:none;text-align:right;font-weight:800;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.mes-qtd{width:92px;flex:none;text-align:right;font-size:13px;color:var(--faint);white-space:nowrap}
+.mes-var{width:78px;flex:none;text-align:right;font-size:13px;font-weight:700;white-space:nowrap}
+.mes-var.sobe{color:#3F4527}
+.mes-var.desce{color:var(--vermelho)}
+.mes-var.igual{color:var(--mudo)}
+
 .atras{display:flex;align-items:center;gap:10px;padding:9px 0;
   border-bottom:1px solid var(--linha2);font-size:14.5px;flex-wrap:wrap}
 .atras:last-child{border-bottom:none}
@@ -467,6 +484,13 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   .bloco{padding:16px 16px 0}
   .avisos{margin:0 16px 14px}
   .cal-dia{min-height:82px}
+  /* no celular a linha do mes empilha, senao nao cabe */
+  .mes{flex-wrap:wrap;gap:6px 10px}
+  .mes-nome{width:100%}
+  .mes-tr{order:3;flex-basis:100%;min-width:0}
+  .mes-val{width:auto;text-align:left}
+  .mes-qtd{width:auto}
+  .mes-var{width:auto}
   .cal-item{font-size:11px}
   .cal-dia-nome{font-size:10px;letter-spacing:.06em}
 }
@@ -548,7 +572,7 @@ var Estado = {
   /* pipeline */
   lgBusca:'', lgStatus:'todos', lgIcp:'todos', lgCol:'status', lgDir:1,
   /* clientes */
-  clBusca:'', clFiltro:'todos', clCol:'data_pagamento', clDir:-1
+  clBusca:'', clFiltro:'todos', clMes:'todos', clCol:'data_pagamento', clDir:-1
 };
 
 (async function porta(){
@@ -1787,11 +1811,41 @@ function formLead(l){
    12. ABA CLIENTES  ·  quem ja comprou, com os dados de nota fiscal
    ========================================================================== */
 
+/* agrupa o faturamento por mes de pagamento, do mais antigo para o mais novo */
+function porMes(clientes){
+  var m = {};
+  clientes.forEach(function(c){
+    if (!c || !c.data_pagamento) return;
+    var k = String(c.data_pagamento).slice(0, 7);      /* AAAA-MM */
+    if (!m[k]) m[k] = { chave:k, total:0, n:0 };
+    m[k].total += num(c.valor);
+    m[k].n += 1;
+  });
+  var fora = Object.keys(m).sort();
+  return fora.map(function(k, i){
+    var x = m[k];
+    var ant = i > 0 ? m[fora[i-1]].total : null;
+    /* variacao so existe se houve mes anterior com valor, senao fica nula */
+    x.variacao = (ant && ant > 0) ? Math.round(div(x.total - ant, ant) * 100) : null;
+    return x;
+  });
+}
+function nomeMes(chave){
+  var p = String(chave).split('-');
+  var i = num(p[1]) - 1;
+  return (MESES[i] ? capital(MESES[i]) : chave) + ' de ' + p[0];
+}
+
 function telaClientes(){
   var busca = Estado.clBusca.trim().toLowerCase();
   var hoje = hojeS();
 
-  var listaC = Estado.clientes.filter(function(c){
+  /* o filtro de mes vale para a faixa de numeros e para a tabela */
+  var base = Estado.clMes === 'todos' ? Estado.clientes : Estado.clientes.filter(function(c){
+    return c.data_pagamento && String(c.data_pagamento).slice(0,7) === Estado.clMes;
+  });
+
+  var listaC = base.filter(function(c){
     if (Estado.clFiltro === 'nf' && String(c.status_nf) === 'Emitida') return false;
     if (Estado.clFiltro === 'negociando' && lista(c.crm_status).indexOf('Em negociação') < 0) return false;
     if (Estado.clFiltro === 'contato' && !c.proximo_contato) return false;
@@ -1812,19 +1866,51 @@ function telaClientes(){
   });
 
   /* --- a faixa de numeros, com divisao segura ---------------------------- */
-  var todas = Estado.clientes;
+  var todas = base;
+  var recorte = Estado.clMes === 'todos' ? 'na base' : 'em ' + nomeMes(Estado.clMes);
   var faturado = todas.reduce(function(a,c){ return a + num(c.valor); }, 0);
   var ticket = div(faturado, todas.length);
   var aEmitir = todas.filter(function(c){ return String(c.status_nf) !== 'Emitida'; });
   var negociando = todas.filter(function(c){ return lista(c.crm_status).indexOf('Em negociação') > -1; });
 
   var h = '<div class="faixa c4">' +
-    cel('Clientes', todas.length, todas.length === 0 ? 'nenhum ainda' : 'na base') +
+    cel('Clientes', todas.length, todas.length === 0 ? 'nenhum ainda' : recorte) +
     celDinheiro('Faturamento', faturado,
         todas.length ? 'ticket médio de ' + real(ticket) : 'aparece com a primeira venda') +
     cel('Notas a emitir', aEmitir.length, aEmitir.length ? 'esperando você' : 'tudo emitido') +
     cel('Em negociação', negociando.length, 'conversas abertas de novo') +
   '</div>';
+
+  /* --- faturamento mes a mes, sempre sobre a base inteira ----------------- */
+  var meses = porMes(Estado.clientes);
+  var mesAtual = hojeS().slice(0,7);
+  h += '<div class="cartao"><div class="cartao-topo"><div>' +
+       '<div class="cartao-tit">Faturamento mês a mês</div>' +
+       '<div class="cartao-sub">Pela data do pagamento. A porcentagem compara com o mês anterior.</div>' +
+       '</div></div><div class="cartao-corpo">';
+
+  if (!meses.length) {
+    h += '<div class="vazio">Aqui vai aparecer <b>quanto entrou em cada mês</b>, lado a lado, ' +
+         'com a variação de um mês para o outro. Aparece assim que houver cliente com ' +
+         '<b>data de pagamento</b> preenchida.</div>';
+  } else {
+    var maiorMes = Math.max.apply(null, meses.map(function(m){ return m.total; }));
+    h += meses.map(function(m){
+      var pct = maiorMes > 0 ? Math.max(2, Math.round(div(m.total, maiorMes) * 100)) : 2;
+      var v = m.variacao;
+      var classeV = v === null ? 'igual' : (v > 0 ? 'sobe' : v < 0 ? 'desce' : 'igual');
+      var textoV = v === null ? '·' : (v > 0 ? '+' + v + '%' : v + '%');
+      return '<div class="mes' + (m.chave === mesAtual ? ' atual' : '') + '">' +
+        '<div class="mes-nome">' + esc(nomeMes(m.chave)) +
+          (m.chave === mesAtual ? ' <span class="pil pil-perto">em curso</span>' : '') + '</div>' +
+        '<div class="mes-tr"><div class="mes-in" style="width:' + pct + '%"></div></div>' +
+        '<div class="mes-val">' + real(m.total) + '</div>' +
+        '<div class="mes-qtd">' + plural(m.n,'cliente','clientes') + '</div>' +
+        '<div class="mes-var ' + classeV + '" title="comparado com o mês anterior">' + textoV + '</div>' +
+      '</div>';
+    }).join('');
+  }
+  h += '</div></div>';
 
   h += '<div class="cartao"><div class="ferramentas">' +
     '<div class="abas">' +
@@ -1834,6 +1920,14 @@ function telaClientes(){
             '" type="button" data-f="' + f[0] + '">' + f[1] + '</button>';
         }).join('') +
     '</div>' +
+    '<select class="sel" id="clMes">' +
+      '<option value="todos"' + (Estado.clMes === 'todos' ? ' selected' : '') + '>Todos os meses</option>' +
+      meses.slice().reverse().map(function(m){
+        return '<option value="' + esc(m.chave) + '"' +
+          (Estado.clMes === m.chave ? ' selected' : '') + '>' +
+          esc(nomeMes(m.chave)) + ' · ' + real(m.total) + '</option>';
+      }).join('') +
+    '</select>' +
     '<div class="busca">' + svg('busca',14) +
       '<input id="clBusca" type="search" placeholder="Buscar cliente" value="' +
       esc(Estado.clBusca) + '"></div>' +
@@ -1847,8 +1941,9 @@ function telaClientes(){
     h += '<div class="cartao-corpo"><div class="vazio">A sua base de clientes está vazia. ' +
          'Clique em <b>Novo cliente</b> para começar.</div></div>';
   } else if (!listaC.length) {
-    h += '<div class="cartao-corpo"><div class="vazio">Nenhum cliente com esse filtro. ' +
-         'Tente <b>Todos</b> ou outra palavra na busca.</div></div>';
+    h += '<div class="cartao-corpo"><div class="vazio">Nenhum cliente com esse filtro' +
+         (Estado.clMes === 'todos' ? '' : ' em <b>' + esc(nomeMes(Estado.clMes)) + '</b>') + '. ' +
+         'Tente <b>Todos</b>, ou volte para <b>Todos os meses</b>.</div></div>';
   } else {
     h += '<div class="rolar"><table><thead><tr>' +
       ths([
@@ -1891,6 +1986,7 @@ function telaClientes(){
     b.addEventListener('click', function(){ Estado.clFiltro = b.getAttribute('data-f'); telaClientes(); });
   });
   ligarBusca('clBusca', 'clBusca', telaClientes);
+  $('clMes').addEventListener('change', function(){ Estado.clMes = this.value; telaClientes(); });
   $('clAdd').addEventListener('click', function(){ formCliente(null); });
   ligarOrdenacao('clCol', 'clDir', telaClientes);
 
