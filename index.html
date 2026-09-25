@@ -919,22 +919,5 @@ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
 </script>
 
-<!--
-  REGISTRO DE VISITA
-  Grava uma linha na tabela visitas do seu Supabase, para alimentar os numeros
-  do painel em /admin. Nao usa nenhum servico de fora, nao pede nada para o
-  visitante e nao guarda nada que identifique ninguem: so a data, qual pagina
-  e de onde a pessoa clicou.
-  Os dois arquivos entram com "defer", ou seja, depois da pagina ja estar
-  desenhada. Se algo falhar, o site continua exatamente igual.
--->
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script defer src="js/banco.js"></script>
-<script defer>
-window.addEventListener('load', function(){
-  if (window.Banco && window.Banco.registrarVisita) window.Banco.registrarVisita();
-});
-</script>
-
 </body>
 </html>

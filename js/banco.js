@@ -2,7 +2,7 @@
    CONEXAO COM O BANCO  ·  Giovanna Carrilho
    ----------------------------------------------------------------------------
    Este arquivo guarda o endereco do seu projeto no Supabase e a CHAVE PUBLICA.
-   Ele e usado pelo site, pela tela de login e pelo admin. Um lugar so.
+   E usado pela tela de login e pelo painel. Um lugar so.
 
    A chave que esta aqui e a chave PUBLICA (publishable). Ela pode ficar
    a vista de todo mundo, porque quem protege os seus dados nao e ela: e o RLS
@@ -49,114 +49,19 @@ try {
 
 
 /* ============================================================================
-   AJUDANTES QUE O SITE E O ADMIN USAM
+   AJUDANTE PARA O DIA EM QUE VOCE COLOCAR UM FORMULARIO NO SITE
    ============================================================================ */
 
 window.Banco = {
-
-  /* --------------------------------------------------------------------------
-     REGISTRO DE VISITA
-     Usado no site. Grava uma linha na tabela visitas: a data, qual pagina
-     e de onde a pessoa veio. Nao usa nenhum servico de fora, nao pede nada
-     para o visitante e nao guarda nada que identifique ninguem.
-
-     Grava no maximo uma visita por pessoa a cada 30 minutos, para a mesma
-     pessoa recarregando a pagina nao inflar os seus numeros.
-
-     Se der qualquer erro, ele fica quieto. Um problema no contador nunca
-     pode atrapalhar quem esta lendo o seu site.
-     -------------------------------------------------------------------------- */
-  async registrarVisita() {
-    try {
-      if (!window.sb) return;
-
-      var agora = Date.now();
-      var trinta = 30 * 60 * 1000;
-
-      // sessionStorage pode estar bloqueado em aba privada, por isso o try
-      try {
-        var ultima = window.sessionStorage.getItem('visita_em');
-        if (ultima && (agora - Number(ultima)) < trinta) return;
-        window.sessionStorage.setItem('visita_em', String(agora));
-      } catch (e) { /* segue mesmo sem memoria */ }
-
-      await window.sb.from('visitas').insert({
-        data:   new Date().toISOString().slice(0, 10),
-        pagina: (location.pathname || '/'),
-        origem: window.Banco.deOndeVeio()
-      });
-    } catch (e) { /* silencio de proposito */ }
-  },
-
-  /* --------------------------------------------------------------------------
-     DE ONDE A PESSOA VEIO
-     Le o endereco de onde ela clicou e devolve um nome curto e legivel.
-     Se ela digitou o endereco na mao ou veio de um app, devolve "direto".
-     -------------------------------------------------------------------------- */
-  deOndeVeio() {
-    try {
-      // se o link tiver ?utm_source=algumacoisa, esse nome ganha
-      var utm = new URLSearchParams(location.search).get('utm_source');
-      if (utm) return String(utm).toLowerCase().slice(0, 40);
-
-      var r = document.referrer || '';
-      if (!r) return 'direto';
-
-      var dominio = new URL(r).hostname.replace(/^www\./, '').toLowerCase();
-
-      // o proprio site nao conta como origem
-      if (dominio === location.hostname.replace(/^www\./, '').toLowerCase()) return 'direto';
-
-      var conhecidos = {
-        'instagram.com': 'instagram',
-        'l.instagram.com': 'instagram',
-        'facebook.com': 'facebook',
-        'l.facebook.com': 'facebook',
-        'lm.facebook.com': 'facebook',
-        'google.com': 'google',
-        'google.com.br': 'google',
-        'youtube.com': 'youtube',
-        'm.youtube.com': 'youtube',
-        'tiktok.com': 'tiktok',
-        'linkedin.com': 'linkedin',
-        'wa.me': 'whatsapp',
-        'api.whatsapp.com': 'whatsapp',
-        'web.whatsapp.com': 'whatsapp',
-        't.co': 'twitter',
-        'x.com': 'twitter'
-      };
-      return conhecidos[dominio] || dominio.slice(0, 40);
-    } catch (e) {
-      return 'direto';
-    }
-  },
-
-  /* --------------------------------------------------------------------------
-     VIDEOS QUE APARECEM NO SITE
-     Le a tabela videos, so os visiveis, na ordem que voce arrumou no admin.
-     Devolve uma lista vazia se der erro, nunca quebra a pagina.
-     -------------------------------------------------------------------------- */
-  async videosDoSite() {
-    try {
-      if (!window.sb) return [];
-      var r = await window.sb
-        .from('videos')
-        .select('*')
-        .eq('visivel', true)
-        .order('ordem', { ascending: true })
-        .order('id', { ascending: true });
-      if (r.error) return [];
-      return r.data || [];
-    } catch (e) {
-      return [];
-    }
-  },
 
   /* --------------------------------------------------------------------------
      CADASTRAR UMA LEAD VINDA DO FORMULARIO DO SITE
      Entra sempre no comeco do funil, com status 'Contato realizado', que e a
      unica coisa que a tranca do banco deixa um visitante gravar.
      Devolve { ok: true } ou { ok: false, mensagem: 'texto em portugues' }.
+
+     Hoje o seu site nao tem formulario. Esta funcao fica pronta aqui para
+     quando voce quiser um, sem precisar mexer na tranca do banco.
      -------------------------------------------------------------------------- */
   async cadastrarLead(dados) {
     try {
@@ -167,10 +72,12 @@ window.Banco = {
       if (!nome) {
         return { ok: false, mensagem: 'Escreva o seu nome, por favor.' };
       }
-      /* junta o @ e o telefone num campo so, que e como o painel mostra o contato */
+      /* junta o @, o telefone e o e-mail num campo so, que e como o painel
+         mostra o contato da lead */
       var contato = [(dados.instagram || '').trim(),
                      (dados.telefone  || '').trim(),
                      (dados.email     || '').trim()].filter(Boolean).join(' · ');
+
       var r = await window.sb.from('leads').insert({
         lead:           nome.slice(0, 120),
         contato:        contato.slice(0, 160),

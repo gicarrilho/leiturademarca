@@ -17,12 +17,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================================
-   PAINEL  ·  mesmas cores, mesma fonte e mesmo arredondamento do portfolio.
-   Uma fonte so: Archivo. Tamanhos pequenos, nada de titulo gigante.
+   PAINEL  ·  mesmas cores e mesmo arredondamento do portfolio.
+   A letra aqui e a Inter, desenhada para tela, em tamanhos confortaveis.
+   O site continua com a Archivo, que e a letra da marca.
    ============================================================================ */
 :root{
   --vinho:#4A2028;
@@ -45,19 +46,19 @@
   --linha:rgba(74,32,40,.13);
   --linha2:rgba(74,32,40,.07);
 
-  --disp:'Archivo',Helvetica,Arial,sans-serif;
+  --disp:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif;
 
   --rad:18px;      /* cartoes */
   --rad-s:11px;    /* campos e botoes quadrados */
   --rad-p:100px;   /* pilulas, igual ao portfolio */
 
-  --menu:236px;
+  --menu:252px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
   font-family:var(--disp);background:var(--creme);color:var(--ink);
-  font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
 }
 ::selection{background:var(--ocre);color:var(--vinho)}
 img{display:block;max-width:100%}
@@ -70,7 +71,7 @@ svg{display:block;flex:none}
 body.liberado #app{display:block}
 #checando{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:var(--creme);color:var(--faint);font-size:13px;font-weight:600;
+  background:var(--creme);color:var(--faint);font-size:14.5px;font-weight:600;
   letter-spacing:.12em;text-transform:uppercase;z-index:999;text-align:center;padding:24px;
 }
 body.liberado #checando{display:none}
@@ -83,21 +84,21 @@ body.liberado #checando{display:none}
 }
 .menu-topo{padding:0 20px 20px}
 .menu-marca{
-  font-weight:800;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  font-weight:800;font-size:12px;letter-spacing:.24em;text-transform:uppercase;
   color:var(--ocre);
 }
-.menu-nome{font-weight:800;font-size:15px;letter-spacing:-.02em;color:var(--creme);margin-top:3px}
+.menu-nome{font-weight:800;font-size:17px;letter-spacing:-.02em;color:var(--creme);margin-top:3px}
 
 .menu-corpo{flex:1;overflow-y:auto;padding:4px 10px 12px}
 .menu-secao{
-  font-weight:700;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:rgba(245,240,230,.36);padding:16px 10px 7px;
 }
 .menu-item{
   display:flex;align-items:center;gap:10px;width:100%;
   background:none;border:none;cursor:pointer;text-align:left;
   padding:9px 10px;border-radius:var(--rad-s);
-  color:rgba(245,240,230,.76);font-size:13.5px;font-weight:600;
+  color:rgba(245,240,230,.76);font-size:15px;font-weight:600;
   border-left:3px solid transparent;transition:background .14s,color .14s;
 }
 .menu-item:hover{background:rgba(245,240,230,.07);color:var(--creme)}
@@ -110,13 +111,13 @@ body.liberado #checando{display:none}
 
 .menu-pe{padding:14px 18px 16px;border-top:1px solid rgba(245,240,230,.13)}
 .menu-email{
-  font-size:11.5px;color:rgba(245,240,230,.52);word-break:break-all;margin-bottom:10px;
+  font-size:13px;color:rgba(245,240,230,.52);word-break:break-all;margin-bottom:10px;
   line-height:1.35;
 }
 .btn-sair{
   display:flex;align-items:center;justify-content:center;gap:7px;width:100%;
   background:rgba(245,240,230,.1);border:1px solid rgba(245,240,230,.18);
-  color:var(--creme);font-size:12.5px;font-weight:700;
+  color:var(--creme);font-size:14px;font-weight:700;
   padding:9px;border-radius:var(--rad-p);cursor:pointer;transition:background .14s;
 }
 .btn-sair:hover{background:rgba(245,240,230,.18)}
@@ -132,15 +133,15 @@ body.liberado #checando{display:none}
   backdrop-filter:blur(8px);border-bottom:1px solid var(--linha);
   padding:16px 26px;display:flex;align-items:center;gap:12px;
 }
-.topo h1{font-weight:800;font-size:19px;letter-spacing:-.03em;line-height:1.1}
-.topo .dica{font-size:12.5px;color:var(--faint);margin-top:1px}
+.topo h1{font-weight:800;font-size:21px;letter-spacing:-.03em;line-height:1.1}
+.topo .dica{font-size:14px;color:var(--faint);margin-top:1px}
 .bloco{padding:22px 26px 0}
 
 .avisos{margin:0 26px 18px;display:none}
 .avisos.tem{display:block}
 .aviso{
   background:rgba(201,162,39,.13);border:1px solid rgba(201,162,39,.4);
-  border-radius:var(--rad-s);padding:11px 14px;font-size:13px;color:#7A5F12;
+  border-radius:var(--rad-s);padding:11px 14px;font-size:14.5px;color:#7A5F12;
   margin-bottom:8px;line-height:1.5;
 }
 .aviso b{color:#5E4A0D}
@@ -154,8 +155,8 @@ body.liberado #checando{display:none}
   padding:14px 18px;border-bottom:1px solid var(--linha2);
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
 }
-.cartao-tit{font-weight:800;font-size:13.5px;letter-spacing:-.01em}
-.cartao-sub{font-size:12px;color:var(--faint)}
+.cartao-tit{font-weight:800;font-size:15px;letter-spacing:-.01em}
+.cartao-sub{font-size:13.5px;color:var(--faint)}
 .cartao-corpo{padding:18px}
 
 .faixa{
@@ -167,57 +168,36 @@ body.liberado #checando{display:none}
 .faixa-cel{padding:14px 16px;border-left:1px solid var(--linha2);min-width:0}
 .faixa-cel:first-child{border-left:none}
 .faixa-rot{
-  font-weight:700;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--faint);margin-bottom:5px;
 }
-.faixa-num{font-weight:800;font-size:23px;letter-spacing:-.035em;line-height:1.05}
-.faixa-txt{font-weight:800;font-size:14px;letter-spacing:-.02em;line-height:1.22;padding-top:3px}
-.faixa-pe{font-size:11.5px;color:var(--faint);margin-top:3px;line-height:1.35}
-
-/* --- grafico de barras ---------------------------------------------------- */
-.graf{display:flex;align-items:flex-end;gap:5px;height:132px;padding-top:6px}
-.graf-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;
-  align-items:center;gap:5px;height:100%}
-.graf-barra{
-  width:100%;background:var(--laranja);border-radius:5px 5px 2px 2px;
-  min-height:2px;transition:background .14s;
-}
-.graf-col:hover .graf-barra{background:var(--vinho)}
-.graf-barra.zero{background:var(--linha)}
-.graf-dia{font-size:9.5px;color:var(--faint);font-weight:600;white-space:nowrap}
-.graf-val{font-size:10px;font-weight:800;color:var(--soft)}
+.faixa-num{font-weight:800;font-size:26px;letter-spacing:-.035em;line-height:1.05}
+.faixa-txt{font-weight:800;font-size:16px;letter-spacing:-.02em;line-height:1.22;padding-top:3px}
+.faixa-pe{font-size:13px;color:var(--faint);margin-top:3px;line-height:1.35}
 
 .vazio{
-  padding:26px 20px;text-align:center;color:var(--faint);font-size:13px;
+  padding:26px 20px;text-align:center;color:var(--faint);font-size:14.5px;
   line-height:1.6;background:var(--creme);border-radius:var(--rad-s);
   border:1px dashed var(--linha);
 }
 .vazio b{color:var(--soft)}
 
-.origem{display:flex;align-items:center;gap:10px;padding:7px 0;
-  border-bottom:1px solid var(--linha2);font-size:13px}
-.origem:last-child{border-bottom:none}
-.origem-nome{width:110px;flex:none;font-weight:600}
-.origem-tr{flex:1;height:7px;background:var(--creme2);border-radius:4px;overflow:hidden}
-.origem-in{height:100%;background:var(--terra);border-radius:4px}
-.origem-n{width:42px;flex:none;text-align:right;font-weight:800;font-size:12.5px}
-
 /* ============================== TABELAS ================================== */
 .rolar{overflow-x:auto}
-.rolar table{min-width:660px}
-table{width:100%;border-collapse:collapse;font-size:13px}
+.rolar table{min-width:720px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
 th{
-  text-align:left;font-weight:700;font-size:9.5px;letter-spacing:.14em;
+  text-align:left;font-weight:700;font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--faint);
   padding:9px 12px;border-bottom:1px solid var(--linha);white-space:nowrap;
   background:var(--white);
 }
 th.ord{cursor:pointer;user-select:none}
 th.ord:hover{color:var(--laranja)}
-th .seta{display:inline-block;margin-left:4px;font-size:9px;opacity:.22}
+th .seta{display:inline-block;margin-left:4px;font-size:10.5px;opacity:.22}
 th.ord.ativa{color:var(--laranja)}
 th.ord.ativa .seta{opacity:1}
-td{padding:10px 12px;border-bottom:1px solid var(--linha2);vertical-align:middle}
+td{padding:11px 13px;border-bottom:1px solid var(--linha2);vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
 tbody tr.clicavel{cursor:pointer}
 tbody tr.clicavel:hover{background:var(--creme)}
@@ -225,15 +205,14 @@ td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.acoes{text-align:right;white-space:nowrap}
 .forte{font-weight:700}
 .apagado{color:var(--mudo)}
-.tr-oculto td{opacity:.48}
 .corta{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-size:12.5px;color:var(--faint)}
+  font-size:14px;color:var(--faint)}
 tr.destaque td:first-child{box-shadow:inset 3px 0 0 var(--ocre)}
 
 /* ============================== BOTOES =================================== */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  font-weight:700;font-size:12.5px;padding:8px 16px;border-radius:var(--rad-p);
+  font-weight:700;font-size:14px;padding:8px 16px;border-radius:var(--rad-p);
   border:1px solid var(--linha);background:var(--white);color:var(--ink);
   cursor:pointer;transition:background .14s,border-color .14s,transform .14s;
   white-space:nowrap;
@@ -244,7 +223,7 @@ tr.destaque td:first-child{box-shadow:inset 3px 0 0 var(--ocre)}
 .btn-forte:hover{background:#C56A31;border-color:#C56A31;transform:translateY(-1px)}
 .btn-perigo{color:var(--vermelho);border-color:rgba(155,42,42,.3)}
 .btn-perigo:hover{background:rgba(155,42,42,.08);border-color:var(--vermelho)}
-.btn-p{padding:6px 11px;font-size:11.5px}
+.btn-p{padding:6px 11px;font-size:13px}
 .btn:disabled{opacity:.5;cursor:default;transform:none}
 
 .icone{
@@ -256,11 +235,6 @@ tr.destaque td:first-child{box-shadow:inset 3px 0 0 var(--ocre)}
 .icone svg{stroke:currentColor}
 .icone.on{color:var(--laranja)}
 .icone.mal:hover{color:var(--vermelho);background:rgba(155,42,42,.08)}
-.alca{cursor:grab;color:var(--mudo)}
-.alca:hover{color:var(--soft);background:var(--creme2)}
-.alca:active{cursor:grabbing}
-tr.arrastando{opacity:.4}
-tr.alvo td{box-shadow:inset 0 2px 0 var(--laranja)}
 
 /* ============================ FERRAMENTAS ================================ */
 .ferramentas{
@@ -272,13 +246,13 @@ tr.alvo td{box-shadow:inset 0 2px 0 var(--laranja)}
   stroke:var(--faint);pointer-events:none}
 .busca input{
   width:100%;padding:8px 12px 8px 33px;border:1px solid var(--linha);
-  border-radius:var(--rad-p);background:var(--white);font-size:13px;
+  border-radius:var(--rad-p);background:var(--white);font-size:14.5px;
 }
 .busca input:focus{outline:none;border-color:var(--laranja);
   box-shadow:0 0 0 3px rgba(180,95,43,.12)}
 select.sel{
   padding:8px 12px;border:1px solid var(--linha);border-radius:var(--rad-p);
-  background:var(--white);font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--white);font-size:14px;font-weight:600;cursor:pointer;
   max-width:200px;
 }
 select.sel:focus{outline:none;border-color:var(--laranja)}
@@ -287,7 +261,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .abas{display:flex;gap:5px;flex-wrap:wrap}
 .aba{
   padding:7px 14px;border-radius:var(--rad-p);border:1px solid var(--linha);
-  background:var(--white);font-size:12.5px;font-weight:700;cursor:pointer;
+  background:var(--white);font-size:14px;font-weight:700;cursor:pointer;
   color:var(--soft);transition:background .14s,color .14s,border-color .14s;
 }
 .aba:hover{background:var(--creme)}
@@ -296,7 +270,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 /* ============================== PILULAS ================================== */
 .pil{
   display:inline-block;padding:3px 10px;border-radius:var(--rad-p);
-  font-size:11px;font-weight:700;white-space:nowrap;line-height:1.5;
+  font-size:12.5px;font-weight:700;white-space:nowrap;line-height:1.5;
 }
 .pils{display:flex;gap:4px;flex-wrap:wrap}
 
@@ -341,32 +315,32 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 /* ============================= CALENDARIO ================================ */
 .cal-cab{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:5px}
 .cal-dia-nome{
-  text-align:center;font-weight:700;font-size:9.5px;letter-spacing:.14em;
+  text-align:center;font-weight:700;font-size:11px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--faint);padding:4px 0;
 }
 .cal-grade{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .cal-dia{
-  min-width:0;overflow:hidden;position:relative;min-height:92px;background:var(--white);
+  min-width:0;overflow:hidden;position:relative;min-height:106px;background:var(--white);
   border:1px solid var(--linha);border-radius:10px;padding:6px 6px 5px;
   cursor:pointer;transition:border-color .14s,background .14s;
 }
 .cal-dia:hover{border-color:var(--terra);background:#FFFDFA}
 .cal-dia.fora{background:var(--creme2);border-color:transparent;opacity:.5}
 .cal-dia.hoje{border-color:var(--laranja);box-shadow:0 0 0 2px rgba(180,95,43,.16)}
-.cal-n{font-weight:800;font-size:12px;color:var(--soft);margin-bottom:4px}
+.cal-n{font-weight:800;font-size:13.5px;color:var(--soft);margin-bottom:4px}
 .cal-dia.hoje .cal-n{color:var(--laranja)}
 .cal-dia.fora .cal-n{color:var(--mudo)}
 .cal-mais-btn{
   position:absolute;top:4px;right:4px;width:19px;height:19px;border-radius:6px;
   border:none;background:var(--creme2);color:var(--soft);cursor:pointer;
-  display:none;align-items:center;justify-content:center;font-weight:800;font-size:13px;
+  display:none;align-items:center;justify-content:center;font-weight:800;font-size:14.5px;
   line-height:1;padding:0;
 }
 .cal-dia:hover .cal-mais-btn{display:flex}
 .cal-mais-btn:hover{background:var(--laranja);color:var(--creme)}
 .cal-item{
   display:block;width:100%;text-align:left;border:none;cursor:pointer;
-  font-size:10.5px;font-weight:600;line-height:1.3;
+  font-size:12px;font-weight:600;line-height:1.3;
   padding:3px 5px;border-radius:5px;margin-bottom:2px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
@@ -374,12 +348,12 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .cal-item.so-leitura{border-left:2px solid var(--ocre)}
 .cal-n-mais{
   background:none;border:none;cursor:pointer;padding:2px 5px;
-  font-size:10px;font-weight:700;color:var(--laranja);
+  font-size:11.5px;font-weight:700;color:var(--laranja);
 }
 .cal-n-mais:hover{text-decoration:underline}
 
 .atras{display:flex;align-items:center;gap:10px;padding:9px 0;
-  border-bottom:1px solid var(--linha2);font-size:13px;flex-wrap:wrap}
+  border-bottom:1px solid var(--linha2);font-size:14.5px;flex-wrap:wrap}
 .atras:last-child{border-bottom:none}
 .atras-tit{font-weight:700;flex:1;min-width:130px}
 
@@ -399,8 +373,8 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   display:flex;align-items:flex-start;gap:12px;padding:18px 20px 14px;
   border-bottom:1px solid var(--linha2);
 }
-.modal-tit{flex:1;font-weight:800;font-size:16px;letter-spacing:-.025em;line-height:1.2}
-.modal-sub{font-size:12.5px;color:var(--faint);margin-top:2px;font-weight:400}
+.modal-tit{flex:1;font-weight:800;font-size:18px;letter-spacing:-.025em;line-height:1.2}
+.modal-sub{font-size:14px;color:var(--faint);margin-top:2px;font-weight:400}
 .modal-corpo{padding:18px 20px}
 .modal-pe{
   display:flex;gap:8px;justify-content:flex-end;padding:14px 20px 18px;
@@ -411,21 +385,21 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .campo{margin-bottom:14px}
 .campo:last-child{margin-bottom:0}
 .campo label{
-  display:block;font-weight:700;font-size:10.5px;letter-spacing:.1em;
+  display:block;font-weight:700;font-size:12px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--soft);margin-bottom:6px;
 }
 .campo input,.campo select,.campo textarea{
   width:100%;padding:10px 12px;border:1px solid var(--linha);
-  border-radius:var(--rad-s);background:var(--white);font-size:13.5px;
+  border-radius:var(--rad-s);background:var(--white);font-size:15px;
 }
 .campo textarea{min-height:74px;resize:vertical;line-height:1.5}
 .campo textarea.alto{min-height:150px}
 .campo input:focus,.campo select:focus,.campo textarea:focus{
   outline:none;border-color:var(--laranja);box-shadow:0 0 0 3px rgba(180,95,43,.12);
 }
-.campo .dica{font-size:11.5px;color:var(--faint);margin-top:4px;text-transform:none;
+.campo .dica{font-size:13px;color:var(--faint);margin-top:4px;text-transform:none;
   letter-spacing:0;font-weight:400}
-.liga{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;
+.liga{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;
   cursor:pointer;text-transform:none;letter-spacing:0}
 .liga input{width:17px;height:17px;flex:none;accent-color:var(--laranja);cursor:pointer}
 
@@ -434,7 +408,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .multi label{
   display:flex;align-items:center;gap:7px;margin:0;cursor:pointer;
   border:1px solid var(--linha);border-radius:var(--rad-p);padding:6px 12px;
-  font-size:12.5px;font-weight:600;color:var(--soft);
+  font-size:14px;font-weight:600;color:var(--soft);
   text-transform:none;letter-spacing:0;transition:background .14s,border-color .14s;
 }
 .multi label:hover{background:var(--creme)}
@@ -443,26 +417,26 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 
 /* divisor de secao dentro do formulario */
 .sec-form{
-  font-weight:800;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:800;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--faint);padding-top:8px;margin-bottom:12px;
   border-top:1px solid var(--linha2);padding-top:16px;
 }
 .sec-form .sub{
-  display:block;font-weight:400;font-size:11.5px;letter-spacing:0;
+  display:block;font-weight:400;font-size:13px;letter-spacing:0;
   text-transform:none;color:var(--mudo);margin-top:3px;
 }
 
 .erro-campo{
   background:rgba(155,42,42,.09);border:1px solid rgba(155,42,42,.24);
   color:var(--vermelho);border-radius:var(--rad-s);padding:9px 12px;
-  font-size:12.5px;font-weight:600;margin-bottom:13px;display:none;
+  font-size:14px;font-weight:600;margin-bottom:13px;display:none;
 }
 .erro-campo.on{display:block}
 
 .toast{
   position:fixed;bottom:22px;left:50%;transform:translate(-50%,80px);
   background:var(--vinho);color:var(--creme);padding:11px 20px;
-  border-radius:var(--rad-p);font-size:13px;font-weight:600;z-index:300;
+  border-radius:var(--rad-p);font-size:14.5px;font-weight:600;z-index:300;
   box-shadow:0 12px 30px rgba(0,0,0,.28);opacity:0;
   transition:transform .26s,opacity .26s;pointer-events:none;max-width:88vw;
   text-align:center;
@@ -489,16 +463,12 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   }
   .btn-menu svg{stroke:currentColor}
   .topo{padding:13px 16px}
-  .topo h1{font-size:17px}
+  .topo h1{font-size:19px}
   .bloco{padding:16px 16px 0}
   .avisos{margin:0 16px 14px}
-  .cal-dia{min-height:70px}
-  .cal-item{font-size:9.5px}
-  .cal-dia-nome{font-size:8.5px;letter-spacing:.06em}
-  /* no celular o grafico desliza de lado, para os 14 dias caberem inteiros */
-  .graf{height:112px;overflow-x:auto;padding-bottom:5px}
-  .graf-col{flex:0 0 27px}
-  .graf-dia{font-size:8px}
+  .cal-dia{min-height:82px}
+  .cal-item{font-size:11px}
+  .cal-dia-nome{font-size:10px;letter-spacing:.06em}
 }
 @media (max-width:420px){
   .faixa.c5,.faixa.c4{grid-template-columns:1fr}
@@ -568,7 +538,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 
 var Estado = {
   aba:'pautas', email:'',
-  pautas:[], leads:[], clientes:[], videos:[], visitas:[],
+  pautas:[], leads:[], clientes:[],
   avisos:[],
 
   /* pautas */
@@ -675,12 +645,9 @@ var ICO = {
   calendario:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
   pipeline:'<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
   clientes:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  portfolio:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>',
   olho:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
   olhoNao:'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>',
-  lapis:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
   lixo:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/>',
-  alca:'<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
   mais:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
   baixar:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
   busca:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
@@ -806,16 +773,12 @@ async function carregarTudo(){
   var r = await Promise.all([
     ler('pautas',   function(q){ return q.order('data',{ascending:true,nullsFirst:false}); }),
     ler('leads',    function(q){ return q.order('id',{ascending:true}); }),
-    ler('clientes', function(q){ return q.order('id',{ascending:true}); }),
-    ler('videos',   function(q){ return q.order('ordem',{ascending:true}).order('id',{ascending:true}); }),
-    ler('visitas',  function(q){ return q.order('data',{ascending:false}).limit(4000); })
+    ler('clientes', function(q){ return q.order('id',{ascending:true}); })
   ]);
 
   Estado.pautas   = r[0];
   Estado.leads    = r[1];
   Estado.clientes = r[2];
-  Estado.videos   = r[3];
-  Estado.visitas  = r[4];
 
   desenharAvisos();
 }
@@ -840,9 +803,7 @@ var ABAS = [
   { grupo:'meu negócio', id:'pipeline', rot:'Pipeline', ico:'pipeline',
     dica:'As suas leads e o próximo passo de cada conversa.' },
   { grupo:'meu negócio', id:'clientes', rot:'Clientes', ico:'clientes',
-    dica:'Quem já comprou, o que pagou e a situação da nota fiscal.' },
-  { grupo:'meu site', id:'portfolio', rot:'Portfólio', ico:'portfolio',
-    dica:'Os números do seu site e a lista de vídeos que ele mostra.' }
+    dica:'Quem já comprou, o que pagou e a situação da nota fiscal.' }
 ];
 
 function montarMenu(){
@@ -878,8 +839,8 @@ function irPara(id){
 
 function desenhar(){
   var f = {
-    pautas: telaPautas, calendario: telaCalendario, pipeline: telaPipeline,
-    clientes: telaClientes, portfolio: telaPortfolio
+    pautas: telaPautas, calendario: telaCalendario,
+    pipeline: telaPipeline, clientes: telaClientes
   }[Estado.aba];
   try {
     $('painel').innerHTML = '';
@@ -1052,7 +1013,7 @@ function formPadrao(cfg){
 function confirmar(cfg){
   abrirModal({
     titulo: cfg.titulo,
-    corpo: '<div style="font-size:13.5px;line-height:1.6;color:var(--soft)">' + esc(cfg.texto) + '</div>',
+    corpo: '<div style="font-size:15px;line-height:1.6;color:var(--soft)">' + esc(cfg.texto) + '</div>',
     pe: '<button class="btn" type="button" data-fechar="1">Não, deixa</button>' +
         '<button class="btn btn-perigo" type="button" data-sim="1">Sim, apagar</button>',
     depois: function(m){
@@ -1118,7 +1079,7 @@ function celTexto(rot, txt, pe){
 }
 function celDinheiro(rot, v, pe){
   return '<div class="faixa-cel"><div class="faixa-rot">' + esc(rot) + '</div>' +
-    '<div class="faixa-num" style="font-size:19px">' + real(v) + '</div>' +
+    '<div class="faixa-num" style="font-size:21px">' + real(v) + '</div>' +
     '<div class="faixa-pe">' + esc(pe || '') + '</div></div>';
 }
 function acharPorId(lista, id){
@@ -1276,7 +1237,7 @@ function telaPautas(){
               : '<span class="apagado">·</span>') + '</td>' +
           '<td><span class="' + classePauta(p.status) + '">' + esc(p.status || 'Ideia') + '</span></td>' +
           '<td>' + (p.formato ? '<span class="pil pil-neutra">' + esc(p.formato) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
-          '<td style="font-size:12.5px">' + (p.formato_editorial ? esc(p.formato_editorial) : '<span class="apagado">·</span>') + '</td>' +
+          '<td style="font-size:14px">' + (p.formato_editorial ? esc(p.formato_editorial) : '<span class="apagado">·</span>') + '</td>' +
           '<td>' + (p.macrotema ? '<span class="pil pil-macro">' + esc(p.macrotema) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
           '<td><div class="pils">' + lista(p.objetivo).map(function(o){
               return '<span class="pil pil-obj">' + esc(o) + '</span>';
@@ -1730,13 +1691,13 @@ function telaPipeline(){
         return '<tr class="clicavel' + (String(l.icp) === 'Sim' ? ' destaque' : '') +
             '" data-abre="' + esc(l.id) + '">' +
           '<td class="forte" style="max-width:190px">' + esc(l.lead || 'Sem nome') + '</td>' +
-          '<td style="font-size:12.5px">' + (insta
+          '<td style="font-size:14px">' + (insta
               ? '<a href="' + esc(insta) + '" target="_blank" rel="noopener" data-paro="1">' + esc(l.contato) + '</a>'
               : (l.contato ? esc(l.contato) : '<span class="apagado">·</span>')) + '</td>' +
           '<td><span class="' + classeLead(l.status) + '">' + esc(l.status || 'Contato realizado') + '</span></td>' +
           '<td><span class="' + classeIcp(l.icp) + '">' + esc(l.icp || 'A confirmar') + '</span></td>' +
-          '<td style="font-size:12.5px">' + (l.origem ? esc(l.origem) : '<span class="apagado">·</span>') + '</td>' +
-          '<td style="font-size:12.5px">' + (l.tempo_mercado ? esc(l.tempo_mercado) : '<span class="apagado">·</span>') + '</td>' +
+          '<td style="font-size:14px">' + (l.origem ? esc(l.origem) : '<span class="apagado">·</span>') + '</td>' +
+          '<td style="font-size:14px">' + (l.tempo_mercado ? esc(l.tempo_mercado) : '<span class="apagado">·</span>') + '</td>' +
           '<td>' + (l.ultimo_contato
               ? brData(l.ultimo_contato, true) +
                 (!fechada && dias > 14 ? ' <span class="pil pil-parado">há ' + dias + 'd</span>' : '')
@@ -1905,7 +1866,7 @@ function telaClientes(){
           '<td><span class="pil pil-neutra">' + esc(c.produto || 'Outro') + '</span></td>' +
           '<td class="num">' + real(c.valor) + '</td>' +
           '<td>' + (c.data_pagamento ? brData(c.data_pagamento, true) : '<span class="apagado">·</span>') + '</td>' +
-          '<td style="font-size:12.5px">' + (c.forma_pagamento ? esc(c.forma_pagamento) : '<span class="apagado">·</span>') + '</td>' +
+          '<td style="font-size:14px">' + (c.forma_pagamento ? esc(c.forma_pagamento) : '<span class="apagado">·</span>') + '</td>' +
           '<td><span class="pil ' + (String(c.status_nf) === 'Emitida' ? 'pil-emitida' : 'pil-emitir') + '">' +
             esc(c.status_nf || 'A emitir') + '</span></td>' +
           '<td><div class="pils">' + lista(c.crm_status).map(function(s){
@@ -2011,276 +1972,7 @@ function formCliente(c){
 
 
 /* ==========================================================================
-   13. ABA PORTFOLIO  ·  os numeros do site e a lista de videos
-   ========================================================================== */
-
-function serieVisitas(dias){
-  var mapa = {}, hoje = new Date(), listaV = [];
-  for (var i = dias - 1; i >= 0; i--) {
-    var d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - i);
-    var s = sData(d);
-    mapa[s] = 0;
-    listaV.push({ dia:s, d:d, n:0 });
-  }
-  Estado.visitas.forEach(function(v){
-    var s = String(v && v.data || '').slice(0,10);
-    if (mapa.hasOwnProperty(s)) mapa[s]++;
-  });
-  listaV.forEach(function(x){ x.n = mapa[x.dia]; });
-  return listaV;
-}
-
-function telaPortfolio(){
-  var serie = serieVisitas(14);
-  var total14 = serie.reduce(function(a,b){ return a + b.n; }, 0);
-  var hoje = hojeS();
-  var hojeN = serie.length ? serie[serie.length-1].n : 0;
-
-  var visiveis = Estado.videos.filter(function(v){ return v.visivel !== false; });
-  var nicho = maisComum(visiveis.map(function(v){ return v.nicho; }));
-
-  var dias14 = {};
-  serie.forEach(function(x){ dias14[x.dia] = true; });
-  var visitas14 = Estado.visitas.filter(function(v){
-    return dias14[String(v && v.data || '').slice(0,10)];
-  });
-  var origem = maisComum(visitas14.map(function(v){ return v.origem; }));
-
-  var h = '<div class="faixa c5">' +
-    cel('Visitas em 14 dias', total14, total14 === 0 ? 'ainda nenhuma' : plural(total14,'visita','visitas')) +
-    cel('Visitas hoje', hojeN, brData(hoje, true)) +
-    cel('Vídeos no ar', visiveis.length,
-        Estado.videos.length ? (Estado.videos.length - visiveis.length) + ' escondido(s)' : 'nenhum cadastrado') +
-    celTexto('Nicho mais forte', nicho.nome || 'Sem dados ainda',
-        nicho.nome ? plural(nicho.n,'vídeo','vídeos') : 'cadastre o nicho dos vídeos') +
-    celTexto('De onde mais vêm', origem.nome ? capital(origem.nome) : 'Sem dados ainda',
-        origem.nome ? plural(origem.n,'visita','visitas') : 'aparece com as primeiras visitas') +
-  '</div>';
-
-  h += '<div class="cartao"><div class="cartao-topo">' +
-       '<div><div class="cartao-tit">Visitas dos últimos 14 dias</div>' +
-       '<div class="cartao-sub">Contando uma visita por pessoa a cada 30 minutos</div></div></div>' +
-       '<div class="cartao-corpo">';
-
-  if (total14 === 0) {
-    /* nada de grafico vazio: uma frase explicando o que vai aparecer aqui */
-    h += '<div class="vazio">Aqui vai aparecer uma barra por dia, mostrando <b>quantas pessoas ' +
-         'visitaram o seu site</b> em cada um dos últimos 14 dias. ' +
-         'Está vazio porque ainda não houve nenhuma visita registrada. ' +
-         'A partir da próxima pessoa que abrir o seu site, as barras começam a subir sozinhas.</div>';
-  } else {
-    var maior = Math.max.apply(null, serie.map(function(x){ return x.n; }));
-    h += '<div class="graf">' + serie.map(function(x){
-      var alt = maior > 0 ? Math.max(2, Math.round(div(x.n, maior) * 100)) : 2;
-      return '<div class="graf-col" title="' + brData(x.dia, true) + ': ' + x.n + '">' +
-        '<div class="graf-val">' + (x.n || '') + '</div>' +
-        '<div class="graf-barra' + (x.n === 0 ? ' zero' : '') + '" style="height:' + alt + '%"></div>' +
-        '<div class="graf-dia">' + pad(x.d.getDate()) + '/' + pad(x.d.getMonth()+1) + '</div>' +
-      '</div>';
-    }).join('') + '</div>';
-  }
-  h += '</div></div>';
-
-  h += '<div class="cartao"><div class="cartao-topo">' +
-       '<div><div class="cartao-tit">Por onde as pessoas chegaram</div>' +
-       '<div class="cartao-sub">Nos últimos 14 dias</div></div></div><div class="cartao-corpo">';
-
-  var porOrigem = {};
-  visitas14.forEach(function(v){
-    var k = String(v && v.origem || 'direto').trim() || 'direto';
-    porOrigem[k] = (porOrigem[k] || 0) + 1;
-  });
-  var listaO = Object.keys(porOrigem).map(function(k){ return { nome:k, n:porOrigem[k] }; })
-                 .sort(function(a,b){ return b.n - a.n; });
-
-  if (!listaO.length) {
-    h += '<div class="vazio">Aqui vai aparecer <b>de onde cada visita veio</b>: Instagram, Google, ' +
-         'WhatsApp ou digitada direto. Ainda não há visitas registradas.</div>';
-  } else {
-    var maiorO = listaO[0].n;
-    h += listaO.slice(0, 10).map(function(o){
-      var pct = Math.round(div(o.n, maiorO) * 100);
-      return '<div class="origem"><div class="origem-nome">' + esc(capital(o.nome)) + '</div>' +
-        '<div class="origem-tr"><div class="origem-in" style="width:' + pct + '%"></div></div>' +
-        '<div class="origem-n">' + o.n + '</div></div>';
-    }).join('');
-  }
-  h += '</div></div>';
-
-  h += '<div class="cartao"><div class="ferramentas">' +
-       '<div><div class="cartao-tit">Meus vídeos</div>' +
-       '<div class="cartao-sub">Arraste pela alcinha para mudar a ordem. ' +
-       'O olhinho mostra ou esconde do site.</div></div>' +
-       '<div class="espaco"></div>' +
-       '<button class="btn btn-forte" type="button" id="addVideo">' + svg('mais',13) + ' Adicionar vídeo</button>' +
-       '</div>';
-
-  if (!Estado.videos.length) {
-    h += '<div class="cartao-corpo"><div class="vazio">Você ainda não cadastrou nenhum vídeo. ' +
-         'Clique em <b>Adicionar vídeo</b> para começar.</div></div>';
-  } else {
-    h += '<div class="rolar"><table><thead><tr>' +
-      '<th style="width:34px"></th><th>Título</th><th>Nicho</th><th>Formato</th>' +
-      '<th>Marca</th><th>Destaque</th><th>Link</th><th style="width:108px"></th>' +
-      '</tr></thead><tbody id="corpoVideos">' +
-      Estado.videos.map(function(v, i){
-        var oculto = v.visivel === false;
-        return '<tr data-i="' + i + '" data-id="' + esc(v.id) + '"' + (oculto ? ' class="tr-oculto"' : '') + '>' +
-          '<td><button class="icone alca" type="button" title="Arraste para reordenar">' + svg('alca',14) + '</button></td>' +
-          '<td class="forte">' + esc(v.titulo || 'Sem título') + '</td>' +
-          '<td>' + (v.nicho ? esc(v.nicho) : '<span class="apagado">·</span>') + '</td>' +
-          '<td>' + (v.formato ? esc(v.formato) : '<span class="apagado">·</span>') + '</td>' +
-          '<td>' + (v.marca ? esc(v.marca) : '<span class="apagado">·</span>') + '</td>' +
-          '<td>' + (v.destaque ? '<span class="pil pil-neutra">' + esc(v.destaque) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
-          '<td>' + (v.link
-              ? '<a href="' + esc(v.link) + '" target="_blank" rel="noopener">abrir</a>'
-              : '<span class="apagado">·</span>') + '</td>' +
-          '<td class="acoes">' +
-            '<button class="icone' + (oculto ? '' : ' on') + '" type="button" data-olho="' + esc(v.id) + '" ' +
-              'title="' + (oculto ? 'Escondido do site, clique para mostrar' : 'Aparecendo no site, clique para esconder') + '">' +
-              svg(oculto ? 'olhoNao' : 'olho',15) + '</button>' +
-            '<button class="icone" type="button" data-edita="' + esc(v.id) + '" title="Editar">' + svg('lapis',14) + '</button>' +
-            '<button class="icone mal" type="button" data-apaga="' + esc(v.id) + '" title="Apagar">' + svg('lixo',14) + '</button>' +
-          '</td></tr>';
-      }).join('') + '</tbody></table></div>';
-  }
-  h += '</div>';
-
-  $('painel').innerHTML = h;
-
-  $('addVideo').addEventListener('click', function(){ formVideo(null); });
-
-  $('painel').querySelectorAll('[data-edita]').forEach(function(b){
-    b.addEventListener('click', function(ev){
-      ev.stopPropagation();
-      formVideo(acharPorId(Estado.videos, b.getAttribute('data-edita')));
-    });
-  });
-
-  $('painel').querySelectorAll('[data-olho]').forEach(function(b){
-    b.addEventListener('click', async function(ev){
-      ev.stopPropagation();
-      var v = acharPorId(Estado.videos, b.getAttribute('data-olho'));
-      if (!v) return;
-      var estavaVisivel = !(v.visivel === false);
-      var ok = await gravar('videos', function(t){
-        return t.update({ visivel: !estavaVisivel }).eq('id', v.id);
-      });
-      if (ok) toast(estavaVisivel ? 'Escondido do site.' : 'Aparecendo no site.');
-      await carregarTudo();
-      desenhar();
-    });
-  });
-
-  $('painel').querySelectorAll('[data-apaga]').forEach(function(b){
-    b.addEventListener('click', function(ev){
-      ev.stopPropagation();
-      var v = acharPorId(Estado.videos, b.getAttribute('data-apaga'));
-      if (!v) return;
-      confirmar({
-        titulo:'Apagar este vídeo?',
-        texto:'"' + (v.titulo || 'Sem título') + '" vai sair da sua lista e do seu site.',
-        aoSim: async function(){
-          var ok = await gravar('videos', function(t){ return t.delete().eq('id', v.id); });
-          fecharModal();
-          if (ok) toast('Vídeo apagado.');
-          await carregarTudo();
-          desenhar();
-        }
-      });
-    });
-  });
-
-  ligarArrasto();
-}
-
-function formVideo(v){
-  var proxOrdem = Estado.videos.reduce(function(a,x){ return Math.max(a, num(x.ordem)); }, 0) + 1;
-  formPadrao({
-    titulo: v ? 'Editar vídeo' : 'Adicionar vídeo',
-    tabela:'videos',
-    id: v ? v.id : null,
-    valores: v || { visivel:true, ordem:proxOrdem },
-    textoApagar:'Este vídeo vai sair da sua lista e do seu site.',
-    campos:[
-      { k:'titulo',  rot:'Título',   ph:'Como você chama este vídeo' },
-      { k:'link',    rot:'Link',     ph:'https://...' },
-      { k:'nicho',   rot:'Nicho',    ph:'Marca pessoal, mercado imobiliário...' },
-      { k:'formato', rot:'Formato',  ph:'Reel análise, Carrossel...' },
-      { k:'marca',   rot:'Marca',    ph:'Para qual marca você fez' },
-      { k:'destaque',rot:'Destaque', ph:'2,4M views', dica:'Texto livre. Aparece como etiqueta na lista.' },
-      { k:'ordem',   rot:'Ordem',    tipo:'number', dica:'Número menor aparece antes. Você também pode arrastar na tabela.' },
-      { k:'visivel', rot:'Aparecer no site', tipo:'liga' }
-    ],
-    validar: function(d){
-      if (!String(d.titulo || '').trim()) return 'Escreva o título do vídeo.';
-      return '';
-    }
-  });
-}
-
-/* --- arrastar pela alcinha para mudar a ordem ---------------------------- */
-function ligarArrasto(){
-  var corpo = $('corpoVideos');
-  if (!corpo) return;
-  var origem = null;
-
-  corpo.querySelectorAll('tr').forEach(function(tr){
-    var alca = tr.querySelector('.alca');
-    if (alca) {
-      alca.addEventListener('mousedown', function(){ tr.draggable = true; });
-      alca.addEventListener('touchstart', function(){ tr.draggable = true; }, {passive:true});
-    }
-
-    tr.addEventListener('dragstart', function(){
-      origem = tr;
-      tr.classList.add('arrastando');
-    });
-    tr.addEventListener('dragend', function(){
-      tr.draggable = false;
-      tr.classList.remove('arrastando');
-      corpo.querySelectorAll('tr').forEach(function(x){ x.classList.remove('alvo'); });
-    });
-    tr.addEventListener('dragover', function(ev){
-      ev.preventDefault();
-      if (tr !== origem) tr.classList.add('alvo');
-    });
-    tr.addEventListener('dragleave', function(){ tr.classList.remove('alvo'); });
-    tr.addEventListener('drop', async function(ev){
-      ev.preventDefault();
-      tr.classList.remove('alvo');
-      if (!origem || origem === tr) return;
-
-      var de = num(origem.getAttribute('data-i'));
-      var para = num(tr.getAttribute('data-i'));
-
-      var nova = Estado.videos.slice();
-      var movido = nova.splice(de, 1)[0];
-      nova.splice(para, 0, movido);
-
-      var mudou = [];
-      nova.forEach(function(v, i){
-        if (num(v.ordem) !== i + 1) mudou.push({ id:v.id, ordem:i + 1 });
-      });
-
-      Estado.videos = nova;
-      desenhar();
-
-      for (var i = 0; i < mudou.length; i++) {
-        await gravar('videos', function(t){
-          return t.update({ ordem: mudou[i].ordem }).eq('id', mudou[i].id);
-        });
-      }
-      toast('Ordem salva.');
-      await carregarTudo();
-      desenhar();
-    });
-  });
-}
-
-
-/* ==========================================================================
-   14. LIGAR TUDO
+   13. LIGAR TUDO
    ========================================================================== */
 
 async function iniciar(){
