@@ -238,8 +238,8 @@ window.Mensagens = {
     quando:'Tudo entregue e o site da Leitura no ar. Fecha a Leitura e abre a ativação.',
     principio:'A mensagem nao pede aprovacao e nao vende nada. Ela devolve para a cliente a ideia central do seu trabalho: marca nao se cria, se reconhece. Por isso a aurora boreal entra no fim, depois da regua, quando ela ja viu tudo que caminhou.',
     texto:
-'*Uhuuul, trago boas novas* 🤍\n\n' +
-'[NOME], sua Leitura de Marca está oficialmente concluída.\n' +
+'*Uhuuul, trago boas novas✨*\n\n' +
+'[NOME], sua Leitura de Marca está concluída.\n' +
 '[LINK DA LEITURA]\n\n' +
 'Passando aqui para você ver tudo o que a gente construiu juntas e, principalmente, para dizer que *a partir daqui começa a sua fase de ativação.*\n\n' +
 '✅ Ponto de Partida\n' +
@@ -273,7 +273,7 @@ window.Mensagens = {
       'Não oferecer a Ativação aqui. A mensagem anuncia que a fase começou, não vende o programa. A oferta vem depois, quando ela tentou aplicar e sentiu onde trava.',
       'Não pedir feedback junto. Essa mensagem fecha um ciclo, e pergunta no meio rouba o fecho.'
     ],
-    dica:'Na versão da Thaissa você escreveu "Thacialmente concluída", brincando com o nome dela. Vale repetir quando o nome permitir: é o tipo de detalhe que mostra que a mensagem foi escrita para aquela pessoa.'
+    dica:'Com a Thaissa você escreveu "Thacialmente concluída", brincando com o nome dela. Quando o nome não permitir a brincadeira, fica só "está concluída", que é como ficou para a Julliana.'
   },
 
   /* ======================= POS-ENTREGA ======================= */
