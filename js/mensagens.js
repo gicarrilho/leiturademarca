@@ -233,6 +233,49 @@ window.Mensagens = {
     ]
   },
 
+  {
+    momento:'onboarding', titulo:'7 · Entrega final da Leitura',
+    quando:'Tudo entregue e o site da Leitura no ar. Fecha a Leitura e abre a ativação.',
+    principio:'A mensagem nao pede aprovacao e nao vende nada. Ela devolve para a cliente a ideia central do seu trabalho: marca nao se cria, se reconhece. Por isso a aurora boreal entra no fim, depois da regua, quando ela ja viu tudo que caminhou.',
+    texto:
+'*Uhuuul, trago boas novas* 🤍\n\n' +
+'[NOME], sua Leitura de Marca está oficialmente concluída.\n' +
+'[LINK DA LEITURA]\n\n' +
+'Passando aqui para você ver tudo o que a gente construiu juntas e, principalmente, para dizer que *a partir daqui começa a sua fase de ativação.*\n\n' +
+'✅ Ponto de Partida\n' +
+'✅ Análise da sua comunicação\n' +
+'✅ Encontro #1 · Investigação\n' +
+'✅ Encontro #2 · Leitura e direcionamento\n' +
+'✅ Encontro #3 · Entrega e primeiros movimentos\n' +
+'✅ Posicionamento\n' +
+'✅ Manual da Marca\n' +
+'✅ Guia da Expressão\n' +
+'🟠 *Ativação da sua marca ← VOCÊ ESTÁ AQUI*\n\n' +
+'Com essa entrega, encerramos a nossa troca dentro da Leitura de Marca.\n\n' +
+'Agora você tem um lugar para voltar sempre que precisar lembrar do que a gente reconheceu, das decisões que tomamos e da direção que escolhemos.\n\n' +
+'E tem uma coisa que eu quero que você guarde:\n' +
+'*Você não recebeu uma marca pronta para vestir.*\n' +
+'*Recebeu uma leitura para reconhecer, se apropriar e ativar aquilo que já era seu.*\n\n' +
+'Nada do que está ali foi inventado.\n' +
+'*Tudo veio de alguma coisa que você disse, fez ou já viveu.*\n\n' +
+'Gosto de pensar na aurora boreal.\n' +
+'Ela não é criada quando alguém finalmente a vê.\n' +
+'*Ela já estava acontecendo.*\n\n' +
+'Com a marca é a mesma coisa.\n' +
+'*Marca não se cria. Se reconhece.*\n\n' +
+'E agora começa a parte de tornar tudo isso cada vez mais perceptível.\n' +
+'Eu amei todo o processo de ler e estruturar a sua marca.\n\n' +
+'Obrigada pela confiança, [NOME] 🤍\n\n' +
+'*Agora é seu.*\n\n' +
+'Com carinho,\n' +
+'Gi',
+    nao:[
+      'Não oferecer a Ativação aqui. A mensagem anuncia que a fase começou, não vende o programa. A oferta vem depois, quando ela tentou aplicar e sentiu onde trava.',
+      'Não pedir feedback junto. Essa mensagem fecha um ciclo, e pergunta no meio rouba o fecho.'
+    ],
+    dica:'Na versão da Thaissa você escreveu "Thacialmente concluída", brincando com o nome dela. Vale repetir quando o nome permitir: é o tipo de detalhe que mostra que a mensagem foi escrita para aquela pessoa.'
+  },
+
   /* ======================= POS-ENTREGA ======================= */
   {
     momento:'entrega', titulo:'Follow-up de entrega de material',

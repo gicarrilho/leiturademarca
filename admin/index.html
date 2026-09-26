@@ -445,6 +445,35 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   border-radius:var(--rad-s);padding:10px 13px;margin-top:10px;
 }
 
+/* --- prompts: campos de preencher e o texto longo -------------------------- */
+.precisa{
+  font-size:13.5px;line-height:1.55;color:#33485A;background:rgba(163,186,203,.2);
+  border-radius:var(--rad-s);padding:11px 14px;margin-bottom:14px;
+}
+.precisa b{display:block;font-size:10px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.precisa div{padding-left:15px;position:relative;margin-top:5px}
+.precisa div:first-of-type{margin-top:0}
+.precisa div::before{content:'';position:absolute;left:2px;top:8px;width:5px;height:5px;
+  border-radius:50%;background:currentColor;opacity:.5}
+
+.pr-campos{display:grid;gap:12px;margin-bottom:14px}
+.pr-campo{display:block}
+.pr-campo span{
+  display:block;font-weight:700;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--soft);margin-bottom:6px;
+}
+.pr-campo input,.pr-campo textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--linha);
+  border-radius:var(--rad-s);background:var(--white);font-size:14px;
+}
+.pr-campo textarea{min-height:76px;resize:vertical;line-height:1.5}
+.pr-campo input:focus,.pr-campo textarea:focus{
+  outline:none;border-color:var(--laranja);box-shadow:0 0 0 3px rgba(180,95,43,.12);
+}
+/* o prompt e longo, entao o texto rola dentro da propria caixa */
+.pr-txt{max-height:420px;font-size:13.5px;line-height:1.55}
+
 /* --- importar lista de leads ---------------------------------------------- */
 .previa{
   border:1px solid var(--linha);border-radius:var(--rad-s);overflow:hidden;
@@ -715,6 +744,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../js/banco.js"></script>
 <script src="../js/mensagens.js"></script>
+<script src="../js/prompts.js"></script>
 
 <script>
 (function(){
@@ -739,7 +769,9 @@ var Estado = {
   /* clientes */
   clBusca:'', clFiltro:'todos', clMes:'todos', clCol:'data_pagamento', clDir:-1,
   /* mensagens */
-  msMomento:'abordagem', msBusca:'', msCampos:{}
+  msMomento:'abordagem', msBusca:'', msCampos:{},
+  /* prompts */
+  prFamilia:'cliente', prBusca:'', prCampos:{}
 };
 
 (async function porta(){
@@ -848,6 +880,7 @@ var ICO = {
   colar:'<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
   mensagens:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
   hoje:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  prompts:'<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
   x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'
 };
 function svg(nome, tam){
@@ -1042,8 +1075,10 @@ var ABAS = [
     dica:'As suas leads e o próximo passo de cada conversa.' },
   { grupo:'meu negócio', id:'clientes', rot:'Clientes', ico:'clientes',
     dica:'Quem já comprou, o que pagou e a situação da nota fiscal.' },
-  { grupo:'meu negócio', id:'mensagens', rot:'Mensagens', ico:'mensagens',
-    dica:'As suas mensagens prontas. Preencher, copiar, enviar.' }
+  { grupo:'minhas ferramentas', id:'mensagens', rot:'Mensagens', ico:'mensagens',
+    dica:'As suas mensagens prontas. Preencher, copiar, enviar.' },
+  { grupo:'minhas ferramentas', id:'prompts', rot:'Prompts', ico:'prompts',
+    dica:'Os seus prompts padrão. Preencher, copiar, colar no Claude.' }
 ];
 
 function montarMenu(){
@@ -1081,7 +1116,8 @@ function irPara(id){
 function desenhar(){
   var f = {
     hoje: telaHoje, pautas: telaPautas, calendario: telaCalendario,
-    pipeline: telaPipeline, clientes: telaClientes, mensagens: telaMensagens
+    pipeline: telaPipeline, clientes: telaClientes,
+    mensagens: telaMensagens, prompts: telaPrompts
   }[Estado.aba];
   try {
     $('painel').innerHTML = '';
@@ -3045,24 +3081,30 @@ function telaHoje(){
 function M(){ return window.Mensagens || { momentos:[], itens:[] }; }
 
 /* acha os campos variaveis de um texto, tipo [NOME] ou [LINK DO PLANO] */
-function variaveisDe(txt){
-  var achados = String(txt || '').match(/\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g) || [];
+var RE_VAR_CURTA = /\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g;
+var RE_VAR_AMPLA = /\[[^\[\]\n]{1,70}\]/g;
+
+/* acha os campos de um texto. Nas mensagens so maiuscula conta, para nao
+   confundir com colchete escrito no meio da frase. Nos prompts vale
+   qualquer coisa entre colchetes, porque eles usam texto explicativo. */
+function variaveisDe(txt, amplo){
+  var achados = String(txt || '').match(amplo ? RE_VAR_AMPLA : RE_VAR_CURTA) || [];
   var unicas = [];
   achados.forEach(function(v){ if (unicas.indexOf(v) < 0) unicas.push(v); });
   return unicas;
 }
 /* troca os campos preenchidos pelo que voce digitou */
-function preencher(txt, valores){
+function preencher(txt, valores, amplo){
   var fora = String(txt || '');
-  variaveisDe(fora).forEach(function(v){
+  variaveisDe(fora, amplo).forEach(function(v){
     var val = (valores && valores[v] ? String(valores[v]).trim() : '');
     if (val) fora = fora.split(v).join(val);
   });
   return fora;
 }
 /* marca os campos ainda vazios, para dar para ver o que falta */
-function destacarVars(txt){
-  return esc(txt).replace(/\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g, function(m){
+function destacarVars(txt, amplo){
+  return esc(txt).replace(amplo ? RE_VAR_AMPLA : RE_VAR_CURTA, function(m){
     return '<mark>' + m + '</mark>';
   });
 }
@@ -3194,7 +3236,139 @@ function telaMensagens(){
 
 
 /* ==========================================================================
-   15. LIGAR TUDO
+   15. ABA PROMPTS  ·  os seus prompts padrao
+   Le de js/prompts.js. Funciona igual as Mensagens, com uma diferenca:
+   campo de colar vira area grande, porque o que entra ali e texto longo.
+   ========================================================================== */
+
+function P(){ return window.Prompts || { familias:[], itens:[] }; }
+
+/* campo curto vira caixinha, campo de colar vira area grande */
+function campoGrande(v){
+  var t = v.replace(/[\[\]]/g, '');
+  return t.length > 18 || /colar|cole /i.test(t);
+}
+
+function telaPrompts(){
+  var dados = P();
+  var busca = Estado.prBusca.trim().toLowerCase();
+
+  if (!window.Prompts) {
+    $('painel').innerHTML = '<div class="cartao"><div class="cartao-corpo"><div class="vazio">' +
+      'O arquivo <b>js/prompts.js</b> não carregou, então a lista está vazia. ' +
+      'Confira se ele está na pasta js do projeto e recarregue a página.</div></div></div>';
+    return;
+  }
+
+  var lista = dados.itens.filter(function(x){
+    if (Estado.prFamilia !== 'todas' && x.familia !== Estado.prFamilia) return false;
+    if (!busca) return true;
+    return [x.titulo, x.quando, x.principio, x.texto].some(function(c){
+      return String(c || '').toLowerCase().indexOf(busca) > -1;
+    });
+  });
+
+  var fam = dados.familias.filter(function(x){ return x.id === Estado.prFamilia; })[0];
+
+  var h = '<div class="cartao"><div class="ferramentas">' +
+    '<div class="abas">' +
+      dados.familias.map(function(x){
+        var n = dados.itens.filter(function(i){ return i.familia === x.id; }).length;
+        return '<button class="aba' + (Estado.prFamilia === x.id ? ' on' : '') +
+          '" type="button" data-fam="' + esc(x.id) + '">' + esc(x.nome) +
+          ' <span class="apagado">' + n + '</span></button>';
+      }).join('') +
+      '<button class="aba' + (Estado.prFamilia === 'todas' ? ' on' : '') +
+        '" type="button" data-fam="todas">Todos <span class="apagado">' +
+        dados.itens.length + '</span></button>' +
+    '</div>' +
+    '<div class="busca">' + svg('busca',14) +
+      '<input id="prBusca" type="search" placeholder="Buscar no prompt" value="' +
+      esc(Estado.prBusca) + '"></div>' +
+  '</div>' +
+  (fam ? '<div class="cartao-topo" style="border-bottom:none">' +
+         '<div class="cartao-sub">' + esc(fam.dica) + '</div></div>' : '') +
+  '</div>';
+
+  if (!lista.length) {
+    h += '<div class="vazio">Nenhum prompt com essa busca. ' +
+         'Tente outra palavra ou volte para <b>Todos</b>.</div>';
+  } else {
+    h += lista.map(function(x, i){
+      var vars = variaveisDe(x.texto, true);
+      return '<div class="msg" data-i="' + i + '">' +
+        '<div class="msg-cab">' +
+          '<div class="msg-tit">' + esc(x.titulo) + '</div>' +
+          (x.quando ? '<div class="msg-quando">' + esc(x.quando) + '</div>' : '') +
+        '</div>' +
+        (x.principio ? '<div class="msg-princ">' + esc(x.principio) + '</div>' : '') +
+        '<div class="msg-corpo">' +
+
+          (x.precisa && x.precisa.length
+            ? '<div class="precisa"><b>Antes de rodar, tenha em mãos</b>' +
+              x.precisa.map(function(c){ return '<div>' + esc(c) + '</div>'; }).join('') + '</div>'
+            : '') +
+
+          (vars.length
+            ? '<div class="pr-campos">' + vars.map(function(v){
+                var rot = esc(v.replace(/[\[\]]/g,''));
+                var val = esc(Estado.prCampos[v] || '');
+                return '<label class="pr-campo"><span>' + rot + '</span>' +
+                  (campoGrande(v)
+                    ? '<textarea data-var="' + esc(v) + '" data-para="' + i +
+                      '" placeholder="cole aqui">' + val + '</textarea>'
+                    : '<input type="text" data-var="' + esc(v) + '" data-para="' + i +
+                      '" value="' + val + '" placeholder="preencher">') +
+                '</label>';
+              }).join('') + '</div>'
+            : '') +
+
+          '<div class="msg-txt pr-txt" data-txt="' + i + '">' + destacarVars(x.texto, true) + '</div>' +
+          '<div class="msg-pe"><div class="espaco"></div>' +
+            '<button class="btn btn-forte" type="button" data-copiar="' + i + '">' +
+              svg('colar',13) + ' Copiar prompt</button>' +
+          '</div>' +
+
+          (x.regras && x.regras.length ? '<div class="msg-nao"><b>Não esquecer</b>' +
+            x.regras.map(function(c){ return '<div>' + esc(c) + '</div>'; }).join('') + '</div>' : '') +
+          (x.dica ? '<div class="msg-dica">' + esc(x.dica) + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+
+  $('painel').innerHTML = h;
+
+  $('painel').querySelectorAll('[data-fam]').forEach(function(b){
+    b.addEventListener('click', function(){ Estado.prFamilia = b.getAttribute('data-fam'); telaPrompts(); });
+  });
+  ligarBusca('prBusca', 'prBusca', telaPrompts);
+
+  $('painel').querySelectorAll('[data-var]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      Estado.prCampos[inp.getAttribute('data-var')] = inp.value;
+      var i = inp.getAttribute('data-para');
+      var cx = $('painel').querySelector('[data-txt="' + i + '"]');
+      if (cx) cx.innerHTML = destacarVars(preencher(lista[num(i)].texto, Estado.prCampos, true), true);
+    });
+  });
+
+  $('painel').querySelectorAll('[data-copiar]').forEach(function(b){
+    b.addEventListener('click', async function(){
+      var x = lista[num(b.getAttribute('data-copiar'))];
+      var txt = preencher(x.texto, Estado.prCampos, true);
+      var faltam = variaveisDe(txt, true);
+      var ok = await copiarTexto(txt);
+      if (!ok) { toast('Não consegui copiar. Selecione o texto e use Cmd+C.'); return; }
+      toast(faltam.length
+        ? 'Copiado, mas faltou preencher ' + faltam.length + ' campo(s).'
+        : 'Copiado. É só colar no Claude.');
+    });
+  });
+}
+
+
+/* ==========================================================================
+   16. LIGAR TUDO
    ========================================================================== */
 
 async function iniciar(){
