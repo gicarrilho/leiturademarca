@@ -280,13 +280,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
   font-size:12.5px;font-weight:700;white-space:nowrap;line-height:1.5;
 }
 .pils{display:flex;gap:4px;flex-wrap:wrap}
-
-/* status da pauta, na ordem do funil de producao */
-.pil-p0{background:rgba(163,186,203,.34);color:#33485A}   /* Pesquisa */
-.pil-p1{background:rgba(74,32,40,.09);color:var(--soft)}   /* Ideia */
-.pil-p2{background:rgba(201,162,39,.2);color:#75590F}      /* Desenvolvendo */
-.pil-p3{background:rgba(84,90,52,.18);color:#3F4527}       /* Pronto */
-.pil-p4{background:var(--oliva);color:var(--creme)}        /* Publicado */
+.mes-liq{display:block;font-size:12px;font-weight:600;color:var(--faint);letter-spacing:0}
 
 /* status do lead, na ordem do funil comercial */
 .pil-l0{background:rgba(74,32,40,.09);color:var(--soft)}     /* Contato realizado */
@@ -302,7 +296,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .pil-icp-conf{background:rgba(201,162,39,.18);color:#7A5F12}
 .pil-icp-fora{background:rgba(74,32,40,.08);color:var(--mudo)}
 
-/* formato da pauta e produto */
+/* produto e rotulos neutros */
 .pil-neutra{background:rgba(74,32,40,.08);color:var(--soft)}
 .pil-obj{background:rgba(163,186,203,.28);color:#33485A}
 .pil-macro{background:rgba(200,144,120,.24);color:#8A4E32}
@@ -329,30 +323,19 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 .cal-dia{
   min-width:0;overflow:hidden;position:relative;min-height:106px;background:var(--white);
   border:1px solid var(--linha);border-radius:10px;padding:6px 6px 5px;
-  cursor:pointer;transition:border-color .14s,background .14s;
+  transition:border-color .14s,background .14s;
 }
-.cal-dia:hover{border-color:var(--terra);background:#FFFDFA}
 .cal-dia.fora{background:var(--creme2);border-color:transparent;opacity:.5}
 .cal-dia.hoje{border-color:var(--laranja);box-shadow:0 0 0 2px rgba(180,95,43,.16)}
 .cal-n{font-weight:800;font-size:13.5px;color:var(--soft);margin-bottom:4px}
 .cal-dia.hoje .cal-n{color:var(--laranja)}
 .cal-dia.fora .cal-n{color:var(--mudo)}
-.cal-mais-btn{
-  position:absolute;top:4px;right:4px;width:19px;height:19px;border-radius:6px;
-  border:none;background:var(--creme2);color:var(--soft);cursor:pointer;
-  display:none;align-items:center;justify-content:center;font-weight:800;font-size:14.5px;
-  line-height:1;padding:0;
-}
-.cal-dia:hover .cal-mais-btn{display:flex}
-.cal-mais-btn:hover{background:var(--laranja);color:var(--creme)}
 .cal-item{
   display:block;width:100%;text-align:left;border:none;cursor:pointer;
   font-size:12px;font-weight:600;line-height:1.3;
   padding:3px 5px;border-radius:5px;margin-bottom:2px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-.cal-item.feito{opacity:.55;text-decoration:line-through}
-.cal-item.so-leitura{border-left:2px solid var(--ocre)}
 .cal-n-mais{
   background:none;border:none;cursor:pointer;padding:2px 5px;
   font-size:11.5px;font-weight:700;color:var(--laranja);
@@ -727,7 +710,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
              stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div>
-        <h1 id="tituloAba">Pautas</h1>
+        <h1 id="tituloAba">Hoje</h1>
         <div class="dica" id="dicaAba"></div>
       </div>
     </header>
@@ -757,13 +740,11 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 
 var Estado = {
   aba:'hoje', email:'',
-  pautas:[], leads:[], clientes:[],
+  leads:[], clientes:[],
   avisos:[],
 
-  /* pautas */
-  ptBusca:'', ptStatus:'todos', ptMacro:'todos', ptCol:'data', ptDir:1,
-  /* calendario */
-  calRef:new Date(), calTipo:'todos',
+  /* agenda */
+  calRef:new Date(),
   /* pipeline */
   lgBusca:'', lgStatus:'todos', lgIcp:'todos', lgTipo:'todos', lgCol:'status', lgDir:1,
   /* clientes */
@@ -864,7 +845,6 @@ function toast(txt){
 
 /* icones de traco, nunca emoji */
 var ICO = {
-  pautas:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
   calendario:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
   pipeline:'<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
   clientes:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
@@ -895,14 +875,6 @@ function svg(nome, tam){
    Sao exatamente as opcoes que voce ja usava no Notion.
    Os emoji foram retirados, o resto esta igual.
    ========================================================================== */
-
-var PAUTA_STATUS    = ['Pesquisa','Ideia','Desenvolvendo','Pronto','Publicado'];
-var PAUTA_FORMATO   = ['Reel análise','Reel falado','Reel cena','Carrossel','Estático',
-                       'POV','Stories','Grupo Whatsapp','A definir'];
-var PAUTA_EDITORIAL = ['Análises','Minha História','Educativos','Frases de Impacto'];
-var PAUTA_MACROTEMA = ['Reconhecimento & Posicionamento','Comunicação & Leitura de Pessoas',
-                       'Mercado Imobiliário & Tendências','Essência & Recomeços','Vida Real'];
-var PAUTA_OBJETIVO  = ['Alcance','Autoridade','Conexão','Conversão','Sustentação'];
 
 var LEAD_STATUS = ['Contato realizado','Conversa','Intenção','Oportunidade',
                    'Oferta/Follow-up','Cliente','Não agora'];
@@ -942,9 +914,7 @@ var FORMA_PAG = ['PIX','Cartão Parcelado','Cartão à vista','Boleto'];
 var STATUS_NF = ['A emitir','Emitida'];
 
 /* posicao no funil, para ordenar pelo caminho e nunca pelo alfabeto */
-function posPauta(s){ var i = PAUTA_STATUS.indexOf(String(s || '').trim()); return i < 0 ? 99 : i; }
 function posLead(s){  var i = LEAD_STATUS.indexOf(String(s || '').trim());  return i < 0 ? 99 : i; }
-function classePauta(s){ var i = posPauta(s); return 'pil pil-p' + (i > 4 ? 1 : i); }
 function classeLead(s){  var i = posLead(s);  return 'pil pil-l' + (i > 6 ? 0 : i); }
 function classeIcp(v){
   v = String(v || '');
@@ -1020,14 +990,12 @@ async function carregarTudo(){
   Estado.avisos = [];
 
   var r = await Promise.all([
-    ler('pautas',   function(q){ return q.order('data',{ascending:true,nullsFirst:false}); }),
     ler('leads',    function(q){ return q.order('id',{ascending:true}); }),
     ler('clientes', function(q){ return q.order('id',{ascending:true}); })
   ]);
 
-  Estado.pautas   = r[0];
-  Estado.leads    = r[1];
-  Estado.clientes = r[2];
+  Estado.leads    = r[0];
+  Estado.clientes = r[1];
 
   desenharAvisos();
 }
@@ -1067,10 +1035,8 @@ function desenharAvisos(){
 var ABAS = [
   { grupo:'', id:'hoje', rot:'Hoje', ico:'hoje',
     dica:'O que fazer agora e como está o mês.' },
-  { grupo:'meu conteúdo', id:'pautas', rot:'Pautas', ico:'pautas',
-    dica:'O seu banco de pautas, do primeiro rascunho até o ar.' },
-  { grupo:'meu conteúdo', id:'calendario', rot:'Calendário', ico:'calendario',
-    dica:'O mês inteiro, com as pautas e os contatos que você marcou.' },
+  { grupo:'meu negócio', id:'calendario', rot:'Agenda', ico:'calendario',
+    dica:'O mês inteiro, com os contatos de cliente que você marcou.' },
   { grupo:'meu negócio', id:'pipeline', rot:'Pipeline', ico:'pipeline',
     dica:'As suas leads e o próximo passo de cada conversa.' },
   { grupo:'meu negócio', id:'clientes', rot:'Clientes', ico:'clientes',
@@ -1115,7 +1081,7 @@ function irPara(id){
 
 function desenhar(){
   var f = {
-    hoje: telaHoje, pautas: telaPautas, calendario: telaCalendario,
+    hoje: telaHoje, calendario: telaCalendario,
     pipeline: telaPipeline, clientes: telaClientes,
     mensagens: telaMensagens, prompts: telaPrompts
   }[Estado.aba];
@@ -1496,210 +1462,22 @@ function linkZap(tel){
 
 
 /* ==========================================================================
-   9. ABA PAUTAS  ·  o seu banco de pautas
-   ========================================================================== */
-
-function telaPautas(){
-  var busca = Estado.ptBusca.trim().toLowerCase();
-  var hoje = hojeS();
-
-  var listaP = Estado.pautas.filter(function(p){
-    if (Estado.ptStatus !== 'todos' && String(p.status || '') !== Estado.ptStatus) return false;
-    if (Estado.ptMacro !== 'todos' && String(p.macrotema || '') !== Estado.ptMacro) return false;
-    if (!busca) return true;
-    return [p.pauta, p.formato, p.macrotema, p.formato_editorial, p.notas].some(function(c){
-      return String(c || '').toLowerCase().indexOf(busca) > -1;
-    });
-  });
-
-  listaP.sort(function(a,b){
-    var col = Estado.ptCol, d = Estado.ptDir, x, y;
-    if (col === 'status')     { x = posPauta(a.status); y = posPauta(b.status); }
-    else if (col === 'data')  { x = a.data || '9999-12-31'; y = b.data || '9999-12-31'; }
-    else if (col === 'publicado') { x = a.publicado ? 0 : 1; y = b.publicado ? 0 : 1; }
-    else { x = String(a[col] || '').toLowerCase(); y = String(b[col] || '').toLowerCase(); }
-    return ordenar(x, y, d) || num(a.id) - num(b.id);
-  });
-
-  /* --- a faixa de numeros ------------------------------------------------ */
-  var todas     = Estado.pautas;
-  var publicadas = todas.filter(function(p){ return p.publicado; });
-  var prontas   = todas.filter(function(p){ return String(p.status) === 'Pronto' && !p.publicado; });
-  var semData   = todas.filter(function(p){ return !p.data; });
-  var macro     = maisComum(todas.map(function(p){ return p.macrotema; }));
-
-  var h = '<div class="faixa c5">' +
-    cel('Pautas', todas.length, todas.length === 0 ? 'nenhuma ainda' : 'no banco') +
-    cel('Publicadas', publicadas.length,
-        todas.length ? Math.round(div(publicadas.length, todas.length) * 100) + '% do banco' : '') +
-    cel('Prontas para ir ao ar', prontas.length, prontas.length ? 'esperando data' : 'nenhuma na fila') +
-    cel('Sem data', semData.length, semData.length ? 'ideias soltas' : 'tudo agendado') +
-    celTexto('Macrotema mais forte', macro.nome || 'Sem dados ainda',
-        macro.nome ? plural(macro.n,'pauta','pautas') : 'preencha o macrotema') +
-  '</div>';
-
-  /* --- ferramentas ------------------------------------------------------- */
-  h += '<div class="cartao"><div class="ferramentas">' +
-    '<div class="busca">' + svg('busca',14) +
-      '<input id="ptBusca" type="search" placeholder="Buscar pauta, formato ou tema" value="' +
-      esc(Estado.ptBusca) + '"></div>' +
-    '<select class="sel" id="ptStatus">' +
-      '<option value="todos"' + (Estado.ptStatus === 'todos' ? ' selected' : '') + '>Todos os status</option>' +
-      PAUTA_STATUS.map(function(s){
-        return '<option value="' + esc(s) + '"' + (Estado.ptStatus === s ? ' selected' : '') + '>' + esc(s) + '</option>';
-      }).join('') + '</select>' +
-    '<select class="sel" id="ptMacro">' +
-      '<option value="todos"' + (Estado.ptMacro === 'todos' ? ' selected' : '') + '>Todos os macrotemas</option>' +
-      PAUTA_MACROTEMA.map(function(s){
-        return '<option value="' + esc(s) + '"' + (Estado.ptMacro === s ? ' selected' : '') + '>' + esc(s) + '</option>';
-      }).join('') + '</select>' +
-    '<div class="espaco"></div>' +
-    '<button class="btn" type="button" id="ptBaixar">' + svg('baixar',13) + ' Baixar CSV</button>' +
-    '<button class="btn btn-forte" type="button" id="ptAdd">' + svg('mais',13) + ' Nova pauta</button>' +
-  '</div>';
-
-  if (!todas.length) {
-    h += '<div class="cartao-corpo"><div class="vazio">O seu banco de pautas está vazio. ' +
-         'Clique em <b>Nova pauta</b> para começar.</div></div>';
-  } else if (!listaP.length) {
-    h += '<div class="cartao-corpo"><div class="vazio">Nenhuma pauta com esse filtro. ' +
-         'Tente outra palavra ou volte para <b>Todos os status</b>.</div></div>';
-  } else {
-    h += '<div class="rolar"><table><thead><tr>' +
-      ths([
-        { k:'pauta', rot:'Pauta' }, { k:'data', rot:'Data' }, { k:'status', rot:'Status' },
-        { k:'formato', rot:'Formato' }, { k:'formato_editorial', rot:'Editorial' },
-        { k:'macrotema', rot:'Macrotema' }, { k:'objetivo', rot:'Objetivo' },
-        { k:'publicado', rot:'No ar', larg:'62px' }
-      ], Estado.ptCol, Estado.ptDir) + '</tr></thead><tbody>' +
-      listaP.map(function(p){
-        var atrasada = p.data && !p.publicado && String(p.data).slice(0,10) < hoje;
-        return '<tr class="clicavel" data-abre="' + esc(p.id) + '">' +
-          '<td class="forte" style="max-width:280px">' + esc(p.pauta || 'Sem título') + '</td>' +
-          '<td>' + (p.data
-              ? brData(p.data, true) + (atrasada
-                  ? ' <span class="pil pil-atrasado">passou</span>' : '')
-              : '<span class="apagado">·</span>') + '</td>' +
-          '<td><span class="' + classePauta(p.status) + '">' + esc(p.status || 'Ideia') + '</span></td>' +
-          '<td>' + (p.formato ? '<span class="pil pil-neutra">' + esc(p.formato) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
-          '<td style="font-size:14px">' + (p.formato_editorial ? esc(p.formato_editorial) : '<span class="apagado">·</span>') + '</td>' +
-          '<td>' + (p.macrotema ? '<span class="pil pil-macro">' + esc(p.macrotema) + '</span>' : '<span class="apagado">·</span>') + '</td>' +
-          '<td><div class="pils">' + lista(p.objetivo).map(function(o){
-              return '<span class="pil pil-obj">' + esc(o) + '</span>';
-            }).join('') + (lista(p.objetivo).length ? '' : '<span class="apagado">·</span>') + '</div></td>' +
-          '<td class="acoes"><button class="icone' + (p.publicado ? ' on' : '') + '" type="button" ' +
-            'data-nar="' + esc(p.id) + '" data-paro="1" title="' +
-            (p.publicado ? 'Já publicada, clique para desmarcar' : 'Ainda não publicada, clique para marcar') + '">' +
-            svg(p.publicado ? 'olho' : 'olhoNao',15) + '</button></td>' +
-        '</tr>';
-      }).join('') + '</tbody></table></div>' +
-      '<div class="cartao-topo" style="border-top:1px solid var(--linha2);border-bottom:none">' +
-      '<div class="cartao-sub">' + plural(listaP.length,'pauta','pautas') + ' na lista. ' +
-      'Clique em qualquer linha para editar, e no cabeçalho para ordenar.</div></div>';
-  }
-  h += '</div>';
-
-  $('painel').innerHTML = h;
-
-  ligarBusca('ptBusca', 'ptBusca', telaPautas);
-  $('ptStatus').addEventListener('change', function(){ Estado.ptStatus = this.value; telaPautas(); });
-  $('ptMacro').addEventListener('change', function(){ Estado.ptMacro = this.value; telaPautas(); });
-  $('ptAdd').addEventListener('click', function(){ formPauta(null, null); });
-  ligarOrdenacao('ptCol', 'ptDir', telaPautas);
-
-  $('ptBaixar').addEventListener('click', function(){
-    baixarCSV('pautas', COLS_PAUTAS, listaP);
-  });
-
-  $('painel').querySelectorAll('[data-paro]').forEach(function(b){
-    b.addEventListener('click', function(ev){ ev.stopPropagation(); });
-  });
-  $('painel').querySelectorAll('[data-nar]').forEach(function(b){
-    b.addEventListener('click', async function(){
-      var p = acharPorId(Estado.pautas, b.getAttribute('data-nar'));
-      if (!p) return;
-      var novo = !p.publicado;
-      var campos = { publicado: novo };
-      /* marcar como publicada tambem adianta o status para o fim do funil */
-      if (novo) campos.status = 'Publicado';
-      var ok = await gravar('pautas', function(t){ return t.update(campos).eq('id', p.id); });
-      if (ok) toast(novo ? 'Marcada como publicada.' : 'Desmarcada.');
-      await carregarTudo();
-      desenhar();
-    });
-  });
-  $('painel').querySelectorAll('[data-abre]').forEach(function(tr){
-    tr.addEventListener('click', function(){
-      formPauta(acharPorId(Estado.pautas, tr.getAttribute('data-abre')), null);
-    });
-  });
-}
-
-function formPauta(p, dia){
-  formPadrao({
-    titulo: p ? 'Editar pauta' : 'Nova pauta',
-    sub: p ? '' : (dia ? brData(dia, true) : 'Uma ideia nova no banco'),
-    larga: true,
-    tabela:'pautas',
-    id: p ? p.id : null,
-    valores: p || { status:'Ideia', formato:'A definir', publicado:false, data: dia || null },
-    textoApagar:'Esta pauta vai sair do seu banco e do calendário.',
-    campos:[
-      { k:'pauta', rot:'Pauta', tipo:'area',
-        ph:'O que é esta pauta. Pode ser a frase inteira.' },
-      { k:'data', rot:'Data', tipo:'date',
-        dica:'Quando vai ao ar. Deixe vazio se ainda é só uma ideia solta.' },
-      { k:'status', rot:'Status', tipo:'select', opcoes:PAUTA_STATUS },
-      { k:'formato', rot:'Formato', tipo:'select', opcoes:PAUTA_FORMATO },
-      { k:'formato_editorial', rot:'Formato editorial', tipo:'select',
-        opcoes:PAUTA_EDITORIAL, vazio:'Sem formato editorial' },
-      { k:'macrotema', rot:'Macrotema', tipo:'select',
-        opcoes:PAUTA_MACROTEMA, vazio:'Sem macrotema' },
-      { k:'objetivo', rot:'Objetivo', tipo:'multi', opcoes:PAUTA_OBJETIVO,
-        dica:'Qual é o trabalho principal desta peça. Pode marcar mais de um.' },
-      { k:'notas', rot:'Notas', tipo:'area', ph:'Gancho, referência, o que você quer lembrar na hora de gravar' },
-      { k:'publicado', rot:'Já foi publicada', tipo:'liga' }
-    ],
-    validar: function(d){
-      if (!String(d.pauta || '').trim()) return 'Escreva a pauta.';
-      return '';
-    }
-  });
-}
-
-
-/* ==========================================================================
-   10. ABA CALENDARIO  ·  as pautas e os contatos do mes
+   9. ABA AGENDA  ·  os contatos de cliente marcados no mes
    Os contatos vem da Base de Clientes, para voce nao digitar duas vezes.
    ========================================================================== */
 
-function itensDoCalendario(){
+function itensDaAgenda(){
   var itens = [];
-
-  if (Estado.calTipo === 'todos' || Estado.calTipo === 'pautas') {
-    Estado.pautas.forEach(function(p){
-      if (!p || !p.data) return;
-      itens.push({
-        chave:'pauta-' + p.id, dia:String(p.data).slice(0,10),
-        titulo:p.pauta || 'Sem título',
-        detalhe:[p.formato, p.macrotema].filter(Boolean).join(' · '),
-        classe:'pil-p' + (posPauta(p.status) > 4 ? 1 : posPauta(p.status)),
-        feito:!!p.publicado, deCliente:false, bruto:p
-      });
+  Estado.clientes.forEach(function(c){
+    if (!c || !c.proximo_contato) return;
+    itens.push({
+      chave:'cli-' + c.id,
+      dia:String(c.proximo_contato).slice(0,10),
+      titulo:c.cliente || 'Cliente',
+      detalhe:c.objetivo_contato || '',
+      bruto:c
     });
-  }
-
-  if (Estado.calTipo === 'todos' || Estado.calTipo === 'contatos') {
-    Estado.clientes.forEach(function(c){
-      if (!c || !c.proximo_contato) return;
-      itens.push({
-        chave:'cli-' + c.id, dia:String(c.proximo_contato).slice(0,10),
-        titulo:'Contato: ' + (c.cliente || 'cliente'),
-        detalhe:c.objetivo_contato || '',
-        classe:'pil-contato', feito:false, deCliente:true, bruto:c
-      });
-    });
-  }
+  });
   return itens;
 }
 
@@ -1708,7 +1486,7 @@ function telaCalendario(){
   var ano = ref.getFullYear(), mes = ref.getMonth();
   var hoje = hojeS();
 
-  var itens = itensDoCalendario();
+  var itens = itensDaAgenda();
   var porDia = {};
   itens.forEach(function(it){
     if (!porDia[it.dia]) porDia[it.dia] = [];
@@ -1720,24 +1498,21 @@ function telaCalendario(){
   var desloca = (primeiro.getDay() + 6) % 7;        /* domingo=0 vira 6 */
   var inicio = new Date(ano, mes, 1 - desloca);
 
-  /* quantas pautas tem neste mes */
-  var doMes = Estado.pautas.filter(function(p){
-    if (!p.data) return false;
-    var d = dData(p.data);
+  /* o que cai dentro do mes que esta na tela */
+  var doMes = itens.filter(function(it){
+    var d = dData(it.dia);
     return d && d.getFullYear() === ano && d.getMonth() === mes;
   });
+  var vencidosMes = doMes.filter(function(it){ return it.dia < hoje; });
+  var semData = Estado.clientes.filter(function(c){ return !c.proximo_contato; });
 
   var h = '<div class="faixa c4">' +
-    cel('Pautas no mês', doMes.length, capital(MESES[mes]) + ' de ' + ano) +
-    cel('Já publicadas', doMes.filter(function(p){ return p.publicado; }).length,
-        doMes.length ? 'de ' + doMes.length + ' no mês' : '') +
-    cel('Contatos marcados', Estado.clientes.filter(function(c){
-        if (!c.proximo_contato) return false;
-        var d = dData(c.proximo_contato);
-        return d && d.getFullYear() === ano && d.getMonth() === mes;
-      }).length, 'vindos dos Clientes') +
-    cel('Sem data no banco', Estado.pautas.filter(function(p){ return !p.data; }).length,
-        'ideias esperando dia') +
+    cel('Contatos no mês', doMes.length, capital(MESES[mes]) + ' de ' + ano) +
+    cel('Já venceram', vencidosMes.length,
+        vencidosMes.length ? 'dentro deste mês' : 'nada atrasado no mês') +
+    cel('Clientes na base', Estado.clientes.length, 'de onde vêm os contatos') +
+    cel('Sem contato marcado', semData.length,
+        semData.length ? 'clientes esperando data' : 'todos com data') +
   '</div>';
 
   h += '<div class="cartao"><div class="ferramentas">' +
@@ -1747,13 +1522,7 @@ function telaCalendario(){
     '<button class="icone" type="button" id="calProx" title="Próximo mês">' + svg('dir',16) + '</button>' +
     '<button class="btn btn-p" type="button" id="calHoje">Este mês</button>' +
     '<div class="espaco"></div>' +
-    '<div class="abas">' +
-      [['todos','Tudo'],['pautas','Só pautas'],['contatos','Só contatos']].map(function(t){
-        return '<button class="aba' + (Estado.calTipo === t[0] ? ' on' : '') +
-          '" type="button" data-tipo="' + t[0] + '">' + t[1] + '</button>';
-      }).join('') +
-    '</div>' +
-    '<button class="btn btn-forte" type="button" id="calAdd">' + svg('mais',13) + ' Nova pauta</button>' +
+    '<div class="cartao-sub">A data vem do campo <b>Próximo contato</b> de cada cliente.</div>' +
   '</div><div class="cartao-corpo">';
 
   h += '<div class="cal-cab">' + DIAS_CURTOS.map(function(d){
@@ -1767,13 +1536,11 @@ function telaCalendario(){
     var fora = d.getMonth() !== mes;
     var doDia = porDia[s] || [];
 
-    h += '<div class="cal-dia' + (fora ? ' fora' : '') + (s === hoje ? ' hoje' : '') + '" data-dia="' + s + '">' +
-      '<button class="cal-mais-btn" type="button" data-novo="' + s + '" title="Nova pauta neste dia">+</button>' +
+    h += '<div class="cal-dia' + (fora ? ' fora' : '') + (s === hoje ? ' hoje' : '') + '">' +
       '<div class="cal-n">' + d.getDate() + '</div>';
 
     doDia.slice(0, 3).forEach(function(it){
-      h += '<button class="cal-item ' + it.classe + (it.feito ? ' feito' : '') +
-        (it.deCliente ? ' so-leitura' : '') + '" type="button" data-item="' + esc(it.chave) + '" ' +
+      h += '<button class="cal-item pil-contato" type="button" data-item="' + esc(it.chave) + '" ' +
         'title="' + esc(it.titulo + (it.detalhe ? ' · ' + it.detalhe : '')) + '">' +
         esc(it.titulo) + '</button>';
     });
@@ -1785,32 +1552,18 @@ function telaCalendario(){
   h += '</div></div></div>';
 
   /* --- ficou pra tras --------------------------------------------------- */
-  var atrasadas = Estado.pautas.filter(function(p){
-    return p && p.data && !p.publicado && String(p.data).slice(0,10) < hoje;
-  }).sort(function(a,b){ return String(a.data) < String(b.data) ? -1 : 1; });
-
   var contatosVencidos = Estado.clientes.filter(function(c){
     return c && c.proximo_contato && String(c.proximo_contato).slice(0,10) < hoje;
   }).sort(function(a,b){ return String(a.proximo_contato) < String(b.proximo_contato) ? -1 : 1; });
 
   h += '<div class="cartao"><div class="cartao-topo">' +
     '<div><div class="cartao-tit">Ficou pra trás</div>' +
-    '<div class="cartao-sub">Passou do dia e ainda não saiu</div></div></div><div class="cartao-corpo">';
+    '<div class="cartao-sub">Passou do dia e você ainda não falou com ela</div></div></div><div class="cartao-corpo">';
 
-  if (!atrasadas.length && !contatosVencidos.length) {
-    h += '<div class="vazio">Nada atrasado. Aqui vai aparecer <b>a pauta que passou da data e não foi ' +
-         'publicada</b>, e <b>o contato de cliente que venceu</b>, dizendo há quantos dias.</div>';
+  if (!contatosVencidos.length) {
+    h += '<div class="vazio">Nada atrasado. Aqui vai aparecer <b>o contato de cliente que venceu</b>, ' +
+         'dizendo há quantos dias, para você abrir a ficha e resolver.</div>';
   } else {
-    h += atrasadas.map(function(p){
-      var dias = difDias(String(p.data).slice(0,10), hoje);
-      return '<div class="atras">' +
-        '<span class="' + classePauta(p.status) + '">' + esc(p.status || 'Ideia') + '</span>' +
-        '<span class="atras-tit">' + esc(p.pauta || 'Sem título') + '</span>' +
-        '<span class="pil pil-atrasado">há ' + plural(dias,'dia','dias') + '</span>' +
-        '<button class="btn btn-p" type="button" data-nopar="' + esc(p.id) + '">Marcar publicada</button>' +
-        '<button class="btn btn-p" type="button" data-edpauta="' + esc(p.id) + '">Abrir</button>' +
-      '</div>';
-    }).join('');
     h += contatosVencidos.map(function(c){
       var dias = difDias(String(c.proximo_contato).slice(0,10), hoje);
       return '<div class="atras">' +
@@ -1836,61 +1589,21 @@ function telaCalendario(){
   $('calHoje').addEventListener('click', function(){
     Estado.calRef = new Date(); telaCalendario();
   });
-  $('painel').querySelectorAll('[data-tipo]').forEach(function(b){
-    b.addEventListener('click', function(){
-      Estado.calTipo = b.getAttribute('data-tipo'); telaCalendario();
-    });
-  });
-  $('calAdd').addEventListener('click', function(){ formPauta(null, hoje); });
-
-  /* clicar no dia ja abre a pauta nova com a data preenchida */
-  $('painel').querySelectorAll('.cal-dia').forEach(function(cx){
-    cx.addEventListener('click', function(ev){
-      if (ev.target.closest('.cal-item,.cal-n-mais,.cal-mais-btn')) return;
-      formPauta(null, cx.getAttribute('data-dia'));
-    });
-  });
-  $('painel').querySelectorAll('[data-novo]').forEach(function(b){
-    b.addEventListener('click', function(ev){
-      ev.stopPropagation();
-      formPauta(null, b.getAttribute('data-novo'));
-    });
-  });
 
   $('painel').querySelectorAll('[data-item]').forEach(function(b){
-    b.addEventListener('click', function(ev){
-      ev.stopPropagation();
+    b.addEventListener('click', function(){
       var it = itens.filter(function(x){ return x.chave === b.getAttribute('data-item'); })[0];
-      if (!it) return;
-      if (it.deCliente) formCliente(it.bruto);
-      else formPauta(it.bruto, it.dia);
+      if (it) formCliente(it.bruto);
     });
   });
 
   $('painel').querySelectorAll('[data-ver]').forEach(function(b){
-    b.addEventListener('click', function(ev){
-      ev.stopPropagation();
+    b.addEventListener('click', function(){
       var dia = b.getAttribute('data-ver');
       verDia(dia, porDia[dia] || []);
     });
   });
 
-  $('painel').querySelectorAll('[data-nopar]').forEach(function(b){
-    b.addEventListener('click', async function(){
-      var ok = await gravar('pautas', function(t){
-        return t.update({ publicado:true, status:'Publicado' }).eq('id', b.getAttribute('data-nopar'));
-      });
-      if (ok) toast('Marcada como publicada.');
-      await carregarTudo();
-      desenhar();
-    });
-  });
-  $('painel').querySelectorAll('[data-edpauta]').forEach(function(b){
-    b.addEventListener('click', function(){
-      var p = acharPorId(Estado.pautas, b.getAttribute('data-edpauta'));
-      if (p) formPauta(p, String(p.data).slice(0,10));
-    });
-  });
   $('painel').querySelectorAll('[data-edcli]').forEach(function(b){
     b.addEventListener('click', function(){
       var c = acharPorId(Estado.clientes, b.getAttribute('data-edcli'));
@@ -1899,35 +1612,27 @@ function telaCalendario(){
   });
 }
 
-/* abre so um dia, quando tem mais de 3 coisas nele */
+/* abre so um dia, quando tem mais de 3 contatos nele */
 function verDia(dia, listaD){
   abrirModal({
     titulo: brData(dia, true),
-    sub: plural(listaD.length,'item','itens') + ' neste dia',
+    sub: plural(listaD.length,'contato','contatos') + ' neste dia',
     corpo: listaD.map(function(it){
       return '<div class="atras">' +
-        '<span class="pil ' + it.classe + '">' + (it.deCliente ? 'Contato' : 'Pauta') + '</span>' +
-        '<span class="atras-tit"' + (it.feito ? ' style="opacity:.55;text-decoration:line-through"' : '') + '>' +
-          esc(it.titulo) +
+        '<span class="pil pil-contato">Contato</span>' +
+        '<span class="atras-tit">' + esc(it.titulo) +
           (it.detalhe ? ' <span style="font-weight:400;color:var(--faint)">· ' + esc(it.detalhe) + '</span>' : '') +
         '</span>' +
         '<button class="btn btn-p" type="button" data-abrir="' + esc(it.chave) + '">Abrir</button>' +
       '</div>';
     }).join(''),
-    pe: '<button class="btn esq" type="button" data-addnodia="' + esc(dia) + '">' +
-          svg('mais',13) + ' Nova pauta neste dia</button>' +
-        '<button class="btn" type="button" data-fechar="1">Fechar</button>',
+    pe: '<button class="btn" type="button" data-fechar="1">Fechar</button>',
     depois: function(m){
       m.querySelectorAll('[data-abrir]').forEach(function(b){
         b.addEventListener('click', function(){
           var it = listaD.filter(function(x){ return x.chave === b.getAttribute('data-abrir'); })[0];
-          if (!it) return;
-          if (it.deCliente) formCliente(it.bruto);
-          else formPauta(it.bruto, it.dia);
+          if (it) formCliente(it.bruto);
         });
-      });
-      m.querySelector('[data-addnodia]').addEventListener('click', function(){
-        formPauta(null, dia);
       });
     }
   });
@@ -1935,7 +1640,7 @@ function verDia(dia, listaD){
 
 
 /* ==========================================================================
-   11. ABA PIPELINE  ·  as suas leads
+   10. ABA PIPELINE  ·  as suas leads
    ========================================================================== */
 
 /* tira acento e caixa, para comparar nome sem tropecar em maiuscula ou til */
@@ -2062,12 +1767,10 @@ async function baixarTudo(){
     projeto: 'Leitura de Marca · Giovanna Carrilho',
     aviso: 'Este arquivo contem dados pessoais de clientes. Guarde em lugar seu, nunca em pasta compartilhada.',
     contagem: {
-      pautas: Estado.pautas.length,
       leads: Estado.leads.length,
       clientes: Estado.clientes.length
     },
     tabelas: {
-      pautas: Estado.pautas,
       leads: Estado.leads,
       clientes: Estado.clientes
     }
@@ -2075,7 +1778,6 @@ async function baixarTudo(){
 
   var arquivos = [
     ['backup-' + dia + '.json', JSON.stringify(pacote, null, 2), 'application/json;charset=utf-8'],
-    ['pautas-' + dia + '.csv',   montarCSV(COLS_PAUTAS, Estado.pautas),     'text/csv;charset=utf-8'],
     ['pipeline-' + dia + '.csv', montarCSV(COLS_LEADS, Estado.leads),       'text/csv;charset=utf-8'],
     ['clientes-' + dia + '.csv', montarCSV(COLS_CLIENTES, Estado.clientes), 'text/csv;charset=utf-8']
   ];
@@ -2089,7 +1791,7 @@ async function baixarTudo(){
 
   if (deuCerto === arquivos.length) {
     marcarBackup(dia);
-    toast('Backup baixado: 1 arquivo de restauração e 3 planilhas.');
+    toast('Backup baixado: 1 arquivo de restauração e 2 planilhas.');
   } else {
     toast('Baixei ' + deuCerto + ' de ' + arquivos.length + ' arquivos. Tente de novo.');
   }
@@ -2097,18 +1799,6 @@ async function baixarTudo(){
 }
 
 /* as colunas de cada tabela, usadas tanto no CSV de cada aba quanto no backup */
-var COLS_PAUTAS = [
-      { rot:'Pauta', k:'pauta' },
-      { rot:'Data', val:function(p){ return p.data ? brData(p.data,true) : ''; } },
-      { rot:'Status', k:'status' },
-      { rot:'Formato', k:'formato' },
-      { rot:'Formato Editorial', k:'formato_editorial' },
-      { rot:'Macrotema', k:'macrotema' },
-      { rot:'Objetivo', val:function(p){ return lista(p.objetivo).join(', '); } },
-      { rot:'Publicado', val:function(p){ return p.publicado ? 'sim' : 'não'; } },
-      { rot:'Notas', k:'notas' }
-    ];
-
 var COLS_LEADS = [
       { rot:'Lead', k:'lead' }, { rot:'Tipo', val:function(l){ return tipoDa(l); } },
       { rot:'Contato', k:'contato' },
@@ -2125,7 +1815,8 @@ var COLS_LEADS = [
 
 var COLS_CLIENTES = [
       { rot:'Cliente', k:'cliente' }, { rot:'Produto', k:'produto' },
-      { rot:'Valor', val:function(c){ return String(num(c.valor).toFixed(2)).replace('.',','); } },
+      { rot:'Valor pago', val:function(c){ return String(num(c.valor).toFixed(2)).replace('.',','); } },
+      { rot:'Valor líquido', val:function(c){ return String(liquidoDe(c).toFixed(2)).replace('.',','); } },
       { rot:'Data do pagamento', val:function(c){ return c.data_pagamento ? brData(c.data_pagamento,true) : ''; } },
       { rot:'Forma de pagamento', k:'forma_pagamento' },
       { rot:'Status NF', k:'status_nf' }, { rot:'Nº da nota', k:'num_nota' },
@@ -2607,8 +2298,18 @@ function formLead(l){
 
 
 /* ==========================================================================
-   12. ABA CLIENTES  ·  quem ja comprou, com os dados de nota fiscal
+   11. ABA CLIENTES  ·  quem ja comprou, com os dados de nota fiscal
    ========================================================================== */
+
+/* o que a cliente pagou e o que sobrou para voce.
+   Quando o liquido nao esta preenchido, considero que entrou o valor cheio,
+   para a conta nunca ficar menor do que a verdade. */
+function liquidoDe(c){
+  var v = num(c && c.valor_liquido);
+  return v > 0 ? v : num(c && c.valor);
+}
+function somaValor(cs){   return cs.reduce(function(a,c){ return a + num(c.valor); }, 0); }
+function somaLiquido(cs){ return cs.reduce(function(a,c){ return a + liquidoDe(c); }, 0); }
 
 /* agrupa o faturamento por mes de pagamento, do mais antigo para o mais novo */
 function porMes(clientes){
@@ -2616,8 +2317,9 @@ function porMes(clientes){
   clientes.forEach(function(c){
     if (!c || !c.data_pagamento) return;
     var k = String(c.data_pagamento).slice(0, 7);      /* AAAA-MM */
-    if (!m[k]) m[k] = { chave:k, total:0, n:0 };
+    if (!m[k]) m[k] = { chave:k, total:0, liquido:0, n:0 };
     m[k].total += num(c.valor);
+    m[k].liquido += liquidoDe(c);
     m[k].n += 1;
   });
   var fora = Object.keys(m).sort();
@@ -2667,7 +2369,8 @@ function telaClientes(){
   /* --- a faixa de numeros, com divisao segura ---------------------------- */
   var todas = base;
   var recorte = Estado.clMes === 'todos' ? 'na base' : 'em ' + nomeMes(Estado.clMes);
-  var faturado = todas.reduce(function(a,c){ return a + num(c.valor); }, 0);
+  var faturado = somaValor(todas);
+  var liquido = somaLiquido(todas);
   var ticket = div(faturado, todas.length);
   var aEmitir = todas.filter(function(c){ return String(c.status_nf) !== 'Emitida'; });
   var negociando = todas.filter(function(c){ return lista(c.crm_status).indexOf('Em negociação') > -1; });
@@ -2675,7 +2378,8 @@ function telaClientes(){
   var h = '<div class="faixa c4">' +
     cel('Clientes', todas.length, todas.length === 0 ? 'nenhum ainda' : recorte) +
     celDinheiro('Faturamento', faturado,
-        todas.length ? 'ticket médio de ' + real(ticket) : 'aparece com a primeira venda') +
+        todas.length ? 'líquido de ' + real(liquido) + ' · ticket médio de ' + real(ticket)
+                     : 'aparece com a primeira venda') +
     cel('Notas a emitir', aEmitir.length, aEmitir.length ? 'esperando você' : 'tudo emitido') +
     cel('Em negociação', negociando.length, 'conversas abertas de novo') +
   '</div>';
@@ -2685,7 +2389,8 @@ function telaClientes(){
   var mesAtual = hojeS().slice(0,7);
   h += '<div class="cartao"><div class="cartao-topo"><div>' +
        '<div class="cartao-tit">Faturamento mês a mês</div>' +
-       '<div class="cartao-sub">Pela data do pagamento. A porcentagem compara com o mês anterior.</div>' +
+       '<div class="cartao-sub">Pela data do pagamento. O valor de cima é o que a cliente pagou, ' +
+       'o de baixo é o que entrou na sua conta. A porcentagem compara com o mês anterior.</div>' +
        '</div></div><div class="cartao-corpo">';
 
   if (!meses.length) {
@@ -2703,7 +2408,8 @@ function telaClientes(){
         '<div class="mes-nome">' + esc(nomeMes(m.chave)) +
           (m.chave === mesAtual ? ' <span class="pil pil-perto">em curso</span>' : '') + '</div>' +
         '<div class="mes-tr"><div class="mes-in" style="width:' + pct + '%"></div></div>' +
-        '<div class="mes-val">' + real(m.total) + '</div>' +
+        '<div class="mes-val">' + real(m.total) +
+          '<span class="mes-liq">líquido ' + real(m.liquido) + '</span></div>' +
         '<div class="mes-qtd">' + plural(m.n,'cliente','clientes') + '</div>' +
         '<div class="mes-var ' + classeV + '" title="comparado com o mês anterior">' + textoV + '</div>' +
       '</div>';
@@ -2818,7 +2524,8 @@ function historicoDaLead(l){
 
 function formCliente(c, deLead){
   /* quando vem do botao Virou cliente, a ficha nasce preenchida pela lead */
-  var valores = c || { produto:'Leitura de Marca', status_nf:'A emitir', valor:0, crm_status:[] };
+  var valores = c || { produto:'Leitura de Marca', status_nf:'A emitir', valor:0,
+                       valor_liquido:0, crm_status:[] };
   if (deLead) {
     valores = {
       cliente: deLead.lead || '',
@@ -2826,6 +2533,7 @@ function formCliente(c, deLead){
       produto: 'Leitura de Marca',
       status_nf: 'A emitir',
       valor: 0,
+      valor_liquido: 0,
       crm_status: ['Pago'],
       data_pagamento: hojeS(),
       lead_id: deLead.id,
@@ -2874,8 +2582,10 @@ function formCliente(c, deLead){
         opcoes: opcoesLead, vazio:'Não veio do pipeline',
         dica:'Ligando as duas, o painel calcula quantos dias foram da primeira conversa até o pagamento.' },
       { k:'produto', rot:'Produto', tipo:'select', opcoes:PRODUTO },
-      { k:'valor', rot:'Valor em reais', tipo:'number', passo:'0.01',
-        dica:'Use ponto para os centavos, por exemplo 697.90' },
+      { k:'valor', rot:'Valor que a cliente pagou', tipo:'number', passo:'0.01',
+        dica:'O valor cheio da venda, com juros de parcelamento se houver. Use ponto para os centavos, por exemplo 1180.20' },
+      { k:'valor_liquido', rot:'Valor líquido que entrou na sua conta', tipo:'number', passo:'0.01',
+        dica:'Já sem as taxas da plataforma. Em branco, eu considero o valor cheio.' },
       { k:'origem', rot:'Origem', tipo:'select', opcoes:ORIGEM, vazio:'Sem origem' },
 
       { tipo:'secao', rot:'Onde está no processo' },
@@ -2884,7 +2594,7 @@ function formCliente(c, deLead){
       { k:'objetivo_contato', rot:'Objetivo do próximo contato', tipo:'select',
         opcoes:OBJETIVO_CONTATO, vazio:'Sem objetivo definido' },
       { k:'proximo_contato', rot:'Próximo contato', tipo:'date',
-        dica:'Esta data aparece sozinha no seu calendário.' },
+        dica:'Esta data aparece sozinha na sua Agenda.' },
 
       { tipo:'secao', rot:'Pagamento e nota fiscal' },
       { k:'data_pagamento', rot:'Data do pagamento', tipo:'dataTravada',
@@ -2916,7 +2626,7 @@ function formCliente(c, deLead){
 
 
 /* ==========================================================================
-   13. ABA HOJE  ·  a home
+   12. ABA HOJE  ·  a home
    Responde duas perguntas, nesta ordem: o que eu faco agora, e como esta
    o mes. Nao repete as outras abas, aponta para elas.
    ========================================================================== */
@@ -2943,9 +2653,6 @@ function telaHoje(){
   var bateu = toquesHoje >= META_DIA;
   var pctMeta = Math.min(100, Math.round(div(toquesHoje, META_DIA) * 100));
 
-  var pautasHoje = Estado.pautas.filter(function(p){
-    return p.data && String(p.data).slice(0,10) === hoje;
-  });
   var contatosHoje = Estado.clientes.filter(function(c){
     return c.proximo_contato && String(c.proximo_contato).slice(0,10) === hoje;
   });
@@ -2969,18 +2676,10 @@ function telaHoje(){
         '<div class="dia-r">' + d.rotulo + '</div></div>';
     }).join('') + '</div></div>';
 
-  if (!pautasHoje.length && !contatosHoje.length) {
-    h += '<div class="vazio">Nada marcado para hoje. Aqui aparecem as <b>pautas com data de hoje</b> ' +
-         'e os <b>contatos de cliente</b> que você agendou.</div>';
+  if (!contatosHoje.length) {
+    h += '<div class="vazio">Nada marcado para hoje. Aqui aparecem os <b>contatos de cliente</b> ' +
+         'que você agendou para o dia de hoje.</div>';
   } else {
-    h += pautasHoje.map(function(p){
-      return '<div class="agenda" data-pauta="' + esc(p.id) + '">' +
-        '<span class="' + classePauta(p.status) + '">' + esc(p.status || 'Ideia') + '</span>' +
-        '<span class="agenda-t">' + esc(p.pauta || 'Sem título') + '</span>' +
-        (p.publicado ? '<span class="pil pil-p4">no ar</span>'
-                     : '<span class="pil pil-neutra">' + esc(p.formato || 'A definir') + '</span>') +
-      '</div>';
-    }).join('');
     h += contatosHoje.map(function(c){
       return '<div class="agenda" data-cliente="' + esc(c.id) + '">' +
         '<span class="pil pil-contato">Contato</span>' +
@@ -2999,10 +2698,10 @@ function telaHoje(){
   }
   var clientesMes  = doMes(Estado.clientes, 'data_pagamento', mes);
   var clientesAnte = doMes(Estado.clientes, 'data_pagamento', mesPassado);
-  var fatMes  = clientesMes.reduce(function(a,c){ return a + num(c.valor); }, 0);
-  var fatAnte = clientesAnte.reduce(function(a,c){ return a + num(c.valor); }, 0);
+  var fatMes  = somaValor(clientesMes);
+  var fatAnte = somaValor(clientesAnte);
+  var liqMes  = somaLiquido(clientesMes);
   var variacao = fatAnte > 0 ? Math.round(div(fatMes - fatAnte, fatAnte) * 100) : null;
-  var publicadasMes = doMes(Estado.pautas.filter(function(p){ return p.publicado; }), 'data', mes);
   var leadsMes = doMes(Estado.leads, 'ultimo_contato', mes);
 
   h += '<div class="faixa c4">' +
@@ -3013,7 +2712,7 @@ function telaHoje(){
           : (variacao >= 0 ? '+' : '') + variacao + '% contra ' + real(fatAnte) + ' em ' +
             capital(MESES[(agora.getMonth() + 11) % 12])) + '</div></div>' +
     cel('Clientes no mês', clientesMes.length, clientesMes.length ? 'pagaram neste mês' : 'nenhum ainda') +
-    cel('Pautas no ar', publicadasMes.length, 'publicadas neste mês') +
+    celDinheiro('Líquido do mês', liqMes, 'depois das taxas da plataforma') +
     cel('Leads tocadas', leadsMes.length, 'conversas ativas no mês') +
   '</div>';
 
@@ -3024,9 +2723,6 @@ function telaHoje(){
   var esfriando = Estado.leads.filter(function(l){
     if (!l.ultimo_contato || posLead(l.status) >= 5) return false;
     return difDias(String(l.ultimo_contato).slice(0,10), hoje) > 14;
-  }).length;
-  var pautasAtrasadas = Estado.pautas.filter(function(p){
-    return p.data && !p.publicado && String(p.data).slice(0,10) < hoje;
   }).length;
   var contatosVencidos = Estado.clientes.filter(function(c){
     return c.proximo_contato && String(c.proximo_contato).slice(0,10) < hoje;
@@ -3039,7 +2735,6 @@ function telaHoje(){
   var decisoes =
     linhaDecisao(prontas, 'com os 4 portões fechados, prontas para receber a oferta', 'pipeline', 'bom') +
     linhaDecisao(esfriando, 'paradas há mais de 14 dias', 'pipeline', 'atencao') +
-    linhaDecisao(pautasAtrasadas, 'pautas passaram da data e não foram publicadas', 'calendario', 'atencao') +
     linhaDecisao(contatosVencidos, 'contatos de cliente venceram', 'clientes', 'atencao') +
     linhaDecisao(notas, 'notas fiscais a emitir', 'clientes', '') +
     linhaDecisao(concluidasSemContato, 'clientes concluídas sem próximo contato, cabe oferta de upgrade', 'clientes', 'bom');
@@ -3049,19 +2744,13 @@ function telaHoje(){
     '<div class="cartao-sub">O que está esperando você. Clique para ir direto.</div></div></div>' +
     '<div class="cartao-corpo">' +
     (decisoes || '<div class="vazio">Nada pendente. Aqui aparece <b>lead pronta para oferta</b>, ' +
-      '<b>conversa esfriando</b>, <b>pauta atrasada</b>, <b>contato vencido</b> e <b>nota a emitir</b>.</div>') +
+      '<b>conversa esfriando</b>, <b>contato vencido</b> e <b>nota a emitir</b>.</div>') +
     '</div></div>';
 
   $('painel').innerHTML = h;
 
   $('painel').querySelectorAll('[data-vaipara]').forEach(function(b){
     b.addEventListener('click', function(){ irPara(b.getAttribute('data-vaipara')); });
-  });
-  $('painel').querySelectorAll('[data-pauta]').forEach(function(b){
-    b.addEventListener('click', function(){
-      var p = acharPorId(Estado.pautas, b.getAttribute('data-pauta'));
-      if (p) formPauta(p, String(p.data).slice(0,10));
-    });
   });
   $('painel').querySelectorAll('[data-cliente]').forEach(function(b){
     b.addEventListener('click', function(){
@@ -3073,7 +2762,7 @@ function telaHoje(){
 
 
 /* ==========================================================================
-   14. ABA MENSAGENS  ·  a sua biblioteca de abordagem
+   13. ABA MENSAGENS  ·  a sua biblioteca de abordagem
    O conteudo vem do arquivo js/mensagens.js, que espelha a sua pagina
    Mensagens Padrao. Aqui ele vira coisa de usar: preencher, copiar, enviar.
    ========================================================================== */
@@ -3236,7 +2925,7 @@ function telaMensagens(){
 
 
 /* ==========================================================================
-   15. ABA PROMPTS  ·  os seus prompts padrao
+   14. ABA PROMPTS  ·  os seus prompts padrao
    Le de js/prompts.js. Funciona igual as Mensagens, com uma diferenca:
    campo de colar vira area grande, porque o que entra ali e texto longo.
    ========================================================================== */
@@ -3368,7 +3057,7 @@ function telaPrompts(){
 
 
 /* ==========================================================================
-   16. LIGAR TUDO
+   15. LIGAR TUDO
    ========================================================================== */
 
 async function iniciar(){
