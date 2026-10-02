@@ -453,6 +453,9 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 
 /* produto e rotulos neutros */
 .pil-neutra{background:rgba(74,32,40,.08);color:var(--soft)}
+/* mensagem que voce mesma escreveu, para diferenciar da biblioteca base */
+.pil-minha{background:rgba(84,90,52,.18);color:#3F4527;vertical-align:middle;
+  font-size:11px;margin-left:7px}
 .pil-obj{background:rgba(163,186,203,.28);color:#33485A}
 .pil-macro{background:rgba(200,144,120,.24);color:#8A4E32}
 
@@ -875,6 +878,7 @@ var Estado = {
   aba:'hoje', email:'',
   leads:[], clientes:[],
   avisos:[], temRespondeu:true, temOferta:true, temData:true,
+  mensagens:[], temMensagens:true,
 
   /* agenda */
   calRef:new Date(),
@@ -1131,6 +1135,20 @@ async function ler(tabela, arrumar){
   }
 }
 
+/* a tabela de mensagens e opcional: se ela ainda nao existe, a aba continua
+   mostrando a biblioteca base e so esconde o botao de criar. Nao vale fazer
+   barulho por isso, entao este ler nao anota aviso. */
+async function lerSilencioso(tabela, arrumar){
+  try {
+    var q = window.sb.from(tabela).select('*');
+    if (arrumar) q = arrumar(q);
+    var r = await q;
+    if (r.error) { Estado.temMensagens = false; return []; }
+    Estado.temMensagens = true;
+    return r.data || [];
+  } catch (e) { Estado.temMensagens = false; return []; }
+}
+
 async function gravar(tabela, acao){
   try {
     var r = await acao(window.sb.from(tabela));
@@ -1151,12 +1169,15 @@ async function carregarTudo(){
   Estado.avisos = [];
 
   var r = await Promise.all([
-    ler('leads',    function(q){ return q.order('id',{ascending:true}); }),
-    ler('clientes', function(q){ return q.order('id',{ascending:true}); })
+    ler('leads',     function(q){ return q.order('id',{ascending:true}); }),
+    ler('clientes',  function(q){ return q.order('id',{ascending:true}); }),
+    /* as mensagens que voce mesma criou. As da base moram em js/mensagens.js */
+    lerSilencioso('mensagens', function(q){ return q.order('id',{ascending:true}); })
   ]);
 
-  Estado.leads    = r[0];
-  Estado.clientes = r[1];
+  Estado.leads     = r[0];
+  Estado.clientes  = r[1];
+  Estado.mensagens = r[2];
 
   /* o campo "respondeu" e novo. Se ele ainda nao existir no banco, o painel
      abre do mesmo jeito, so esconde o campo e avisa o que falta rodar. */
@@ -3335,7 +3356,23 @@ function telaHoje(){
    Mensagens Padrao. Aqui ele vira coisa de usar: preencher, copiar, enviar.
    ========================================================================== */
 
-function M(){ return window.Mensagens || { momentos:[], itens:[] }; }
+/* A biblioteca e a soma de duas coisas:
+   . a base, que mora em js/mensagens.js e foi escrita com voce
+   . as suas, que voce cria aqui no painel e pode editar quando quiser
+   As suas aparecem primeiro dentro de cada momento, porque sao as mais novas. */
+function M(){
+  var base = window.Mensagens || { momentos:[], itens:[] };
+  var minhas = (Estado.mensagens || []).map(function(m){
+    return {
+      minha:true, id:m.id,
+      momento:m.momento || 'abordagem',
+      titulo:m.titulo || 'Sem título',
+      quando:m.quando || '', principio:m.principio || '',
+      texto:m.texto || '', dica:m.dica || '', nao:[]
+    };
+  });
+  return { momentos: base.momentos, itens: minhas.concat(base.itens) };
+}
 
 /* acha os campos variaveis de um texto, tipo [NOME] ou [LINK DO PLANO] */
 var RE_VAR_CURTA = /\[[A-ZÀ-Ú0-9 ÇÃÕÊÁÉÍÓÚÂÔ\/]+\]/g;
@@ -3422,6 +3459,11 @@ function telaMensagens(){
     '<div class="busca">' + svg('busca',14) +
       '<input id="msBusca" type="search" placeholder="Buscar na mensagem" value="' +
       esc(Estado.msBusca) + '"></div>' +
+    (Estado.temMensagens
+      ? '<div class="espaco"></div>' +
+        '<button class="btn btn-forte" type="button" id="msAdd">' +
+        svg('mais',13) + ' Nova mensagem</button>'
+      : '') +
   '</div>' +
   (mom ? '<div class="cartao-topo" style="border-bottom:none">' +
          '<div class="cartao-sub">' + esc(mom.dica) + '</div></div>' : '') +
@@ -3434,7 +3476,8 @@ function telaMensagens(){
       var vars = variaveisDe(m.texto);
       return '<div class="msg" data-i="' + i + '">' +
         '<div class="msg-cab">' +
-          '<div class="msg-tit">' + esc(m.titulo) + '</div>' +
+          '<div class="msg-tit">' + esc(m.titulo) +
+            (m.minha ? ' <span class="pil pil-minha">sua</span>' : '') + '</div>' +
           (m.quando ? '<div class="msg-quando">' + esc(m.quando) + '</div>' : '') +
         '</div>' +
         (m.principio ? '<div class="msg-princ">' + esc(m.principio) + '</div>' : '') +
@@ -3446,6 +3489,9 @@ function telaMensagens(){
                 '<input type="text" data-var="' + esc(v) + '" data-para="' + i + '" value="' +
                 esc(Estado.msCampos[v] || '') + '" placeholder="preencher"></label>';
             }).join('') + '</div>' +
+            (m.minha
+              ? '<button class="btn" type="button" data-edmsg="' + esc(m.id) + '">Editar</button>'
+              : '') +
             '<button class="btn btn-forte" type="button" data-copiar="' + i + '">' +
               svg('colar',13) + ' Copiar</button>' +
           '</div>' +
@@ -3462,6 +3508,15 @@ function telaMensagens(){
     b.addEventListener('click', function(){ Estado.msMomento = b.getAttribute('data-mom'); telaMensagens(); });
   });
   ligarBusca('msBusca', 'msBusca', telaMensagens);
+
+  var ba = $('msAdd');
+  if (ba) ba.addEventListener('click', function(){ formMensagem(null); });
+  $('painel').querySelectorAll('[data-edmsg]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var m = acharPorId(Estado.mensagens, b.getAttribute('data-edmsg'));
+      if (m) formMensagem(m);
+    });
+  });
 
   /* preencher um campo atualiza o texto na hora, sem recarregar a aba */
   $('painel').querySelectorAll('[data-var]').forEach(function(inp){
@@ -3488,6 +3543,42 @@ function telaMensagens(){
         ? 'Copiado, mas faltou preencher ' + faltam.join(', ')
         : 'Copiado. É só colar no WhatsApp.');
     });
+  });
+}
+
+
+/* o formulario de criar e editar as SUAS mensagens */
+function formMensagem(m){
+  var momentos = (window.Mensagens && window.Mensagens.momentos) || [];
+  formPadrao({
+    titulo: m ? 'Editar mensagem' : 'Nova mensagem',
+    sub: m ? (m.titulo || '') : 'Uma mensagem sua, que você pode mudar quando quiser',
+    larga: true,
+    tabela:'mensagens',
+    id: m ? m.id : null,
+    valores: m || { momento: (Estado.msMomento === 'todas' ? 'abordagem' : Estado.msMomento) },
+    textoApagar:'Esta mensagem vai sair da sua biblioteca.',
+    campos:[
+      { k:'momento', rot:'Momento', tipo:'select',
+        opcoes: momentos.map(function(x){ return { v:x.id, r:x.nome }; }),
+        dica:'Em que aba da biblioteca ela vai aparecer.' },
+      { k:'titulo', rot:'Título', ph:'O nome curto desta mensagem' },
+      { k:'quando', rot:'Quando usar', ph:'Em que momento da conversa ela entra' },
+      { k:'principio', rot:'O princípio', tipo:'area',
+        ph:'Por que ela é assim, e não de outro jeito',
+        dica:'Aparece na faixa clara em cima do texto. Pode deixar vazio.' },
+      { k:'texto', rot:'A mensagem', tipo:'area', alto:true,
+        ph:'Oie, [NOME]! O texto inteiro, do jeito que você manda.',
+        dica:'O que estiver entre colchetes e em MAIÚSCULA vira campo de preencher, por exemplo [NOME] ou [O QUE FALTA]. O negrito do WhatsApp fica com asterisco: *assim*.' },
+      { k:'dica', rot:'Dica', tipo:'area',
+        ph:'Uma observação sua, para lembrar depois',
+        dica:'Aparece embaixo da mensagem, em letra pequena. Pode deixar vazio.' }
+    ],
+    validar: function(d){
+      if (!String(d.titulo || '').trim()) return 'Escreva o título da mensagem.';
+      if (!String(d.texto || '').trim())  return 'Escreva a mensagem.';
+      return '';
+    }
   });
 }
 
