@@ -43,6 +43,9 @@ create table if not exists public.leads (
   tempo_mercado   text default '',
   primeiro_contato date,             -- quando essa conversa comecou
   ultimo_contato  date,
+  respondeu       boolean not null default false,
+  -- marcado: ela falou e a bola esta com voce. E o que sobe para o topo
+  -- da tela Hoje, com etiqueta laranja.
   proximo_passo   text default '',            -- acao concreta e unica
   frase_real      text default '',            -- a fala da propria pessoa
   portoes         text[] not null default '{}',
@@ -103,6 +106,7 @@ alter table public.leads     add column if not exists primeiro_contato date;
 alter table public.leads     add column if not exists tipo      text not null default 'Corretora';
 alter table public.leads     add column if not exists pessoa    text default '';
 alter table public.leads     add column if not exists email     text default '';
+alter table public.leads     add column if not exists respondeu boolean not null default false;
 alter table public.clientes  add column if not exists lead_id   bigint;
 alter table public.clientes  add column if not exists historico text default '';
 alter table public.clientes  add column if not exists crm_status text[] not null default '{}';
