@@ -29,6 +29,22 @@ window.Mensagens = {
 
   /* ======================= ABORDAGEM ======================= */
   {
+    momento:'abordagem', titulo:'Primeira abordagem',
+    quando:'O primeiro contato. Alguém novo chegou no perfil e você foi olhar quem é.',
+    principio:'Chega sem vender nada. Diz por que foi ali, reconhece quem ela é, e devolve duas perguntas que já qualificam: o que prendeu ela, e há quanto tempo está no mercado.',
+    texto:
+'Oie, [NOME]!\n\n' +
+'Separei um tempinho hoje para conhecer quem chegou por aqui nos últimos dias e acabei entrando no seu perfil...\n\n' +
+'Vi que você é corretora, que bom te ver por aqui!\n\n' +
+'E me conta: teve algum conteúdo meu que te fez parar?\n' +
+'Há quanto tempo você está no mercado?',
+    nao:[
+      'Não oferecer nada aqui. A primeira mensagem abre conversa, não abre venda.',
+      'Não mandar para quem você não olhou o perfil. O "acabei entrando no seu perfil" precisa ser verdade.'
+    ],
+    dica:'As duas perguntas trabalham para você: a primeira entrega a origem, a segunda entrega o tempo de mercado. As duas vão direto para a ficha da lead no Pipeline.'
+  },
+  {
     momento:'abordagem', titulo:'Microdiagnóstico',
     quando:'Portão 1. Depois que ela nomeou um problema ou desejo concreto.',
     principio:'Não é explicar a Leitura. É fazer a Leitura acontecer em três linhas: nega o problema óbvio, nomeia a distância real, devolve para ela.',

@@ -44,6 +44,12 @@ create table if not exists public.leads (
   primeiro_contato date,             -- quando essa conversa comecou
   ultimo_contato  date,
   respondeu       boolean not null default false,
+  oferta          text default '',
+  -- Leitura de Marca, Programa de Ativacao, Raio-X de Marca, Palestra.
+  -- A mesma pessoa pode ter duas conversas, uma por oferta.
+  atualizado_em   timestamptz not null default now(),
+  -- carimbado sozinho pelo banco a cada alteracao. Nao e "ultimo contato":
+  -- ultimo contato e o dia da conversa, este e o dia em que a ficha mudou.
   -- marcado: ela falou e a bola esta com voce. E o que sobe para o topo
   -- da tela Hoje, com etiqueta laranja.
   proximo_passo   text default '',            -- acao concreta e unica
@@ -74,6 +80,8 @@ create table if not exists public.clientes (
   origem            text default '',
   produto           text default 'Leitura de Marca',
   -- Leitura de Marca, Mentoria, Palestra, Workshop, Outro
+  atualizado_em     timestamptz not null default now(),
+  -- carimbado sozinho pelo banco a cada alteracao
   valor             numeric(12,2) not null default 0,
   -- o valor cheio que a cliente pagou, com juros de parcelamento se houver
   valor_liquido     numeric(12,2) not null default 0,
@@ -107,6 +115,9 @@ alter table public.leads     add column if not exists tipo      text not null de
 alter table public.leads     add column if not exists pessoa    text default '';
 alter table public.leads     add column if not exists email     text default '';
 alter table public.leads     add column if not exists respondeu boolean not null default false;
+alter table public.leads     add column if not exists oferta    text default '';
+alter table public.leads     add column if not exists atualizado_em timestamptz not null default now();
+alter table public.clientes  add column if not exists atualizado_em timestamptz not null default now();
 alter table public.clientes  add column if not exists lead_id   bigint;
 alter table public.clientes  add column if not exists historico text default '';
 alter table public.clientes  add column if not exists crm_status text[] not null default '{}';
@@ -123,6 +134,36 @@ create index if not exists leads_ultimo_idx       on public.leads (ultimo_contat
 create index if not exists clientes_proximo_idx   on public.clientes (proximo_contato);
 create index if not exists clientes_lead_idx      on public.clientes (lead_id);
 create index if not exists clientes_pagamento_idx on public.clientes (data_pagamento);
+
+
+-- ============================================================================
+-- BLOCO 3.1  ·  O CARIMBO DE ATUALIZACAO
+-- ============================================================================
+-- Toda vez que uma linha muda, o banco carimba a hora sozinho em
+-- atualizado_em. Assim a data nunca depende de alguem lembrar de preencher.
+
+create or replace function public.carimbar_atualizacao()
+returns trigger
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  new.atualizado_em := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists carimbo_leads    on public.leads;
+drop trigger if exists carimbo_clientes on public.clientes;
+
+create trigger carimbo_leads
+  before update on public.leads
+  for each row execute function public.carimbar_atualizacao();
+
+create trigger carimbo_clientes
+  before update on public.clientes
+  for each row execute function public.carimbar_atualizacao();
 
 
 -- ============================================================================

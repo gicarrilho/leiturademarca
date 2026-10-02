@@ -202,6 +202,50 @@ body.liberado #checando{display:none}
 .mf-in{height:100%;background:var(--ocre);border-radius:5px;transition:width .3s}
 .mf-in.bateu{background:var(--oliva)}
 
+/* --- 1.5 os cartoes de atencao, em grade de 3 por 2 ----------------------
+   Cada cartao: um quadradinho com icone, o rotulo pequeno, o numero grande
+   e UMA linha dizendo em portugues o que aquele numero quer dizer.
+   O numero sozinho nao ensina nada. A linha de baixo e que ensina. */
+.atualizado{
+  display:flex;align-items:center;gap:6px;font-size:13px;color:var(--faint);
+  margin:0 0 16px;
+}
+.atualizado b{font-weight:700;color:var(--soft)}
+.atualizado svg{flex:none;stroke:currentColor}
+
+.atencao-cab{margin:0 0 14px}
+.atencao-cab h2{margin-bottom:4px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.cardz{
+  background:var(--white);border:1px solid var(--linha);border-radius:var(--rad);
+  padding:16px 17px 15px;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  display:flex;flex-direction:column;min-width:0;
+  transition:transform .14s,box-shadow .14s,border-color .14s;
+}
+.cardz:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(74,32,40,.09);
+  border-color:var(--terra)}
+.cardz-ico{
+  width:32px;height:32px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:12px;flex:none;
+}
+.cardz-ico svg{stroke:currentColor}
+.cardz-rot{font-size:10.5px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--faint);line-height:1.3}
+.cardz-num{font-size:30px;font-weight:800;letter-spacing:-.045em;line-height:1.05;
+  margin-top:7px}
+.cardz-pe{font-size:13px;color:var(--soft);margin-top:6px;line-height:1.45}
+.cardz.zero .cardz-num{color:var(--mudo)}
+.cardz.zero .cardz-ico{opacity:.45}
+/* cada cartao tem a sua cor, para o olho achar o lugar sem ler */
+.cz-resposta .cardz-ico{background:rgba(180,95,43,.16);color:var(--laranja)}
+.cz-resposta .cardz-num{color:var(--laranja)}
+.cz-pronta .cardz-ico{background:rgba(84,90,52,.18);color:var(--oliva)}
+.cz-pronta .cardz-num{color:var(--oliva)}
+.cz-esfria .cardz-ico{background:rgba(201,162,39,.22);color:#7A5F12}
+.cz-agenda .cardz-ico{background:rgba(163,186,203,.34);color:#33485A}
+.cz-nota .cardz-ico{background:rgba(155,42,42,.12);color:var(--vermelho)}
+.cz-backup .cardz-ico{background:rgba(107,68,51,.15);color:var(--cacau)}
+
 /* --- 2. quem esta esperando voce ---------------------------------------- */
 .esp{display:flex;align-items:flex-start;gap:12px;padding:13px 0;
   border-bottom:1px solid var(--linha2)}
@@ -256,6 +300,12 @@ body.liberado #checando{display:none}
   .mf-nums{gap:18px}
   .placar{gap:20px}
   .pl{min-width:94px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .cardz{padding:13px 13px 12px}
+  .cardz-num{font-size:25px}
+}
+@media (max-width:420px){
+  .cards{grid-template-columns:minmax(0,1fr)}
 }
 
 /* ============================== CARTOES ================================== */
@@ -824,7 +874,7 @@ select.sel:focus{outline:none;border-color:var(--laranja)}
 var Estado = {
   aba:'hoje', email:'',
   leads:[], clientes:[],
-  avisos:[], temRespondeu:true,
+  avisos:[], temRespondeu:true, temOferta:true, temData:true,
 
   /* agenda */
   calRef:new Date(),
@@ -929,6 +979,11 @@ function toast(txt){
 /* icones de traco, nunca emoji */
 var ICO = {
   biblioteca:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  resposta:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  pronta:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  esfriando:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+  nota:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/>',
+  escudo:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   fora:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
   calendario:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
   pipeline:'<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
@@ -1013,6 +1068,9 @@ var CRM_STATUS = ['Lead','Desqualificado','Forms preenchido','Call 1 agendada',
 var OBJETIVO_CONTATO = ['Depoimento','Negociação','Entrega de material',
                         'Agendamento','Sessão agendada','Oferta Upgrade'];
 var PRODUTO   = ['Leitura de Marca','Mentoria','Palestra','Workshop','Outro'];
+/* qual oferta esta em jogo na conversa. A mesma pessoa pode ter duas:
+   a Leitura primeiro, e o Programa de Ativacao depois, como upgrade. */
+var OFERTA = ['Leitura de Marca','Programa de Ativação','Raio-X de Marca','Palestra'];
 var FORMA_PAG = ['PIX','Cartão Parcelado','Cartão à vista','Boleto'];
 var STATUS_NF = ['A emitir','Emitida'];
 
@@ -1103,6 +1161,15 @@ async function carregarTudo(){
   /* o campo "respondeu" e novo. Se ele ainda nao existir no banco, o painel
      abre do mesmo jeito, so esconde o campo e avisa o que falta rodar. */
   Estado.temRespondeu = temCampo(Estado.leads, 'respondeu');
+  Estado.temOferta    = temCampo(Estado.leads, 'oferta');
+  Estado.temData      = temCampo(Estado.leads, 'atualizado_em');
+  if (!Estado.temOferta || !Estado.temData) {
+    anotarAviso('Faltam campos novos no banco: ' +
+      [!Estado.temOferta ? '<b>oferta</b>' : '', !Estado.temData ? '<b>atualizado_em</b>' : '']
+        .filter(Boolean).join(' e ') +
+      '. O painel funciona normal sem eles, só não mostra essa informação. ' +
+      'Para resolver, rode o arquivo <b>campos-novos.sql</b> no SQL Editor do Supabase.');
+  }
   if (!Estado.temRespondeu) {
     anotarAviso('Falta um campo novo no banco: <b>respondeu</b>, na tabela de leads. ' +
       'Sem ele, a tela Hoje não consegue separar quem já te respondeu de quem só está esperando. ' +
@@ -1934,12 +2001,16 @@ var COLS_LEADS = [
       { rot:'Contato', k:'contato' },
       { rot:'Pessoa', k:'pessoa' }, { rot:'E-mail', k:'email' },
       { rot:'Status', k:'status' }, { rot:'ICP', k:'icp' },
+      { rot:'Oferta', k:'oferta' },
       { rot:'Origem', k:'origem' }, { rot:'Tempo de mercado', k:'tempo_mercado' },
       { rot:'Último contato', val:function(l){ return l.ultimo_contato ? brData(l.ultimo_contato,true) : ''; } },
       { rot:'Próximo passo', k:'proximo_passo' },
       { rot:'Frase real dela', k:'frase_real' },
       { rot:'Portões cumpridos', val:function(l){ return contaPortoes(l) + ' de 4'; } },
       { rot:'Portões', val:function(l){ return lista(l.portoes).join(', '); } },
+      { rot:'Respondeu', val:function(l){ return l.respondeu ? 'sim' : 'não'; } },
+      { rot:'Atualizado em', val:function(l){
+          return l.atualizado_em ? brData(String(l.atualizado_em).slice(0,10), true) : ''; } },
       { rot:'Notas', k:'notas' }
     ];
 
@@ -1997,6 +2068,33 @@ function semanaDeToques(){
   return fora;
 }
 
+/* A data em que a ficha foi mexida pela ultima vez. Nao e "ultimo contato":
+   ultimo contato e o dia da conversa, este e o dia em que o dado mudou.
+   O banco carimba sozinho, num gatilho, entao nunca depende de lembrar. */
+function maisRecente(linhas){
+  var melhor = '';
+  (linhas || []).forEach(function(x){
+    var d = x && x.atualizado_em ? String(x.atualizado_em) : '';
+    if (d > melhor) melhor = d;
+  });
+  return melhor;
+}
+function quandoFoi(iso){
+  if (!iso) return '';
+  var dia = String(iso).slice(0,10);
+  var d = difDias(dia, hojeS());
+  if (d === 0) return 'hoje';
+  if (d === 1) return 'ontem';
+  if (d < 0)   return brData(dia, true);
+  return brData(dia, true) + ', há ' + plural(d,'dia','dias');
+}
+function linhaAtualizacao(linhas, oque){
+  var q = maisRecente(linhas);
+  if (!q) return '';
+  return '<div class="atualizado">' + svg('esfriando',12) +
+    ' ' + esc(oque) + ' atualizado pela última vez em <b>' + esc(quandoFoi(q)) + '</b></div>';
+}
+
 /* quantos portoes ja foram cumpridos nesta lead */
 function contaPortoes(l){
   var f = lista(l && l.portoes);
@@ -2043,6 +2141,7 @@ function telaPipeline(){
   });
 
   /* --- a faixa de numeros, sempre sobre o recorte escolhido -------------- */
+  var cabAtualizado = Estado.temData ? linhaAtualizacao(Estado.leads, 'Pipeline') : '';
   var icpSim  = todas.filter(function(l){ return String(l.icp) === 'Sim'; });
   var quentes = todas.filter(function(l){
     var p = posLead(l.status);
@@ -2063,7 +2162,8 @@ function telaPipeline(){
   var maiorDia = Math.max.apply(null, semana.map(function(d){ return d.n; }).concat([META_DIA]));
   var nomesHoje = tocadasEm(hoje).map(function(l){ return l.lead; });
 
-  var h = '<div class="cartao"><div class="cartao-corpo"><div class="meta">' +
+  var h = cabAtualizado +
+    '<div class="cartao"><div class="cartao-corpo"><div class="meta">' +
     '<div class="meta-esq">' +
       '<div class="faixa-rot">Leads tocadas hoje</div>' +
       '<div class="meta-num' + (bateu ? ' bateu' : '') + '"><b>' + hojeN + '</b> de ' + META_DIA + '</div>' +
@@ -2400,12 +2500,22 @@ function formLead(l){
       { k:'status', rot:'Status no funil', tipo:'select', opcoes:LEAD_STATUS },
       { k:'icp', rot:'ICP', tipo:'select', opcoes:ICP, sos:'Corretora' },
       { k:'origem', rot:'Origem', tipo:'select', opcoes:ORIGEM, vazio:'Sem origem' },
+      (Estado.temOferta
+        ? { k:'oferta', rot:'Oferta em jogo', tipo:'select', opcoes:OFERTA,
+            vazio:'Ainda sem oferta definida',
+            dica:'Qual oferta está nesta conversa. Programa de Ativação é o upgrade de quem já fez a Leitura, então a mesma pessoa pode ter duas conversas abertas.' }
+        : null),
       { k:'tempo_mercado', rot:'Tempo de mercado', sos:'Corretora',
         ph:'22 anos, 3 meses, a confirmar...',
         dica:'Qualificar cedo, antes de aprofundar.' },
       { k:'primeiro_contato', rot:'Primeiro contato', tipo:'date',
         dica:'Quando essa conversa começou. É o que mede o tamanho da jornada até o fechamento.' },
       { k:'ultimo_contato', rot:'Último contato', tipo:'date' },
+      ((Estado.temData && l && l.atualizado_em)
+        ? { tipo:'secao', rot:'Esta ficha mudou pela última vez',
+            dica: quandoFoi(l.atualizado_em) + '. O painel carimba essa data sozinho ' +
+                  'toda vez que você salva, então ela nunca depende de você lembrar.' }
+        : null),
       (Estado.temRespondeu
         ? { k:'respondeu', rot:'Ela respondeu e eu ainda não respondi', tipo:'liga',
             dica:'Marcado, esta lead sobe para o topo da tela Hoje com etiqueta laranja. É a conversa que está parada esperando VOCÊ, não ela.' }
@@ -2510,7 +2620,8 @@ function telaClientes(){
   var aEmitir = todas.filter(function(c){ return String(c.status_nf) !== 'Emitida'; });
   var negociando = todas.filter(function(c){ return lista(c.crm_status).indexOf('Em negociação') > -1; });
 
-  var h = '<div class="faixa c4">' +
+  var h = (Estado.temData ? linhaAtualizacao(Estado.clientes, 'Base de clientes') : '') +
+    '<div class="faixa c4">' +
     cel('Clientes', todas.length, todas.length === 0 ? 'nenhum ainda' : recorte) +
     celDinheiro('Faturamento', faturado,
         todas.length ? 'líquido de ' + real(liquido) + ' · ticket médio de ' + real(ticket)
@@ -2748,6 +2859,10 @@ function formCliente(c, deLead){
       { k:'email', rot:'E-mail', tipo:'email' },
       { k:'telefone', rot:'Telefone', tipo:'tel' },
 
+      ((Estado.temData && c && c.atualizado_em)
+        ? { tipo:'secao', rot:'Esta ficha mudou pela última vez',
+            dica: quandoFoi(c.atualizado_em) + '. O painel carimba essa data sozinho.' }
+        : null),
       { tipo:'secao', rot:'A história desta venda' },
       { k:'historico', rot:'Histórico', tipo:'area', alto:true,
         ph:'Como chegou, o que travou, o que funcionou, o que ficou combinado' }
@@ -2884,25 +2999,6 @@ function telaHoje(){
   var h = '<div class="hoje">';
 
   /* ====================================================================
-     TIRA  ·  pendencia administrativa, discreta, nunca uma lista
-     ==================================================================== */
-  var aEmitir = Estado.clientes.filter(function(c){ return String(c.status_nf) !== 'Emitida'; }).length;
-  var semBackup = diasSemBackup();
-  var tira = '';
-  if (aEmitir) {
-    tira += '<span class="tira-i"><b>' + aEmitir + '</b> ' +
-      (aEmitir === 1 ? 'nota fiscal a emitir' : 'notas fiscais a emitir') +
-      ' <button class="tira-b" type="button" data-vaipara="clientes">ver</button></span>';
-  }
-  if (semBackup === null || semBackup >= DIAS_ATE_LEMBRAR) {
-    tira += '<span class="tira-i">' +
-      (semBackup === null ? 'nenhum backup baixado ainda'
-                          : 'último backup há ' + plural(semBackup,'dia','dias')) +
-      ' <button class="tira-b" type="button" id="hjBackup">baixar</button></span>';
-  }
-  if (tira) h += '<div class="tira">' + tira + '</div>';
-
-  /* ====================================================================
      1  ·  O MES
      ==================================================================== */
   var clientesMes = Estado.clientes.filter(function(c){
@@ -2916,7 +3012,8 @@ function telaHoje(){
   var foco = focoDoMes();
 
   h += '<section class="mesfoco">' +
-    '<div class="mesfoco-rot">' + esc(capital(MESES[agora.getMonth()])) + ' de ' + agora.getFullYear() + '</div>' +
+    '<div class="mesfoco-rot">O seu mês · ' + esc(capital(MESES[agora.getMonth()])) +
+      ' de ' + agora.getFullYear() + '</div>' +
     '<p class="mf-frase' + (foco ? '' : ' vazia') + '" id="hjFoco" ' +
       'title="clique para escrever o foco deste mês">' +
       esc(foco || 'Qual é o foco deste mês? Clique aqui e escreva em uma frase.') + '</p>' +
@@ -2934,9 +3031,71 @@ function telaHoje(){
   '</section>';
 
   /* ====================================================================
-     2  ·  QUEM ESTA ESPERANDO VOCE
+     1.5  ·  O QUE PRECISA DA SUA ATENCAO
+     Seis cartoes, tres por linha. Cada um com icone, numero grande e
+     uma linha em portugues dizendo o que aquele numero quer dizer.
+     Clicar leva para a aba onde a coisa se resolve.
      ==================================================================== */
   var esperando = quemEstaEsperando();
+
+  var prontas = Estado.leads.filter(function(l){
+    return posLead(l.status) === 2 && contaPortoes(l) === 4;
+  }).length;
+  var esfriando = Estado.leads.filter(function(l){
+    if (!l.ultimo_contato || posLead(l.status) >= 5) return false;
+    return difDias(String(l.ultimo_contato).slice(0,10), hoje) > 14;
+  }).length;
+  var contatosHoje = Estado.clientes.filter(function(c){
+    return c.proximo_contato && String(c.proximo_contato).slice(0,10) === hoje;
+  });
+  var aEmitir = Estado.clientes.filter(function(c){ return String(c.status_nf) !== 'Emitida'; }).length;
+  var semBackup = diasSemBackup();
+
+  function cardz(classe, ico, rot, n, pe, destino, id){
+    return '<button class="cardz ' + classe + (n ? '' : ' zero') + '" type="button"' +
+      (id ? ' id="' + id + '"' : '') +
+      (destino ? ' data-vaipara="' + destino + '"' : '') + '>' +
+      '<span class="cardz-ico">' + svg(ico, 17) + '</span>' +
+      '<span class="cardz-rot">' + esc(rot) + '</span>' +
+      '<span class="cardz-num">' + n + '</span>' +
+      '<span class="cardz-pe">' + pe + '</span>' +
+    '</button>';
+  }
+
+  h += '<div class="atencao-cab">' +
+    '<h2>o que precisa da sua atenção<span class="sub">' +
+    'Cada quadrinho é uma coisa que está esperando uma decisão sua. ' +
+    'Clique em qualquer um e eu te levo direto no lugar de resolver.</span></h2></div>';
+
+  h += '<div class="cards">' +
+    cardz('cz-resposta', 'resposta', 'esperando você', esperando.length,
+      esperando.length ? 'conversas paradas porque a vez é sua' : 'ninguém esperando resposta',
+      null) +
+    cardz('cz-pronta', 'pronta', 'prontas para a oferta', prontas,
+      prontas ? 'fecharam os 4 portões, pode fazer a oferta' : 'nenhuma com os 4 portões fechados',
+      'pipeline') +
+    cardz('cz-esfria', 'esfriando', 'esfriando', esfriando,
+      esfriando ? 'mais de 14 dias sem um toque seu' : 'nenhuma parada há mais de 14 dias',
+      'pipeline') +
+    cardz('cz-agenda', 'calendario', 'contatos de hoje', contatosHoje.length,
+      contatosHoje.length ? 'clientes que você marcou para hoje' : 'nada marcado para hoje',
+      'agenda-ou-clientes') +
+    cardz('cz-nota', 'nota', 'notas a emitir', aEmitir,
+      aEmitir ? 'vendas pagas esperando a nota fiscal' : 'todas as notas emitidas',
+      'clientes') +
+    cardz('cz-backup', 'escudo', 'dias sem backup',
+      (semBackup === null ? '·' : semBackup),
+      (semBackup === null
+        ? 'você ainda não baixou nenhum. Clique para baixar'
+        : semBackup >= DIAS_ATE_LEMBRAR
+          ? 'o Supabase não faz backup. Clique para baixar'
+          : 'está em dia. Clique para baixar de novo'),
+      null, 'hjBackup') +
+  '</div>';
+
+  /* ====================================================================
+     2  ·  QUEM ESTA ESPERANDO VOCE
+     ==================================================================== */
   var extras = extrasDoDia();
 
   h += '<div class="cartao"><div class="cartao-topo"><div>' +
@@ -3047,11 +3206,14 @@ function telaHoje(){
 
   /* --- tira ------------------------------------------------------------- */
   $('painel').querySelectorAll('[data-vaipara]').forEach(function(b){
-    b.addEventListener('click', function(){ irPara(b.getAttribute('data-vaipara')); });
+    b.addEventListener('click', function(){
+      var d = b.getAttribute('data-vaipara');
+      irPara(d === 'agenda-ou-clientes' ? 'calendario' : d);
+    });
   });
   var bb = $('hjBackup');
   if (bb) bb.addEventListener('click', async function(){
-    this.disabled = true; this.textContent = 'baixando...';
+    this.disabled = true;
     await baixarTudo();
     telaHoje();
   });
