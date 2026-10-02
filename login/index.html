@@ -289,15 +289,26 @@ input:disabled{background:var(--creme2);color:var(--faint)}
   }
 
   /* --------------------------------------------------------------------------
-     Se ja existe sessao aberta, manda direto para o admin.
+     Se ja existe sessao aberta, manda direto para onde a pessoa queria ir.
      Nao faz isso quando a pessoa esta no meio de trocar a senha.
      -------------------------------------------------------------------------- */
+
+  /* A pessoa pode ter chegado aqui tentando abrir a Biblioteca, nao o painel.
+     Nesse caso a propria Biblioteca manda ?ir=biblioteca, e a gente devolve
+     ela para la depois do login. So aceito nomes que eu conheco. */
+  function paraOnde(){
+    try {
+      var q = new URLSearchParams(location.search).get('ir');
+      if (q === 'biblioteca') return '../biblioteca/';
+    } catch (e) {}
+    return '../admin/';
+  }
   (async function jaEstaLogada(){
     if (recuperando) return;
     try {
       var r = await window.sb.auth.getSession();
       if (r && r.data && r.data.session) {
-        location.replace('../admin/');
+        location.replace(paraOnde());
       }
     } catch (e) { /* segue mostrando o formulario */ }
   })();
@@ -327,7 +338,7 @@ input:disabled{background:var(--creme2);color:var(--faint)}
         campoSenha.value = '';
         campoSenha.focus();
       } else {
-        location.replace('../admin/');
+        location.replace(paraOnde());
         return;
       }
     } catch (e) {
@@ -401,7 +412,7 @@ input:disabled{background:var(--creme2);color:var(--faint)}
         btnSalvar.textContent = 'Salvar senha';
       } else {
         mostrar(avisoNova, 'Senha salva. Levando você para o painel...', 'ok');
-        setTimeout(function(){ location.replace('../admin/'); }, 1100);
+        setTimeout(function(){ location.replace(paraOnde()); }, 1100);
       }
     } catch (e) {
       mostrar(avisoNova, emPortugues(e), 'erro');

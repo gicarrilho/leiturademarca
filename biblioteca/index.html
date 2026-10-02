@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- noindex: pagina privada, nao deve aparecer no Google -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+
+<title>Biblioteca · Giovanna Carrilho</title>
+<meta name="theme-color" content="#4A2028">
+
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================================
+   BIBLIOTECA  ·  a estante de estudos.
+   Fraunces nos titulos, com italico nas palavras de virada.
+   Archivo nos rotulos, botoes e numeros.
+   Fundo creme, texto vinho escuro. Nada de preto puro nem de cinza neutro.
+   ============================================================================ */
+:root{
+  --vinho:#4A2028;
+  --laranja:#B45F2B;
+  --cacau:#6B4433;
+  --oliva:#545A34;
+  --terra:#C89078;
+  --ocre:#C9A227;
+  --creme:#F5F0E6;
+  --creme2:#EFE9DC;
+  --white:#FFF;
+  --vermelho:#9B2A2A;
+
+  --ink:#331319;
+  --soft:rgba(51,19,25,.76);
+  --faint:rgba(51,19,25,.5);
+  --mudo:rgba(51,19,25,.3);
+  --linha:rgba(51,19,25,.13);
+  --linha2:rgba(51,19,25,.07);
+
+  --marca:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+
+  --rad:18px;
+  --rad-s:11px;
+  --rad-p:100px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--marca);background:var(--creme);color:var(--ink);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+body.liberado #checando{display:none}
+body:not(.liberado) #tudo{display:none}
+#checando{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:40px;text-align:center;color:var(--faint);font-size:15px;
+}
+
+/* ================================ CHROME ================================= */
+.topo{
+  max-width:1180px;margin:0 auto;padding:30px 26px 0;
+  display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;
+}
+.topo-esq{flex:1;min-width:240px}
+.volta{
+  display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+  color:var(--faint);text-decoration:none;margin-bottom:12px;
+}
+.volta:hover{color:var(--laranja)}
+h1{
+  font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.02;
+  letter-spacing:-.02em;color:var(--vinho);
+}
+h1 i{font-style:italic;font-weight:400}
+.sub1{font-size:14.5px;color:var(--faint);margin-top:8px;max-width:46ch;line-height:1.5}
+.contadores{display:flex;gap:28px;flex:none;padding-top:8px}
+.cont b{display:block;font-size:38px;font-weight:800;letter-spacing:-.045em;
+  line-height:1;color:var(--vinho)}
+.cont span{display:block;font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--faint);margin-top:6px}
+
+.bloco{max-width:1180px;margin:0 auto;padding:0 26px 60px}
+.aviso{
+  max-width:1180px;margin:18px auto 0;padding:0 26px;
+}
+.aviso-cx{
+  background:rgba(201,162,39,.13);border:1px solid rgba(201,162,39,.4);
+  border-radius:var(--rad-s);padding:12px 15px;font-size:14.5px;color:#7A5F12;
+  line-height:1.55;margin-bottom:8px;
+}
+.aviso-cx b{color:#5E4A0D}
+
+/* =============================== FERRAMENTAS ============================= */
+.ferra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:28px 0 20px}
+.busca{
+  flex:1;min-width:230px;display:flex;align-items:center;gap:9px;
+  background:var(--white);border:1px solid var(--linha);border-radius:var(--rad-p);
+  padding:0 16px;height:44px;
+}
+.busca input{
+  flex:1;min-width:0;border:none;background:none;font:inherit;font-size:15px;
+  color:var(--ink);outline:none;
+}
+.busca svg{flex:none;stroke:var(--faint)}
+.pils{display:flex;gap:6px;flex-wrap:wrap}
+.pil{
+  border:1px solid var(--linha);background:var(--white);color:var(--soft);
+  border-radius:var(--rad-p);padding:9px 15px;font-size:13.5px;font-weight:600;
+  cursor:pointer;font-family:var(--marca);transition:background .14s,color .14s,border-color .14s;
+}
+.pil:hover{border-color:var(--terra)}
+.pil.on{background:var(--vinho);border-color:var(--vinho);color:var(--creme)}
+.sel{
+  border:1px solid var(--linha);background:var(--white);color:var(--soft);
+  border-radius:var(--rad-p);padding:0 34px 0 15px;height:44px;font-size:14px;
+  font-family:var(--marca);font-weight:600;cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23331319' stroke-width='3' stroke-linecap='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;
+}
+.espaco{flex:1}
+.btn{
+  border:1px solid var(--linha);background:var(--white);color:var(--ink);
+  border-radius:var(--rad-p);padding:0 18px;height:44px;font-size:14px;
+  font-weight:700;cursor:pointer;font-family:var(--marca);
+  display:inline-flex;align-items:center;gap:7px;
+}
+.btn:hover{border-color:var(--terra)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-forte{background:var(--laranja);border-color:var(--laranja);color:var(--creme)}
+.btn-forte:hover{background:#A05426;border-color:#A05426}
+.btn-p{height:36px;padding:0 14px;font-size:13px}
+.btn-perigo{color:var(--vermelho);border-color:rgba(155,42,42,.3)}
+.btn .esq,.esq{margin-right:auto}
+
+/* ================================ GRADE ================================== */
+.grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{
+  background:var(--white);border:1px solid var(--linha);border-radius:var(--rad);
+  overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;
+  display:flex;flex-direction:column;transition:transform .14s,box-shadow .14s;
+  padding:0;
+}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(51,19,25,.1)}
+.card-topo{padding:18px 20px 22px;color:var(--creme);min-height:142px;
+  display:flex;flex-direction:column}
+.card-tema{font-size:10.5px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;opacity:.72}
+.card-tit{
+  font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.18;
+  margin-top:12px;letter-spacing:-.01em;
+}
+.card-inst{font-size:13px;opacity:.74;margin-top:auto;padding-top:12px}
+.card-pe{padding:13px 20px 15px;background:var(--creme)}
+.card-n{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12.5px;font-weight:700;color:var(--faint)}
+.card-tr{height:4px;background:rgba(51,19,25,.1);border-radius:3px;
+  overflow:hidden;margin-top:9px}
+.card-in{height:100%;border-radius:3px;transition:width .3s}
+
+.t-conteudo{background:#4A2028}  .i-conteudo{background:#4A2028}
+.t-comercial{background:#B45F2B} .i-comercial{background:#B45F2B}
+.t-negocio{background:#6B4433}   .i-negocio{background:#6B4433}
+.t-ia{background:#545A34}        .i-ia{background:#545A34}
+.t-livros{background:#C89078}    .i-livros{background:#C89078}
+
+.vazio{
+  font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.4;
+  color:var(--faint);padding:34px 4px;max-width:46ch;
+}
+
+/* =============================== A ESTANTE =============================== */
+.est-cab{margin:26px 0 8px}
+.est-tema{
+  display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--creme);border-radius:var(--rad-p);
+  padding:5px 13px;margin-bottom:14px;
+}
+.est-tit{font-family:var(--serif);font-weight:500;font-size:38px;line-height:1.06;
+  letter-spacing:-.02em;color:var(--vinho)}
+.est-meta{display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  margin-top:12px;font-size:14px;color:var(--faint)}
+.est-meta a{color:var(--laranja);font-weight:700;text-decoration:none}
+.est-meta a:hover{text-decoration:underline;text-underline-offset:2px}
+.est-res{font-size:15.5px;color:var(--soft);margin-top:14px;max-width:70ch;
+  line-height:1.6;white-space:pre-wrap}
+
+.modulo{margin-top:30px}
+.modulo-rot{font-size:11px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+.nota{
+  background:var(--white);border:1px solid var(--linha);border-radius:var(--rad-s);
+  margin-bottom:8px;overflow:hidden;
+}
+.nota-cab{
+  width:100%;text-align:left;font:inherit;color:inherit;background:none;
+  border:none;cursor:pointer;padding:14px 18px;display:flex;gap:12px;
+  align-items:flex-start;
+}
+.nota-cab:hover{background:var(--creme)}
+.nota-ord{
+  flex:none;min-width:26px;height:26px;border-radius:8px;background:var(--creme2);
+  color:var(--faint);font-size:12.5px;font-weight:800;display:flex;
+  align-items:center;justify-content:center;margin-top:1px;
+}
+.nota-t{flex:1;min-width:0}
+.nota-t b{display:block;font-size:15.5px;font-weight:700;line-height:1.35}
+.nota-t span{display:block;font-size:13.5px;color:var(--faint);margin-top:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nota-corpo{padding:2px 18px 18px 56px;border-top:1px solid var(--linha2)}
+.nota-sec{margin-top:16px}
+.nota-sec h4{font-size:10.5px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.nota-sec p{font-size:15px;line-height:1.6;color:var(--soft);white-space:pre-wrap}
+.nota-ins li{font-size:15px;line-height:1.6;color:var(--soft);
+  margin-left:17px;padding-left:3px}
+.cadeira{
+  display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  background:rgba(84,90,52,.16);color:#3F4527;border-radius:var(--rad-p);
+  padding:4px 11px;
+}
+.nota-pe{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:18px}
+
+/* ================================ MODAL ================================== */
+.fundo{
+  position:fixed;inset:0;background:rgba(51,19,25,.42);display:none;
+  align-items:flex-start;justify-content:center;padding:28px 16px;z-index:50;
+  overflow-y:auto;
+}
+.fundo.on{display:flex}
+.modal{
+  background:var(--creme);border-radius:var(--rad);width:100%;max-width:620px;
+  box-shadow:0 20px 60px rgba(51,19,25,.3);overflow:hidden;
+}
+.modal.larga{max-width:760px}
+.modal-topo{padding:22px 26px 16px;border-bottom:1px solid var(--linha)}
+.modal-tit{font-family:var(--serif);font-weight:500;font-size:26px;
+  line-height:1.15;color:var(--vinho)}
+.modal-sub{font-size:13.5px;color:var(--faint);margin-top:4px}
+.modal-corpo{padding:20px 26px;max-height:65vh;overflow-y:auto}
+.modal-pe{padding:16px 26px;border-top:1px solid var(--linha);
+  display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;background:var(--creme2)}
+.campo{margin-bottom:16px}
+.campo label{display:block;font-size:11px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.campo input,.campo select,.campo textarea{
+  width:100%;border:1px solid var(--linha);background:var(--white);
+  border-radius:var(--rad-s);padding:11px 13px;font-family:var(--marca);
+  font-size:15px;color:var(--ink);
+}
+.campo textarea{min-height:84px;resize:vertical;line-height:1.55}
+.campo textarea.alto{min-height:150px}
+.campo input:focus,.campo select:focus,.campo textarea:focus{
+  outline:none;border-color:var(--laranja)}
+.campo .dica{font-size:12.5px;color:var(--faint);margin-top:5px;line-height:1.45}
+.erro-campo{display:none;background:rgba(155,42,42,.1);color:var(--vermelho);
+  border-radius:var(--rad-s);padding:10px 13px;font-size:14px;margin-bottom:14px}
+.erro-campo.on{display:block}
+.previa{
+  background:var(--white);border:1px solid var(--linha);border-radius:var(--rad-s);
+  padding:12px 14px;font-size:13.5px;color:var(--soft);margin-bottom:14px;
+  max-height:190px;overflow:auto;line-height:1.6;
+}
+.previa b{color:var(--ink)}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(16px);
+  background:var(--vinho);color:var(--creme);padding:12px 20px;border-radius:var(--rad-p);
+  font-size:14.5px;font-weight:600;opacity:0;transition:opacity .2s,transform .2s;
+  z-index:80;pointer-events:none;max-width:90vw;text-align:center;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:900px){ .grade{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:620px){
+  .topo{padding:22px 16px 0;gap:16px}
+  .bloco{padding:0 16px 48px}
+  .aviso{padding:0 16px}
+  h1{font-size:34px}
+  .est-tit{font-size:28px}
+  .contadores{gap:22px}
+  .cont b{font-size:30px}
+  .grade{grid-template-columns:minmax(0,1fr)}
+  .nota-corpo{padding-left:18px}
+  .modal-corpo{max-height:none}
+}
+</style>
+</head>
+<body>
+
+<div id="checando">Conferindo o seu acesso...</div>
+
+<div id="tudo">
+  <header class="topo" id="topo"></header>
+  <div class="aviso" id="avisos"></div>
+  <main class="bloco" id="painel"></main>
+</div>
+
+<div class="fundo" id="modalFundo"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../js/banco.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ==========================================================================
+   1. A PRIMEIRA COISA: CONFERIR A SESSAO
+   Sem sessao, vai para o login, dizendo que a pessoa queria a Biblioteca.
+   ========================================================================== */
+
+var Estado = {
+  tela:'casa', estanteAberta:null, notaAberta:null,
+  estantes:[], notas:[], avisos:[],
+  busca:'', tema:'todos', instrutor:'todos'
+};
+
+function $(id){ return document.getElementById(id); }
+
+(async function porta(){
+  if (!window.sb) {
+    $('checando').textContent = 'Não foi possível ligar no banco de dados. Recarregue a página.';
+    return;
+  }
+  var sessao = null;
+  try {
+    var r = await window.sb.auth.getSession();
+    sessao = r && r.data ? r.data.session : null;
+  } catch (e) { sessao = null; }
+
+  if (!sessao) { location.replace('../login/?ir=biblioteca'); return; }
+
+  document.body.classList.add('liberado');
+  iniciar();
+})();
+
+
+/* ==========================================================================
+   2. AJUDANTES
+   ========================================================================== */
+
+function esc(t){
+  return String(t == null ? '' : t)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function num(v){ var n = Number(v); return isFinite(n) ? n : 0; }
+function plural(n, um, muitos){ return n + ' ' + (n === 1 ? um : muitos); }
+function texto(v){ return String(v == null ? '' : v); }
+function primeiraLinha(t, max){
+  var s = texto(t).split('\n')[0].trim();
+  max = max || 110;
+  if (s.length > max) s = s.slice(0, max - 3).replace(/\s+\S*$/,'') + '...';
+  return s;
+}
+function linhas(t){
+  return texto(t).split('\n').map(function(x){ return x.trim(); })
+    .filter(function(x){ return x; });
+}
+/* divisao que nunca estoura quando a base esta vazia */
+function div(a, b){ a = num(a); b = num(b); return b === 0 ? 0 : a / b; }
+
+var TEMAS = [
+  { v:'conteudo',  r:'Conteúdo' },
+  { v:'comercial', r:'Comercial' },
+  { v:'negocio',   r:'Negócio' },
+  { v:'ia',        r:'IA' },
+  { v:'livros',    r:'Livros' }
+];
+var TIPOS  = ['curso','livro','workshop','material'];
+var STATUS = ['na fila','estudando','concluido'];
+/* qual agente usa este aprendizado */
+var CADEIRAS = [
+  { v:'vini',  r:'Vini · conteúdo' },
+  { v:'neil',  r:'Neil · comercial' },
+  { v:'nanda', r:'Nanda' },
+  { v:'clara', r:'Clara' },
+  { v:'bel',   r:'Bel' }
+];
+function rotuloTema(v){
+  for (var i = 0; i < TEMAS.length; i++) if (TEMAS[i].v === v) return TEMAS[i].r;
+  return v || 'Sem tema';
+}
+function rotuloCadeira(v){
+  for (var i = 0; i < CADEIRAS.length; i++) if (CADEIRAS[i].v === v) return CADEIRAS[i].r;
+  return v || '';
+}
+function rotuloStatus(v){ return v === 'concluido' ? 'concluído' : (v || 'estudando'); }
+function pctStatus(v){ return v === 'concluido' ? 100 : v === 'na fila' ? 6 : 50; }
+
+var ICO = {
+  busca:'<circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.7" y2="16.7"/>',
+  mais:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  esq:'<polyline points="15 18 9 12 15 6"/>',
+  fora:'<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  baixar:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  subir:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>'
+};
+function svg(nome, tam){
+  return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    (ICO[nome] || '') + '</svg>';
+}
+
+var tempoToast = null;
+function toast(txt){
+  var t = $('toast');
+  t.textContent = txt;
+  t.classList.add('on');
+  clearTimeout(tempoToast);
+  tempoToast = setTimeout(function(){ t.classList.remove('on'); }, 2600);
+}
+
+
+/* ==========================================================================
+   3. CARREGAR OS DADOS SEM NUNCA ABRIR EM BRANCO
+   Se faltar uma tabela ou um campo, a gente anota o aviso e segue em frente.
+   ========================================================================== */
+
+function anotarAviso(txt){
+  if (Estado.avisos.indexOf(txt) < 0) Estado.avisos.push(txt);
+}
+
+function explicarErro(tabela, erro){
+  var cod = (erro && erro.code) || '';
+  var msg = (erro && erro.message) || '';
+  if (cod === '42P01' || /does not exist/i.test(msg)) {
+    return 'A tabela <b>' + esc(tabela) + '</b> ainda não existe no banco. ' +
+      'Rode o arquivo <b>biblioteca.sql</b> no SQL Editor do Supabase. ' +
+      'A página continua abrindo, só fica sem esses dados.';
+  }
+  if (cod === '42703') {
+    return 'Falta um campo na tabela <b>' + esc(tabela) + '</b>. ' +
+      'Rode o arquivo <b>biblioteca.sql</b> de novo, que ele acrescenta o que falta.';
+  }
+  if (cod === '42501' || /row-level security/i.test(msg)) {
+    return 'O banco recusou a leitura de <b>' + esc(tabela) + '</b> por causa das permissões. ' +
+      'Rode o <b>biblioteca.sql</b> de novo, que ele recria as permissões.';
+  }
+  return 'Não consegui ler <b>' + esc(tabela) + '</b> agora. ' +
+    'Recarregue a página. Se continuar, me avise.';
+}
+
+async function ler(tabela, arrumar){
+  try {
+    var q = window.sb.from(tabela).select('*');
+    if (arrumar) q = arrumar(q);
+    var r = await q;
+    if (r.error) { anotarAviso(explicarErro(tabela, r.error)); return []; }
+    return r.data || [];
+  } catch (e) {
+    anotarAviso(explicarErro(tabela, e));
+    return [];
+  }
+}
+
+async function gravar(tabela, acao){
+  try {
+    var r = await acao(window.sb.from(tabela));
+    if (r.error) {
+      toast('Não foi possível salvar agora.');
+      anotarAviso(explicarErro(tabela, r.error));
+      desenharAvisos();
+      return false;
+    }
+    return true;
+  } catch (e) {
+    toast('Não foi possível salvar agora. Tente de novo.');
+    return false;
+  }
+}
+
+async function carregarTudo(){
+  Estado.avisos = [];
+  var r = await Promise.all([
+    ler('estantes', function(q){ return q.order('titulo',{ascending:true}); }),
+    ler('notas',    function(q){ return q.order('ordem',{ascending:true,nullsFirst:false}); })
+  ]);
+  Estado.estantes = r[0];
+  Estado.notas    = r[1];
+  desenharAvisos();
+}
+
+function desenharAvisos(){
+  var cx = $('avisos');
+  cx.innerHTML = Estado.avisos.map(function(a){
+    return '<div class="aviso-cx">' + a + '</div>';
+  }).join('');
+}
+
+function notasDa(id){
+  return Estado.notas.filter(function(n){ return String(n.estante_id) === String(id); });
+}
+function acharEstante(id){
+  for (var i = 0; i < Estado.estantes.length; i++) {
+    if (String(Estado.estantes[i].id) === String(id)) return Estado.estantes[i];
+  }
+  return null;
+}
+
+
+/* ==========================================================================
+   4. MODAL E FORMULARIOS
+   ========================================================================== */
+
+function fecharModal(){
+  $('modalFundo').classList.remove('on');
+  $('modal').innerHTML = '';
+  $('modal').className = 'modal';
+}
+
+function abrirModal(o){
+  var m = $('modal');
+  m.className = 'modal' + (o.larga ? ' larga' : '');
+  m.innerHTML =
+    '<div class="modal-topo"><div class="modal-tit">' + esc(o.titulo) + '</div>' +
+      (o.sub ? '<div class="modal-sub">' + esc(o.sub) + '</div>' : '') + '</div>' +
+    '<div class="modal-corpo">' + o.corpo + '</div>' +
+    '<div class="modal-pe">' + o.pe + '</div>';
+  $('modalFundo').classList.add('on');
+  m.querySelectorAll('[data-fechar]').forEach(function(b){
+    b.addEventListener('click', fecharModal);
+  });
+  if (o.depois) o.depois(m);
+}
+
+function htmlCampos(campos, valores){
+  valores = valores || {};
+  return campos.filter(Boolean).map(function(c){
+    var v = valores[c.k];
+    if (v == null) v = (c.padrao != null ? c.padrao : '');
+    var dentro;
+    if (c.tipo === 'select') {
+      dentro = '<select data-k="' + c.k + '">' +
+        (c.vazio ? '<option value=""' + (!v ? ' selected' : '') + '>' + esc(c.vazio) + '</option>' : '') +
+        c.opcoes.map(function(o){
+          var val = (o && typeof o === 'object') ? o.v : o;
+          var rot = (o && typeof o === 'object') ? o.r : o;
+          return '<option value="' + esc(val) + '"' +
+            (String(val) === String(v) ? ' selected' : '') + '>' + esc(rot) + '</option>';
+        }).join('') + '</select>';
+    } else if (c.tipo === 'area') {
+      dentro = '<textarea data-k="' + c.k + '"' + (c.alto ? ' class="alto"' : '') +
+        ' placeholder="' + esc(c.ph || '') + '">' + esc(v) + '</textarea>';
+    } else {
+      dentro = '<input type="' + (c.tipo || 'text') + '" data-k="' + c.k + '" ' +
+        'value="' + esc(v) + '" placeholder="' + esc(c.ph || '') + '">';
+    }
+    return '<div class="campo"><label>' + esc(c.rot) + '</label>' + dentro +
+      (c.dica ? '<div class="dica">' + esc(c.dica) + '</div>' : '') + '</div>';
+  }).join('');
+}
+
+function lerCampos(m){
+  var out = {};
+  m.querySelectorAll('[data-k]').forEach(function(el){
+    var k = el.getAttribute('data-k');
+    if (el.type === 'number') out[k] = el.value === '' ? null : num(el.value);
+    else out[k] = el.value === '' ? null : el.value;
+  });
+  return out;
+}
+
+function mostrarErroForm(m, txt){
+  var e = m.querySelector('.erro-campo');
+  if (!e) return;
+  e.textContent = txt;
+  e.classList.add('on');
+}
+
+function formPadrao(cfg){
+  abrirModal({
+    titulo: cfg.titulo,
+    sub: cfg.sub,
+    larga: cfg.larga,
+    corpo: '<div class="erro-campo"></div>' + htmlCampos(cfg.campos, cfg.valores),
+    pe:
+      (cfg.id ? '<button class="btn btn-perigo esq" type="button" data-apagar="1">Apagar</button>' : '') +
+      '<button class="btn" type="button" data-fechar="1">Cancelar</button>' +
+      '<button class="btn btn-forte" type="button" data-salvar="1">Salvar</button>',
+    depois: function(m){
+      var primeiro = m.querySelector('input,select,textarea');
+      if (primeiro) primeiro.focus();
+
+      m.querySelector('[data-salvar]').addEventListener('click', async function(){
+        var b = this;
+        var d = lerCampos(m);
+        var erro = cfg.validar ? cfg.validar(d) : '';
+        if (erro) { mostrarErroForm(m, erro); return; }
+        b.disabled = true;
+        b.textContent = 'Salvando...';
+        var ok = cfg.id
+          ? await gravar(cfg.tabela, function(t){ return t.update(d).eq('id', cfg.id); })
+          : await gravar(cfg.tabela, function(t){ return t.insert(Object.assign({}, cfg.extras || {}, d)); });
+        b.disabled = false;
+        b.textContent = 'Salvar';
+        if (!ok) return;
+        fecharModal();
+        toast(cfg.id ? 'Salvo.' : 'Criado.');
+        await carregarTudo();
+        desenhar();
+      });
+
+      var ap = m.querySelector('[data-apagar]');
+      if (ap) ap.addEventListener('click', function(){
+        confirmar(cfg.titulo, cfg.textoApagar, async function(){
+          var ok = await gravar(cfg.tabela, function(t){ return t.delete().eq('id', cfg.id); });
+          if (!ok) return;
+          fecharModal();
+          toast('Apagado.');
+          if (cfg.aposApagar) cfg.aposApagar();
+          await carregarTudo();
+          desenhar();
+        });
+      });
+    }
+  });
+}
+
+function confirmar(titulo, texto, aoConfirmar){
+  var guardado = $('modal').innerHTML;
+  var classe = $('modal').className;
+  abrirModal({
+    titulo:'Tem certeza?',
+    sub:titulo,
+    corpo:'<p style="font-size:15px;line-height:1.6;color:var(--soft)">' + esc(texto) +
+          ' Isso não tem como desfazer.</p>',
+    pe:'<button class="btn" type="button" data-volta="1">Voltar</button>' +
+       '<button class="btn btn-perigo" type="button" data-sim="1">Sim, apagar</button>',
+    depois: function(m){
+      m.querySelector('[data-volta]').addEventListener('click', function(){
+        $('modal').className = classe;
+        $('modal').innerHTML = guardado;
+        $('modalFundo').classList.add('on');
+      });
+      m.querySelector('[data-sim]').addEventListener('click', function(){
+        this.disabled = true;
+        aoConfirmar();
+      });
+    }
+  });
+}
+
+
+/* ==========================================================================
+   5. A TELA DE CASA  ·  a grade de estantes
+   ========================================================================== */
+
+/* uma estante entra na busca pelo que ela e e pelo que esta escrito nas notas */
+function casaComBusca(e, termo){
+  if (!termo) return true;
+  var meu = [e.titulo, e.instrutor, e.resumo, rotuloTema(e.tema)].join(' ').toLowerCase();
+  if (meu.indexOf(termo) > -1) return true;
+  return notasDa(e.id).some(function(n){
+    return [n.titulo, n.resumo, n.insights, n.aplicacao, n.modulo]
+      .join(' ').toLowerCase().indexOf(termo) > -1;
+  });
+}
+
+function instrutores(){
+  var vistos = {}, fora = [];
+  Estado.estantes.forEach(function(e){
+    var i = texto(e.instrutor).trim();
+    if (i && !vistos[i]) { vistos[i] = true; fora.push(i); }
+  });
+  return fora.sort(function(a,b){ return a.localeCompare(b); });
+}
+
+function telaCasa(){
+  var termo = Estado.busca.trim().toLowerCase();
+
+  var lista = Estado.estantes.filter(function(e){
+    if (Estado.tema !== 'todos' && e.tema !== Estado.tema) return false;
+    if (Estado.instrutor !== 'todos' && texto(e.instrutor).trim() !== Estado.instrutor) return false;
+    return casaComBusca(e, termo);
+  });
+
+  var h = '<div class="ferra">' +
+    '<div class="busca">' + svg('busca',16) +
+      '<input id="bBusca" type="search" placeholder="Buscar em títulos, resumos e insights" ' +
+      'value="' + esc(Estado.busca) + '"></div>' +
+    '<select class="sel" id="bInstrutor">' +
+      '<option value="todos">Todos os instrutores</option>' +
+      instrutores().map(function(i){
+        return '<option value="' + esc(i) + '"' +
+          (Estado.instrutor === i ? ' selected' : '') + '>' + esc(i) + '</option>';
+      }).join('') +
+    '</select>' +
+    '<button class="btn btn-forte" type="button" id="bNova">' + svg('mais',14) + ' Nova estante</button>' +
+  '</div>';
+
+  h += '<div class="pils" style="margin-bottom:22px">' +
+    [{ v:'todos', r:'Todos' }].concat(TEMAS).map(function(t){
+      return '<button class="pil' + (Estado.tema === t.v ? ' on' : '') +
+        '" type="button" data-tema="' + esc(t.v) + '">' + esc(t.r) + '</button>';
+    }).join('') + '</div>';
+
+  if (!Estado.estantes.length) {
+    h += '<div class="vazio">A sua biblioteca ainda está vazia. ' +
+         'Cada estante é um curso, um livro, um workshop ou um material, ' +
+         'e dentro dela moram os resumos de cada aula.</div>';
+  } else if (!lista.length) {
+    h += '<div class="vazio">Nenhuma estante com esse filtro. ' +
+         'Tente limpar a busca ou voltar para <i>Todos</i>.</div>';
+  } else {
+    h += '<div class="grade">' + lista.map(function(e){
+      var n = notasDa(e.id).length;
+      return '<button class="card" type="button" data-abre="' + esc(e.id) + '">' +
+        '<div class="card-topo t-' + esc(e.tema) + '">' +
+          '<div class="card-tema">' + esc(rotuloTema(e.tema)) + '</div>' +
+          '<div class="card-tit">' + esc(e.titulo || 'Sem título') + '</div>' +
+          '<div class="card-inst">' + esc(e.instrutor || 'sem instrutor') + '</div>' +
+        '</div>' +
+        '<div class="card-pe">' +
+          '<div class="card-n"><span>' + plural(n,'nota','notas') + '</span>' +
+            '<span>' + esc(rotuloStatus(e.status)) + '</span></div>' +
+          '<div class="card-tr"><div class="card-in i-' + esc(e.tema) +
+            '" style="width:' + pctStatus(e.status) + '%"></div></div>' +
+        '</div>' +
+      '</button>';
+    }).join('') + '</div>';
+  }
+
+  $('painel').innerHTML = h;
+
+  var bb = $('bBusca');
+  var espera = null;
+  bb.addEventListener('input', function(){
+    clearTimeout(espera);
+    var v = bb.value;
+    espera = setTimeout(function(){
+      Estado.busca = v;
+      telaCasa();
+      var n = $('bBusca');
+      if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); }
+    }, 220);
+  });
+  $('bInstrutor').addEventListener('change', function(){
+    Estado.instrutor = this.value; telaCasa();
+  });
+  $('bNova').addEventListener('click', function(){ formEstante(null); });
+  $('painel').querySelectorAll('[data-tema]').forEach(function(b){
+    b.addEventListener('click', function(){
+      Estado.tema = b.getAttribute('data-tema'); telaCasa();
+    });
+  });
+  $('painel').querySelectorAll('[data-abre]').forEach(function(b){
+    b.addEventListener('click', function(){
+      Estado.estanteAberta = b.getAttribute('data-abre');
+      Estado.notaAberta = null;
+      Estado.tela = 'estante';
+      desenhar();
+      window.scrollTo(0, 0);
+    });
+  });
+}
+
+
+/* ==========================================================================
+   6. A TELA DA ESTANTE  ·  as notas, agrupadas por modulo
+   ========================================================================== */
+
+function telaEstante(){
+  var e = acharEstante(Estado.estanteAberta);
+  if (!e) { Estado.tela = 'casa'; desenhar(); return; }
+
+  var notas = notasDa(e.id).slice().sort(function(a,b){
+    var ma = texto(a.modulo), mb = texto(b.modulo);
+    if (ma !== mb) return ma.localeCompare(mb);
+    var oa = a.ordem == null ? 9999 : num(a.ordem);
+    var ob = b.ordem == null ? 9999 : num(b.ordem);
+    return oa - ob || texto(a.titulo).localeCompare(texto(b.titulo));
+  });
+
+  var h = '<div class="ferra" style="margin-bottom:0">' +
+    '<button class="btn" type="button" id="eVolta">' + svg('esq',15) + ' Todas as estantes</button>' +
+    '<div class="espaco"></div>' +
+    '<button class="btn" type="button" id="eImportar">' + svg('subir',14) + ' Importar notas (CSV)</button>' +
+    '<button class="btn" type="button" id="eEditar">Editar estante</button>' +
+    '<button class="btn btn-forte" type="button" id="eNota">' + svg('mais',14) + ' Nova nota</button>' +
+  '</div>';
+
+  h += '<div class="est-cab">' +
+    '<span class="est-tema t-' + esc(e.tema) + '">' + esc(rotuloTema(e.tema)) + '</span>' +
+    '<div class="est-tit">' + esc(e.titulo || 'Sem título') + '</div>' +
+    '<div class="est-meta">' +
+      '<span>' + esc(e.instrutor || 'sem instrutor') + '</span>' +
+      '<span>' + esc(e.tipo || 'curso') + '</span>' +
+      '<span>' + esc(rotuloStatus(e.status)) + '</span>' +
+      '<span>' + plural(notas.length,'nota','notas') + '</span>' +
+      (e.pasta_drive
+        ? '<a href="' + esc(e.pasta_drive) + '" target="_blank" rel="noopener noreferrer">' +
+          'abrir pasta no Drive ' + svg('fora',12) + '</a>'
+        : '') +
+    '</div>' +
+    (e.resumo ? '<div class="est-res">' + esc(e.resumo) + '</div>' : '') +
+  '</div>';
+
+  if (!notas.length) {
+    h += '<div class="vazio">Esta estante ainda não tem nota nenhuma. ' +
+         'Cada nota é o resumo de uma aula, de um capítulo ou de um trecho, ' +
+         'com os insights e <i>como isso entra no seu método</i>.</div>';
+  } else {
+    /* agrupa por modulo, mantendo a ordem em que apareceram */
+    var grupos = [], porNome = {};
+    notas.forEach(function(n){
+      var m = texto(n.modulo).trim() || 'Sem módulo';
+      if (!porNome[m]) { porNome[m] = { nome:m, itens:[] }; grupos.push(porNome[m]); }
+      porNome[m].itens.push(n);
+    });
+
+    h += grupos.map(function(g){
+      return '<div class="modulo"><div class="modulo-rot">' + esc(g.nome) + '</div>' +
+        g.itens.map(function(n){
+          var aberta = String(Estado.notaAberta) === String(n.id);
+          var ins = linhas(n.insights);
+          return '<div class="nota">' +
+            '<button class="nota-cab" type="button" data-nota="' + esc(n.id) + '">' +
+              '<span class="nota-ord">' + (n.ordem == null ? '·' : esc(n.ordem)) + '</span>' +
+              '<span class="nota-t"><b>' + esc(n.titulo || 'Sem título') + '</b>' +
+                (aberta ? '' : '<span>' + esc(primeiraLinha(n.resumo) || 'sem resumo') + '</span>') +
+              '</span>' +
+            '</button>' +
+            (aberta
+              ? '<div class="nota-corpo">' +
+                  (n.resumo ? '<div class="nota-sec"><h4>Resumo</h4><p>' + esc(n.resumo) + '</p></div>' : '') +
+                  (ins.length
+                    ? '<div class="nota-sec"><h4>Insights</h4><ul class="nota-ins">' +
+                      ins.map(function(x){ return '<li>' + esc(x.replace(/^[-•*]\s*/,'')) + '</li>'; }).join('') +
+                      '</ul></div>'
+                    : '') +
+                  (n.aplicacao ? '<div class="nota-sec"><h4>Como eu aplico</h4><p>' + esc(n.aplicacao) + '</p></div>' : '') +
+                  '<div class="nota-pe">' +
+                    (n.cadeira ? '<span class="cadeira">' + esc(rotuloCadeira(n.cadeira)) + '</span>' : '') +
+                    (n.link_drive
+                      ? '<a class="btn btn-p" href="' + esc(n.link_drive) + '" target="_blank" ' +
+                        'rel="noopener noreferrer" style="text-decoration:none">abrir arquivo ' + svg('fora',12) + '</a>'
+                      : '') +
+                    '<button class="btn btn-p" type="button" data-ednota="' + esc(n.id) + '">Editar</button>' +
+                  '</div>' +
+                '</div>'
+              : '') +
+          '</div>';
+        }).join('') +
+      '</div>';
+    }).join('');
+  }
+
+  $('painel').innerHTML = h;
+
+  $('eVolta').addEventListener('click', function(){
+    Estado.tela = 'casa'; Estado.notaAberta = null; desenhar(); window.scrollTo(0,0);
+  });
+  $('eEditar').addEventListener('click', function(){ formEstante(e); });
+  $('eNota').addEventListener('click', function(){ formNota(null, e); });
+  $('eImportar').addEventListener('click', function(){ formImportar(e); });
+
+  $('painel').querySelectorAll('[data-nota]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.getAttribute('data-nota');
+      Estado.notaAberta = (String(Estado.notaAberta) === String(id)) ? null : id;
+      telaEstante();
+    });
+  });
+  $('painel').querySelectorAll('[data-ednota]').forEach(function(b){
+    b.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      var id = b.getAttribute('data-ednota');
+      var n = Estado.notas.filter(function(x){ return String(x.id) === String(id); })[0];
+      if (n) formNota(n, e);
+    });
+  });
+}
+
+
+/* ==========================================================================
+   7. OS FORMULARIOS
+   ========================================================================== */
+
+function formEstante(e){
+  formPadrao({
+    titulo: e ? 'Editar estante' : 'Nova estante',
+    sub: e ? (e.titulo || '') : 'Um curso, um livro, um workshop ou um material',
+    tabela:'estantes',
+    id: e ? e.id : null,
+    valores: e || { tema:'conteudo', tipo:'curso', status:'estudando' },
+    textoApagar:'Esta estante vai sair da biblioteca, com todas as notas dentro dela.',
+    aposApagar: function(){ Estado.tela = 'casa'; Estado.estanteAberta = null; },
+    campos:[
+      { k:'titulo', rot:'Título', ph:'Como o curso ou o livro se chama' },
+      { k:'instrutor', rot:'Instrutor', ph:'Quem ensina. Pode deixar vazio.' },
+      { k:'tema', rot:'Tema', tipo:'select', opcoes:TEMAS,
+        dica:'O tema define a cor do card na grade.' },
+      { k:'tipo', rot:'Tipo', tipo:'select', opcoes:TIPOS },
+      { k:'status', rot:'Status', tipo:'select', opcoes:STATUS,
+        dica:'É o que enche a barrinha fina embaixo do card.' },
+      { k:'pasta_drive', rot:'Pasta no Drive', ph:'https://drive.google.com/...',
+        dica:'Vira o link "abrir pasta no Drive" dentro da estante.' },
+      { k:'resumo', rot:'Resumo curto', tipo:'area',
+        ph:'Do que trata, e por que você está estudando isso' }
+    ],
+    validar: function(d){
+      if (!texto(d.titulo).trim()) return 'Escreva o título da estante.';
+      return '';
+    }
+  });
+}
+
+function formNota(n, e){
+  formPadrao({
+    titulo: n ? 'Editar nota' : 'Nova nota',
+    sub: e.titulo || '',
+    larga: true,
+    tabela:'notas',
+    id: n ? n.id : null,
+    extras: { estante_id: e.id },
+    valores: n || {},
+    textoApagar:'Esta nota vai sair da estante.',
+    aposApagar: function(){ Estado.notaAberta = null; },
+    campos:[
+      { k:'modulo', rot:'Módulo', ph:'O bloco a que esta aula pertence',
+        dica:'As notas aparecem agrupadas por módulo. Em branco, caem em "Sem módulo".' },
+      { k:'ordem', rot:'Ordem', tipo:'number', ph:'1, 2, 3...',
+        dica:'Só para as notas aparecerem na ordem da aula.' },
+      { k:'titulo', rot:'Título da nota', ph:'O nome da aula ou do capítulo' },
+      { k:'resumo', rot:'Resumo', tipo:'area', alto:true,
+        ph:'O que foi dito, com as suas palavras' },
+      { k:'insights', rot:'Insights', tipo:'area',
+        ph:'Um por linha' , dica:'Cada linha vira um item da lista.' },
+      { k:'aplicacao', rot:'Como eu aplico', tipo:'area',
+        ph:'Como isso entra no seu método ou na sua marca' },
+      { k:'cadeira', rot:'Cadeira', tipo:'select', opcoes:CADEIRAS,
+        vazio:'Sem cadeira definida',
+        dica:'Qual agente usa este aprendizado.' },
+      { k:'link_drive', rot:'Link do arquivo', ph:'https://drive.google.com/...' }
+    ],
+    validar: function(d){
+      if (!texto(d.titulo).trim()) return 'Escreva o título da nota.';
+      return '';
+    }
+  });
+}
+
+
+/* ==========================================================================
+   8. IMPORTAR NOTAS EM CSV
+   Aceita virgula ou ponto e virgula, aspas, e quebra de linha dentro de aspas.
+   ========================================================================== */
+
+function separadorDe(txt){
+  var cab = texto(txt).split(/\r?\n/)[0] || '';
+  return (cab.split(';').length > cab.split(',').length) ? ';' : ',';
+}
+
+function lerCSV(txt, sep){
+  txt = texto(txt).replace(/^﻿/, '');
+  var linhasFora = [], campo = '', linha = [], dentroAspas = false;
+  for (var i = 0; i < txt.length; i++) {
+    var c = txt[i];
+    if (dentroAspas) {
+      if (c === '"') {
+        if (txt[i+1] === '"') { campo += '"'; i++; }
+        else dentroAspas = false;
+      } else campo += c;
+      continue;
+    }
+    if (c === '"') { dentroAspas = true; continue; }
+    if (c === sep) { linha.push(campo); campo = ''; continue; }
+    if (c === '\n') { linha.push(campo); linhasFora.push(linha); linha = []; campo = ''; continue; }
+    if (c === '\r') continue;
+    campo += c;
+  }
+  if (campo !== '' || linha.length) { linha.push(campo); linhasFora.push(linha); }
+  return linhasFora.filter(function(l){
+    return l.some(function(x){ return texto(x).trim(); });
+  });
+}
+
+/* os nomes de coluna que eu entendo, com e sem acento */
+var COLUNAS_NOTA = {
+  'ordem':'ordem', 'n':'ordem', 'numero':'ordem', 'número':'ordem',
+  'modulo':'modulo', 'módulo':'modulo', 'bloco':'modulo',
+  'titulo':'titulo', 'título':'titulo', 'aula':'titulo', 'nome':'titulo',
+  'resumo':'resumo',
+  'insights':'insights', 'insight':'insights',
+  'aplicacao':'aplicacao', 'aplicação':'aplicacao',
+  'como eu aplico':'aplicacao', 'como aplico':'aplicacao',
+  'cadeira':'cadeira', 'agente':'cadeira',
+  'link_drive':'link_drive', 'link':'link_drive', 'arquivo':'link_drive'
+};
+var CADEIRAS_VALIDAS = CADEIRAS.map(function(c){ return c.v; });
+
+function csvParaNotas(txt){
+  var sep = separadorDe(txt);
+  var ls = lerCSV(txt, sep);
+  if (ls.length < 2) return { erro:'O arquivo precisa de uma linha de cabeçalho e pelo menos uma nota.' };
+
+  var cab = ls[0].map(function(x){ return texto(x).trim().toLowerCase(); });
+  var mapa = cab.map(function(c){ return COLUNAS_NOTA[c] || null; });
+  if (mapa.indexOf('titulo') < 0) {
+    return { erro:'Não achei a coluna do título. O cabeçalho precisa ter uma coluna chamada ' +
+                  'titulo, título, aula ou nome.' };
+  }
+
+  var fora = [];
+  for (var i = 1; i < ls.length; i++) {
+    var l = ls[i], o = {};
+    for (var j = 0; j < mapa.length; j++) {
+      if (!mapa[j]) continue;
+      var v = texto(l[j]).trim();
+      if (v !== '') o[mapa[j]] = v;
+    }
+    if (!texto(o.titulo).trim()) continue;
+    if (o.ordem != null) {
+      var nn = parseInt(o.ordem, 10);
+      o.ordem = isFinite(nn) ? nn : null;
+    }
+    if (o.cadeira) {
+      var cd = texto(o.cadeira).trim().toLowerCase();
+      o.cadeira = CADEIRAS_VALIDAS.indexOf(cd) > -1 ? cd : null;
+    }
+    fora.push(o);
+  }
+  if (!fora.length) return { erro:'Nenhuma linha com título preenchido.' };
+  return { notas: fora, ignoradas: cab.filter(function(c, j){ return !mapa[j]; }) };
+}
+
+function formImportar(e){
+  abrirModal({
+    titulo:'Importar notas',
+    sub: e.titulo || '',
+    larga:true,
+    corpo:
+      '<div class="erro-campo"></div>' +
+      '<p style="font-size:15px;line-height:1.6;color:var(--soft);margin-bottom:16px">' +
+      'Escolha um arquivo <b>.csv</b>. A primeira linha tem que ser o cabeçalho, com os nomes ' +
+      'das colunas. Eu entendo estas: <b>ordem, modulo, titulo, resumo, insights, aplicacao, ' +
+      'cadeira, link_drive</b>. Só o título é obrigatório. Coluna que eu não conheço, eu ignoro.' +
+      '</p>' +
+      '<div class="campo"><label>Arquivo</label>' +
+      '<input type="file" id="impArq" accept=".csv,text/csv"></div>' +
+      '<div id="impPrevia"></div>',
+    pe:'<button class="btn" type="button" data-fechar="1">Cancelar</button>' +
+       '<button class="btn btn-forte" type="button" id="impOk" disabled>Importar</button>',
+    depois: function(m){
+      var prontas = null;
+
+      $('impArq').addEventListener('change', function(){
+        var f = this.files && this.files[0];
+        $('impPrevia').innerHTML = '';
+        $('impOk').disabled = true;
+        prontas = null;
+        if (!f) return;
+        var leitor = new FileReader();
+        leitor.onload = function(){
+          var r;
+          try { r = csvParaNotas(String(leitor.result || '')); }
+          catch (err) { r = { erro:'Não consegui ler este arquivo. Ele é mesmo um .csv?' }; }
+          if (r.erro) { mostrarErroForm(m, r.erro); return; }
+          var er = m.querySelector('.erro-campo');
+          if (er) er.classList.remove('on');
+          prontas = r.notas;
+          $('impPrevia').innerHTML =
+            '<div class="previa"><b>' + plural(r.notas.length,'nota','notas') +
+            '</b> prontas para entrar' +
+            (r.ignoradas.length
+              ? '. Colunas que eu ignorei: ' + esc(r.ignoradas.join(', '))
+              : '') + '.<br><br>' +
+            r.notas.slice(0,6).map(function(n){
+              return '· ' + (n.ordem != null ? esc(n.ordem) + '. ' : '') +
+                '<b>' + esc(n.titulo) + '</b>' +
+                (n.modulo ? ' <span style="color:var(--faint)">· ' + esc(n.modulo) + '</span>' : '');
+            }).join('<br>') +
+            (r.notas.length > 6 ? '<br>· e mais ' + (r.notas.length - 6) : '') +
+            '</div>';
+          $('impOk').disabled = false;
+        };
+        leitor.onerror = function(){ mostrarErroForm(m, 'Não consegui abrir o arquivo.'); };
+        leitor.readAsText(f, 'utf-8');
+      });
+
+      $('impOk').addEventListener('click', async function(){
+        if (!prontas || !prontas.length) return;
+        var b = this;
+        b.disabled = true;
+        b.textContent = 'Importando...';
+        var pacote = prontas.map(function(n){
+          return Object.assign({}, n, { estante_id: e.id });
+        });
+        var ok = await gravar('notas', function(t){ return t.insert(pacote); });
+        b.disabled = false;
+        b.textContent = 'Importar';
+        if (!ok) return;
+        fecharModal();
+        toast(plural(pacote.length,'nota importada','notas importadas') + '.');
+        await carregarTudo();
+        desenhar();
+      });
+    }
+  });
+}
+
+
+/* ==========================================================================
+   9. BACKUP DA BIBLIOTECA
+   O plano gratuito do Supabase nao faz backup nenhum. A copia que existe
+   e a que voce baixa daqui.
+   ========================================================================== */
+
+function baixarArquivo(nome, conteudo, tipo){
+  try {
+    var blob = new Blob([conteudo], { type: tipo });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nome;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 800);
+    return true;
+  } catch (err) { return false; }
+}
+
+function celulaCSV(v){
+  var t = texto(v).replace(/"/g,'""');
+  return '"' + t + '"';
+}
+function montarCSV(colunas, linhasDados){
+  var sep = ';';
+  var t = colunas.map(function(c){ return celulaCSV(c.rot); }).join(sep) + '\r\n';
+  linhasDados.forEach(function(l){
+    t += colunas.map(function(c){ return celulaCSV(c.val ? c.val(l) : l[c.k]); }).join(sep) + '\r\n';
+  });
+  return '﻿' + t;
+}
+
+async function baixarTudo(){
+  var hoje = new Date().toISOString().slice(0,10);
+  var pacote = {
+    gerado_em: new Date().toISOString(),
+    projeto: 'Biblioteca de estudos · Giovanna Carrilho',
+    aviso: 'Este arquivo tem os links das suas pastas do Drive. Guarde em lugar seu.',
+    contagem: { estantes: Estado.estantes.length, notas: Estado.notas.length },
+    tabelas: { estantes: Estado.estantes, notas: Estado.notas }
+  };
+  var colsEst = [
+    { rot:'Título', k:'titulo' }, { rot:'Instrutor', k:'instrutor' },
+    { rot:'Tema', val:function(e){ return rotuloTema(e.tema); } },
+    { rot:'Tipo', k:'tipo' }, { rot:'Status', k:'status' },
+    { rot:'Pasta no Drive', k:'pasta_drive' }, { rot:'Resumo', k:'resumo' }
+  ];
+  var colsNot = [
+    { rot:'Estante', val:function(n){ var e = acharEstante(n.estante_id); return e ? e.titulo : ''; } },
+    { rot:'Módulo', k:'modulo' }, { rot:'Ordem', k:'ordem' },
+    { rot:'Título', k:'titulo' }, { rot:'Resumo', k:'resumo' },
+    { rot:'Insights', k:'insights' }, { rot:'Como eu aplico', k:'aplicacao' },
+    { rot:'Cadeira', k:'cadeira' }, { rot:'Link', k:'link_drive' }
+  ];
+  var arquivos = [
+    ['biblioteca-' + hoje + '.json', JSON.stringify(pacote, null, 2), 'application/json;charset=utf-8'],
+    ['estantes-' + hoje + '.csv', montarCSV(colsEst, Estado.estantes), 'text/csv;charset=utf-8'],
+    ['notas-' + hoje + '.csv',    montarCSV(colsNot, Estado.notas),    'text/csv;charset=utf-8']
+  ];
+  var deuCerto = 0;
+  for (var i = 0; i < arquivos.length; i++) {
+    if (baixarArquivo(arquivos[i][0], arquivos[i][1], arquivos[i][2])) deuCerto++;
+    await new Promise(function(r){ setTimeout(r, 450); });
+  }
+  toast(deuCerto === arquivos.length
+    ? 'Backup baixado: 1 arquivo de restauração e 2 planilhas.'
+    : 'Baixei ' + deuCerto + ' de ' + arquivos.length + ' arquivos. Tente de novo.');
+}
+
+
+/* ==========================================================================
+   10. LIGAR TUDO
+   ========================================================================== */
+
+function desenharTopo(){
+  $('topo').innerHTML =
+    '<div class="topo-esq">' +
+      '<a class="volta" href="../admin/">' + svg('esq',14) + ' Voltar para o painel</a>' +
+      '<h1>Biblioteca <i>de estudos.</i></h1>' +
+      '<div class="sub1">Os resumos de tudo o que você estuda, por estante, ' +
+      'com os insights e como cada coisa entra no seu método.</div>' +
+    '</div>' +
+    '<div class="contadores">' +
+      '<div class="cont"><b>' + Estado.estantes.length + '</b><span>estantes</span></div>' +
+      '<div class="cont"><b>' + Estado.notas.length + '</b><span>notas</span></div>' +
+      '<div class="cont" style="align-self:flex-end">' +
+        '<button class="btn btn-p" type="button" id="tBackup">' +
+        svg('baixar',13) + ' Baixar tudo</button></div>' +
+    '</div>';
+
+  $('tBackup').addEventListener('click', async function(){
+    var b = this;
+    b.disabled = true;
+    var antes = b.innerHTML;
+    b.textContent = 'Baixando...';
+    await baixarTudo();
+    b.disabled = false;
+    b.innerHTML = antes;
+  });
+}
+
+function desenhar(){
+  desenharTopo();
+  try {
+    $('painel').innerHTML = '';
+    if (Estado.tela === 'estante') telaEstante();
+    else telaCasa();
+  } catch (err) {
+    $('painel').innerHTML = '<div class="vazio">Esta tela encontrou um problema e não pôde ser ' +
+      'montada. Recarregue a página para tentar de novo.</div>';
+  }
+}
+
+async function iniciar(){
+  $('modalFundo').addEventListener('click', function(ev){
+    if (ev.target === $('modalFundo')) fecharModal();
+  });
+  document.addEventListener('keydown', function(ev){
+    if (ev.key === 'Escape') fecharModal();
+  });
+  try {
+    window.sb.auth.onAuthStateChange(function(evento, sessao){
+      if (!sessao && evento !== 'INITIAL_SESSION') location.replace('../login/?ir=biblioteca');
+    });
+  } catch (e) {}
+
+  await carregarTudo();
+  desenhar();
+}
+
+})();
+</script>
+</body>
+</html>
